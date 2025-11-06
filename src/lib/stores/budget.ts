@@ -1,0 +1,154 @@
+import { writable } from 'svelte/store';
+import type { AppState, Budget, Expense } from '../types';
+import { loadState, saveState } from '../storage';
+
+function createBudgetStore() {
+	const initialState = loadState();
+	const { subscribe, set, update } = writable<AppState>(initialState);
+
+	// Auto-save to localStorage whenever state changes
+	subscribe((state) => {
+		saveState(state);
+	});
+
+	return {
+		subscribe,
+		set,
+		update,
+
+		// Budget operations
+		addBudget: (budget: Budget) => {
+			update((state) => ({
+				...state,
+				budgets: [...state.budgets, budget],
+				activeBudgetId: state.activeBudgetId || budget.id
+			}));
+		},
+
+		deleteBudget: (budgetId: string) => {
+			update((state) => {
+				const budgets = state.budgets.filter((b) => b.id !== budgetId);
+				const activeBudgetId =
+					state.activeBudgetId === budgetId
+						? budgets[0]?.id || null
+						: state.activeBudgetId;
+				return { budgets, activeBudgetId };
+			});
+		},
+
+		setActiveBudget: (budgetId: string) => {
+			update((state) => ({
+				...state,
+				activeBudgetId: budgetId
+			}));
+		},
+
+		updateBudget: (budgetId: string, updates: Partial<Budget>) => {
+			update((state) => ({
+				...state,
+				budgets: state.budgets.map((b) =>
+					b.id === budgetId
+						? { ...b, ...updates, updatedAt: new Date().toISOString() }
+						: b
+				)
+			}));
+		},
+
+		// Expense operations
+		addExpense: (budgetId: string, expense: Expense) => {
+			update((state) => ({
+				...state,
+				budgets: state.budgets.map((b) =>
+					b.id === budgetId
+						? {
+								...b,
+								entries: [...b.entries, expense],
+								updatedAt: new Date().toISOString()
+							}
+						: b
+				)
+			}));
+		},
+
+		updateExpense: (budgetId: string, expenseId: string, updates: Partial<Expense>) => {
+			update((state) => ({
+				...state,
+				budgets: state.budgets.map((b) =>
+					b.id === budgetId
+						? {
+								...b,
+								entries: b.entries.map((e) =>
+									e.id === expenseId ? { ...e, ...updates } : e
+								),
+								updatedAt: new Date().toISOString()
+							}
+						: b
+				)
+			}));
+		},
+
+		deleteExpense: (budgetId: string, expenseId: string) => {
+			update((state) => ({
+				...state,
+				budgets: state.budgets.map((b) =>
+					b.id === budgetId
+						? {
+								...b,
+								entries: b.entries.filter((e) => e.id !== expenseId),
+								updatedAt: new Date().toISOString()
+							}
+						: b
+				)
+			}));
+		},
+
+		// Category operations
+		addCategory: (budgetId: string, category: string) => {
+			update((state) => ({
+				...state,
+				budgets: state.budgets.map((b) =>
+					b.id === budgetId
+						? {
+								...b,
+								categories: [...b.categories, category],
+								updatedAt: new Date().toISOString()
+							}
+						: b
+				)
+			}));
+		},
+
+		deleteCategory: (budgetId: string, category: string) => {
+			update((state) => ({
+				...state,
+				budgets: state.budgets.map((b) =>
+					b.id === budgetId
+						? {
+								...b,
+								categories: b.categories.filter((c) => c !== category),
+								updatedAt: new Date().toISOString()
+							}
+						: b
+				)
+			}));
+		},
+
+		// Budget limit operations
+		setBudgetLimit: (budgetId: string, category: string, limit: number) => {
+			update((state) => ({
+				...state,
+				budgets: state.budgets.map((b) =>
+					b.id === budgetId
+						? {
+								...b,
+								budgetLimits: { ...b.budgetLimits, [category]: limit },
+								updatedAt: new Date().toISOString()
+							}
+						: b
+				)
+			}));
+		}
+	};
+}
+
+export const budgetStore = createBudgetStore();
