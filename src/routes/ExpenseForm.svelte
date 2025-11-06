@@ -17,7 +17,13 @@
   import { CalendarIcon } from "lucide-svelte";
   import * as LucideIcons from "lucide-svelte";
   import { cn } from "$lib/utils";
-  import { DateFormatter, type DateValue, parseDate, today, getLocalTimeZone } from "@internationalized/date";
+  import {
+    DateFormatter,
+    type DateValue,
+    parseDate,
+    today,
+    getLocalTimeZone,
+  } from "@internationalized/date";
 
   let {
     budget,
@@ -31,23 +37,16 @@
     onClose: () => void;
   } = $props();
 
-  const expenseCategory = expense
-    ? getCategoryById(budget.categories, expense.categoryId)
-    : null;
-
   const df = new DateFormatter("en-US", {
     dateStyle: "long",
   });
 
-  console.log("ExpenseForm initialized:", {
-    expense,
-    expenseCategory,
-    budgetCategories: budget.categories,
-  });
-
   // Convert date string to DateValue
-  const initialDateString = expense?.date || new Date().toISOString().split("T")[0];
-  let selectedDate = $state<DateValue | undefined>(parseDate(initialDateString));
+  const initialDateString =
+    expense?.date || new Date().toISOString().split("T")[0];
+  let selectedDate = $state<DateValue | undefined>(
+    parseDate(initialDateString)
+  );
 
   let formData = $state({
     date: initialDateString,
@@ -65,12 +64,8 @@
     }
   });
 
-  console.log("Initial selectedCategoryId:", selectedCategoryId);
-  console.log("Initial formData:", formData);
-
   // Watch for changes to selectedCategoryId
   $effect(() => {
-    console.log("selectedCategoryId changed to:", selectedCategoryId);
     if (selectedCategoryId) {
       formData.categoryId = selectedCategoryId;
     }
@@ -119,11 +114,13 @@
         <Popover.Root>
           <Popover.Trigger
             class={cn(
-              "w-full justify-between text-left font-normal flex h-9 items-center rounded-md border border-input bg-background px-3 py-1 text-base shadow-xs outline-none transition-[color,box-shadow]",
+              "w-full justify-between text-left font-normal flex h-9 items-center rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow]",
               !selectedDate && "text-muted-foreground"
             )}
           >
-            {selectedDate ? df.format(selectedDate.toDate(getLocalTimeZone())) : "Pick a date"}
+            {selectedDate
+              ? df.format(selectedDate.toDate(getLocalTimeZone()))
+              : "Pick a date"}
             <CalendarIcon class="ml-2 h-4 w-4" />
           </Popover.Trigger>
           <Popover.Content class="w-auto p-0" align="start">
