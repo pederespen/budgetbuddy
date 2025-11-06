@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import type { AppState, Budget, Expense } from "../types";
+import type { AppState, Budget, Expense, Category } from "../types";
 import { loadState, saveState } from "../storage";
 
 function createBudgetStore() {
@@ -107,7 +107,7 @@ function createBudgetStore() {
     },
 
     // Category operations
-    addCategory: (budgetId: string, category: string) => {
+    addCategory: (budgetId: string, category: Category) => {
       update((state) => ({
         ...state,
         budgets: state.budgets.map((b) =>
@@ -122,14 +122,35 @@ function createBudgetStore() {
       }));
     },
 
-    deleteCategory: (budgetId: string, category: string) => {
+    updateCategory: (
+      budgetId: string,
+      categoryId: string,
+      updates: Partial<Category>
+    ) => {
       update((state) => ({
         ...state,
         budgets: state.budgets.map((b) =>
           b.id === budgetId
             ? {
                 ...b,
-                categories: b.categories.filter((c) => c !== category),
+                categories: b.categories.map((c) =>
+                  c.id === categoryId ? { ...c, ...updates } : c
+                ),
+                updatedAt: new Date().toISOString(),
+              }
+            : b
+        ),
+      }));
+    },
+
+    deleteCategory: (budgetId: string, categoryId: string) => {
+      update((state) => ({
+        ...state,
+        budgets: state.budgets.map((b) =>
+          b.id === budgetId
+            ? {
+                ...b,
+                categories: b.categories.filter((c) => c.id !== categoryId),
                 updatedAt: new Date().toISOString(),
               }
             : b
@@ -138,14 +159,14 @@ function createBudgetStore() {
     },
 
     // Budget limit operations
-    setBudgetLimit: (budgetId: string, category: string, limit: number) => {
+    setBudgetLimit: (budgetId: string, categoryId: string, limit: number) => {
       update((state) => ({
         ...state,
         budgets: state.budgets.map((b) =>
           b.id === budgetId
             ? {
                 ...b,
-                budgetLimits: { ...b.budgetLimits, [category]: limit },
+                budgetLimits: { ...b.budgetLimits, [categoryId]: limit },
                 updatedAt: new Date().toISOString(),
               }
             : b

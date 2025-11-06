@@ -1,6 +1,7 @@
 <script lang="ts">
-  import type { Expense, Currency } from "$lib/types";
+  import type { Expense, Currency, Category } from "$lib/types";
   import { formatCurrency, formatDate } from "$lib/utils/format";
+  import { getCategoryById } from "$lib/utils/categories";
   import { Button } from "$lib/components/ui/button";
   import {
     Card,
@@ -17,14 +18,17 @@
     TableRow,
   } from "$lib/components/ui/table";
   import { Pencil, Trash2 } from "lucide-svelte";
+  import * as LucideIcons from "lucide-svelte";
 
   let {
     expenses,
+    categories,
     currency,
     onEdit,
     onDelete,
   }: {
     expenses: Expense[];
+    categories: Category[];
     currency: Currency;
     onEdit: (expense: Expense) => void;
     onDelete: (id: string) => void;
@@ -51,10 +55,20 @@
       <!-- Mobile View -->
       <div class="block sm:hidden space-y-3">
         {#each sortedExpenses as expense (expense.id)}
+          {@const category = getCategoryById(categories, expense.categoryId)}
           <div class="rounded-lg border p-3 space-y-2">
             <div class="flex items-start justify-between">
               <div class="flex-1">
-                <div class="font-medium">{expense.category}</div>
+                <div class="flex items-center gap-2 font-medium">
+                  {#if category}
+                    <svelte:component
+                      this={LucideIcons[category.icon]}
+                      class="w-5 h-5 flex-shrink-0"
+                      style="color: {category.color}"
+                    />
+                  {/if}
+                  <span>{category?.name || "Unknown"}</span>
+                </div>
                 <div class="text-sm text-muted-foreground">
                   {formatDate(expense.date)}
                 </div>
@@ -108,12 +122,27 @@
           </TableHeader>
           <TableBody>
             {#each sortedExpenses as expense (expense.id)}
+              {@const category = getCategoryById(
+                categories,
+                expense.categoryId
+              )}
               <TableRow>
                 <TableCell class="font-medium"
                   >{formatDate(expense.date)}</TableCell
                 >
-                <TableCell>{expense.category}</TableCell>
-                <TableCell class="max-w-xs truncate"
+                <TableCell>
+                  <div class="flex items-center gap-2">
+                    {#if category}
+                      <svelte:component
+                        this={LucideIcons[category.icon]}
+                        class="w-5 h-5"
+                        style="color: {category.color}"
+                      />
+                    {/if}
+                    <span>{category?.name || "Unknown"}</span>
+                  </div>
+                </TableCell>
+                <TableCell class="max-w-xs truncate">
                   >{expense.note || "-"}</TableCell
                 >
                 <TableCell class="text-right font-semibold">

@@ -1,22 +1,29 @@
 export type Currency = "NOK" | "USD" | "EUR" | "GBP" | "SEK" | "DKK";
 
+export interface Category {
+  id: string;
+  name: string;
+  icon: string; // lucide icon name
+  color: string; // hex color
+}
+
 export interface Expense {
   id: string;
   date: string; // ISO date string
-  category: string;
+  categoryId: string; // Reference to category id
   amount: number;
   note: string;
 }
 
 export interface BudgetLimit {
-  [category: string]: number;
+  [categoryId: string]: number;
 }
 
 export interface Budget {
   id: string;
   name: string;
   currency: Currency;
-  categories: string[];
+  categories: Category[];
   entries: Expense[];
   budgetLimits: BudgetLimit;
   createdAt: string;

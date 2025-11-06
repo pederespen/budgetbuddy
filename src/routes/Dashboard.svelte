@@ -2,6 +2,7 @@
   import type { Budget, Expense } from "$lib/types";
   import { budgetStore } from "$lib/stores/budget";
   import { formatCurrency } from "$lib/utils/format";
+  import { getCategoryById } from "$lib/utils/categories";
   import { Button } from "$lib/components/ui/button";
   import {
     Card,
@@ -14,6 +15,7 @@
   import ExpenseForm from "./ExpenseForm.svelte";
   import { Plus } from "lucide-svelte";
   import { toast } from "svelte-sonner";
+  import * as LucideIcons from "lucide-svelte";
 
   let { budget }: { budget: Budget } = $props();
 
@@ -29,7 +31,7 @@
   let spendingByCategory = $derived(
     budget.entries.reduce(
       (acc, entry) => {
-        acc[entry.category] = (acc[entry.category] || 0) + entry.amount;
+        acc[entry.categoryId] = (acc[entry.categoryId] || 0) + entry.amount;
         return acc;
       },
       {} as Record<string, number>
@@ -52,15 +54,18 @@
   }
 
   function handleSaveExpense(expense: Expense) {
+    const category = getCategoryById(budget.categories, expense.categoryId);
+    const categoryName = category?.name || "Unknown";
+
     if (editingExpense) {
       budgetStore.updateExpense(budget.id, expense.id, expense);
       toast.success("Expense updated", {
-        description: `${formatCurrency(expense.amount, budget.currency)} for ${expense.category}`,
+        description: `${formatCurrency(expense.amount, budget.currency)} for ${categoryName}`,
       });
     } else {
       budgetStore.addExpense(budget.id, expense);
       toast.success("Expense added", {
-        description: `${formatCurrency(expense.amount, budget.currency)} for ${expense.category}`,
+        description: `${formatCurrency(expense.amount, budget.currency)} for ${categoryName}`,
       });
     }
     handleCloseForm();
@@ -68,10 +73,15 @@
 
   function handleDeleteExpense(expenseId: string) {
     const expense = budget.entries.find((e) => e.id === expenseId);
+    const category = expense
+      ? getCategoryById(budget.categories, expense.categoryId)
+      : null;
+    const categoryName = category?.name || "Unknown";
+
     budgetStore.deleteExpense(budget.id, expenseId);
     if (expense) {
       toast.success("Expense deleted", {
-        description: `${formatCurrency(expense.amount, budget.currency)} for ${expense.category}`,
+        description: `${formatCurrency(expense.amount, budget.currency)} for ${categoryName}`,
       });
     }
   }
@@ -134,13 +144,23 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          {#each Object.entries(spendingByCategory) as [category, amount]}
-            <div class="flex items-center justify-between">
-              <span class="text-sm font-medium">{category}</span>
-              <span class="text-sm text-muted-foreground">
-                {formatCurrency(amount, budget.currency)}
-              </span>
-            </div>
+          {#each Object.entries(spendingByCategory) as [categoryId, amount]}
+            {@const category = getCategoryById(budget.categories, categoryId)}
+            {#if category}
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <svelte:component
+                    this={LucideIcons[category.icon]}
+                    class="w-6 h-6"
+                    style="color: {category.color}"
+                  />
+                  <span class="text-sm font-medium">{category.name}</span>
+                </div>
+                <span class="text-sm text-muted-foreground">
+                  {formatCurrency(amount, budget.currency)}
+                </span>
+              </div>
+            {/if}
           {/each}
         </div>
       </CardContent>
@@ -150,6 +170,7 @@
   <!-- Expense List -->
   <ExpenseList
     expenses={budget.entries}
+    categories={budget.categories}
     currency={budget.currency}
     onEdit={handleEditExpense}
     onDelete={handleDeleteExpense}
