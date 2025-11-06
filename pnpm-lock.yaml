@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      lucide-svelte:
-        specifier: ^0.552.0
-        version: 0.552.0(svelte@5.43.4)
     devDependencies:
       '@internationalized/date':
         specifier: ^3.10.0
@@ -39,6 +35,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      lucide-svelte:
+        specifier: ^0.552.0
+        version: 0.552.0(svelte@5.43.4)
       mode-watcher:
         specifier: ^1.1.0
         version: 1.1.0(svelte@5.43.4)

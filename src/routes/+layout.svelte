@@ -2,6 +2,7 @@
   import "../app.css";
   import favicon from "$lib/assets/favicon.svg";
   import { Toaster } from "$lib/components/ui/sonner";
+  import Header from "$lib/components/Header.svelte";
   import { onMount } from "svelte";
 
   let { children } = $props();
@@ -29,5 +30,6 @@
   />
 </svelte:head>
 
+<Header />
 <Toaster />
 {@render children()}
