@@ -97,12 +97,12 @@
 
   function handleDelete(category: Category) {
     const expenseCount = getCategoryExpenseCount(category.id);
-    
+
     let message = `Are you sure you want to delete "${category.name}"?`;
     if (expenseCount > 0) {
-      message = `Are you sure you want to delete "${category.name}"?\n\nThis category has ${expenseCount} expense${expenseCount === 1 ? '' : 's'}. All expenses will be reassigned to "Other".`;
+      message = `Are you sure you want to delete "${category.name}"?\n\nThis category has ${expenseCount} expense${expenseCount === 1 ? "" : "s"}. All expenses will be reassigned to "Other".`;
     }
-    
+
     if (confirm(message)) {
       onDelete(category.id);
       toast.success("Category deleted", { description: category.name });
@@ -110,7 +110,7 @@
   }
 
   function getCategoryExpenseCount(categoryId: string): number {
-    return expenses.filter(e => e.categoryId === categoryId).length;
+    return expenses.filter((e) => e.categoryId === categoryId).length;
   }
 
   function getIconComponent(iconName: string) {
@@ -177,7 +177,9 @@
                     onclick={() => (newColor = color)}
                   >
                     {#if newColor === color}
-                      <Check class="h-5 w-5 text-white absolute inset-0 m-auto" />
+                      <Check
+                        class="h-5 w-5 text-white absolute inset-0 m-auto"
+                      />
                     {/if}
                   </button>
                 {/each}
@@ -262,7 +264,11 @@
                 </div>
 
                 <div class="flex gap-2 justify-end">
-                  <Button variant="outline" size="sm" onclick={handleCancelEdit}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onclick={handleCancelEdit}
+                  >
                     Cancel
                   </Button>
                   <Button size="sm" onclick={() => handleSaveEdit(category.id)}>
@@ -291,7 +297,8 @@
                 <div>
                   <div class="font-medium">{category.name}</div>
                   <div class="text-xs text-muted-foreground">
-                    {expenseCount} {expenseCount === 1 ? 'expense' : 'expenses'}
+                    {expenseCount}
+                    {expenseCount === 1 ? "expense" : "expenses"}
                   </div>
                 </div>
               </div>
