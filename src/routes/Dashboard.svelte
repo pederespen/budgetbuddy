@@ -62,10 +62,17 @@
   </div>
 
   <!-- Tabs Navigation -->
-  <Tabs.Root bind:value={activeTab} class="flex flex-col flex-1 overflow-hidden">
+  <Tabs.Root
+    bind:value={activeTab}
+    class="flex flex-col flex-1 overflow-hidden"
+  >
     <Tabs.List class="grid w-full grid-cols-2 max-w-xs flex-shrink-0">
-      <Tabs.Trigger value="overview" class="cursor-pointer">Overview</Tabs.Trigger>
-      <Tabs.Trigger value="expenses" class="cursor-pointer">Expenses</Tabs.Trigger>
+      <Tabs.Trigger value="overview" class="cursor-pointer"
+        >Overview</Tabs.Trigger
+      >
+      <Tabs.Trigger value="expenses" class="cursor-pointer"
+        >Expenses</Tabs.Trigger
+      >
     </Tabs.List>
 
     <!-- Overview Tab -->

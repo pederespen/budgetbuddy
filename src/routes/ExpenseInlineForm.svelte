@@ -84,7 +84,9 @@
   <!-- Table Row Variant: Category | Date | Note | Amount | Actions -->
   <td class="w-[200px]">
     <Select.Root type="single" bind:value={categoryId}>
-      <Select.Trigger class="h-8 text-xs bg-card border-input w-full cursor-pointer">
+      <Select.Trigger
+        class="h-8 text-xs bg-card border-input w-full cursor-pointer"
+      >
         {#if categoryId}
           {@const cat = getCategoryById(categories, categoryId)}
           {@const Icon = cat ? (LucideIcons as any)[cat.icon] : null}
@@ -121,7 +123,11 @@
           !date && "text-muted-foreground"
         )}
       >
-        <span>{date ? df.format(date.toDate(getLocalTimeZone())) : "Pick date"}</span>
+        <span
+          >{date
+            ? df.format(date.toDate(getLocalTimeZone()))
+            : "Pick date"}</span
+        >
         <CalendarIcon class="h-3 w-3" />
       </Popover.Trigger>
       <Popover.Content class="w-auto p-0" align="start">
@@ -179,7 +185,11 @@
               !date && "text-muted-foreground"
             )}
           >
-            <span>{date ? df.format(date.toDate(getLocalTimeZone())) : "Pick date"}</span>
+            <span
+              >{date
+                ? df.format(date.toDate(getLocalTimeZone()))
+                : "Pick date"}</span
+            >
             <CalendarIcon class="h-4 w-4" />
           </Popover.Trigger>
           <Popover.Content class="w-auto p-0" align="start">
@@ -230,7 +240,9 @@
             class="h-9 bg-card flex-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             onkeydown={handleKeydown}
           />
-          <span class="text-muted-foreground font-semibold">{currencySymbol}</span>
+          <span class="text-muted-foreground font-semibold"
+            >{currencySymbol}</span
+          >
         </div>
 
         <Input
