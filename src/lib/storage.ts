@@ -1,49 +1,4 @@
-import type { Budget, AppState, Category } from "./types";
-
-const STORAGE_KEY = "budgetbuddy-data";
-
-export function loadState(): AppState {
-  if (typeof window === "undefined") {
-    return { budgets: [], activeBudgetId: null };
-  }
-
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-
-      // Migration: Check if old format with string categories
-      if (parsed.budgets && parsed.budgets.length > 0) {
-        const firstBudget = parsed.budgets[0];
-        if (
-          firstBudget.categories &&
-          typeof firstBudget.categories[0] === "string"
-        ) {
-          // Old format detected, clear storage
-          console.log("Old data format detected, clearing localStorage...");
-          localStorage.removeItem(STORAGE_KEY);
-          return { budgets: [], activeBudgetId: null };
-        }
-      }
-
-      return parsed;
-    }
-  } catch (error) {
-    console.error("Failed to load state from localStorage:", error);
-  }
-
-  return { budgets: [], activeBudgetId: null };
-}
-
-export function saveState(state: AppState): void {
-  if (typeof window === "undefined") return;
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (error) {
-    console.error("Failed to save state to localStorage:", error);
-  }
-}
+import type { Budget, Category } from "./types";
 
 export function getDefaultCategories(): Category[] {
   return [
@@ -98,6 +53,7 @@ export function createDefaultBudget(): Budget {
     id: crypto.randomUUID(),
     name: "My Budget",
     currency: "NOK",
+    period: "monthly",
     categories: getDefaultCategories(),
     entries: [],
     budgetLimits: {},

@@ -1,15 +1,9 @@
 import { writable } from "svelte/store";
 import type { AppState, Budget, Expense, Category } from "../types";
-import { loadState, saveState } from "../storage";
 
 function createBudgetStore() {
-  const initialState = loadState();
+  const initialState: AppState = { budgets: [], activeBudgetId: null };
   const { subscribe, set, update } = writable<AppState>(initialState);
-
-  // Auto-save to localStorage whenever state changes
-  subscribe((state) => {
-    saveState(state);
-  });
 
   return {
     subscribe,
