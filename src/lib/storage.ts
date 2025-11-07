@@ -41,7 +41,7 @@ export function getDefaultCategories(): Category[] {
     {
       id: crypto.randomUUID(),
       name: "Other",
-      icon: "MoreHorizontal",
+      icon: "Package",
       color: "#636e72",
     },
   ];

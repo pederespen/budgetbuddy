@@ -46,7 +46,7 @@
         {
           "id": "cat-7",
           "name": "Other",
-          "icon": "MoreHorizontal",
+          "icon": "Package",
           "color": "#636e72"
         }
       ],
@@ -55,7 +55,7 @@
           "id": "exp-1",
           "date": "2025-11-01T10:30:00.000Z",
           "categoryId": "cat-1",
-          "amount": 1250.50,
+          "amount": 1250.5,
           "note": "Weekly groceries at Rema 1000"
         },
         {

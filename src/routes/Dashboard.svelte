@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Budget, Expense } from "$lib/types";
+  import type { Budget, Expense, Category } from "$lib/types";
   import { budgetStore } from "$lib/stores/budget";
   import { formatCurrency } from "$lib/utils/format";
   import { getCategoryById } from "$lib/utils/categories";
@@ -54,6 +54,21 @@
         description: `${formatCurrency(expense.amount, budget.currency)} for ${categoryName}`,
       });
     }
+  }
+
+  function handleAddCategory(category: Category) {
+    budgetStore.addCategory(budget.id, category);
+  }
+
+  function handleUpdateCategory(
+    categoryId: string,
+    updates: Partial<Category>
+  ) {
+    budgetStore.updateCategory(budget.id, categoryId, updates);
+  }
+
+  function handleDeleteCategory(categoryId: string) {
+    budgetStore.deleteCategory(budget.id, categoryId);
   }
 </script>
 
@@ -135,6 +150,9 @@
         onAdd={handleAddExpense}
         onEdit={handleEditExpense}
         onDelete={handleDeleteExpense}
+        onAddCategory={handleAddCategory}
+        onUpdateCategory={handleUpdateCategory}
+        onDeleteCategory={handleDeleteCategory}
       />
     </Tabs.Content>
   </Tabs.Root>

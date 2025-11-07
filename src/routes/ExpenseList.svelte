@@ -10,11 +10,12 @@
     TableHeader,
     TableRow,
   } from "$lib/components/ui/table";
-  import { Plus } from "lucide-svelte";
+  import { Plus, Settings } from "lucide-svelte";
   import { parseDate } from "@internationalized/date";
   import type { DateValue } from "@internationalized/date";
   import ExpenseInlineForm from "./ExpenseInlineForm.svelte";
   import ExpenseRow from "./ExpenseRow.svelte";
+  import CategoryManager from "./CategoryManager.svelte";
 
   let {
     expenses,
@@ -23,6 +24,9 @@
     onAdd,
     onEdit,
     onDelete,
+    onAddCategory,
+    onUpdateCategory,
+    onDeleteCategory,
   }: {
     expenses: Expense[];
     categories: Category[];
@@ -30,10 +34,14 @@
     onAdd: (expense: Expense) => void;
     onEdit: (expense: Expense) => void;
     onDelete: (id: string) => void;
+    onAddCategory: (category: Category) => void;
+    onUpdateCategory: (categoryId: string, updates: Partial<Category>) => void;
+    onDeleteCategory: (categoryId: string) => void;
   } = $props();
 
   let showNewExpenseRow = $state(false);
   let editingExpenseId = $state<string | null>(null);
+  let showCategoryManager = $state(false);
 
   // Form state for new expense
   let newExpenseDate = $state<DateValue | undefined>(
@@ -135,11 +143,31 @@
 <!-- Header (Fixed) -->
 <div class="flex items-center justify-between mb-4">
   <h2 class="text-2xl font-bold">Expenses</h2>
-  <Button size="sm" onclick={handleAddNew} disabled={showNewExpenseRow}>
-    <Plus class="mr-2 h-4 w-4" />
-    Add New
-  </Button>
+  <div class="flex gap-2">
+    <Button
+      variant="outline"
+      size="sm"
+      onclick={() => (showCategoryManager = true)}
+    >
+      <Settings class="h-4 w-4 sm:mr-2" />
+      <span class="hidden sm:inline">Edit Categories</span>
+    </Button>
+    <Button size="sm" onclick={handleAddNew} disabled={showNewExpenseRow}>
+      <Plus class="h-4 w-4 sm:mr-2" />
+      <span class="hidden sm:inline">Add New</span>
+    </Button>
+  </div>
 </div>
+
+<!-- Category Manager Dialog -->
+<CategoryManager
+  {categories}
+  {expenses}
+  bind:open={showCategoryManager}
+  onAdd={onAddCategory}
+  onUpdate={onUpdateCategory}
+  onDelete={onDeleteCategory}
+/>
 
 <!-- Scrollable Content -->
 <div class="flex-1 overflow-auto">
