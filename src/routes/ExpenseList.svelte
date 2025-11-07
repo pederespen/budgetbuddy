@@ -147,34 +147,101 @@
       <p>No expenses yet. Click "Add New" to get started!</p>
     </div>
   {:else}
-      <!-- Mobile View -->
-      <div class="block sm:hidden">
-        <!-- New Expense Form (Mobile) -->
-        {#if showNewExpenseRow}
-          <div class="mb-4 pb-4 border-b">
-            <ExpenseInlineForm
-              mode="new"
-              {categories}
+    <!-- Mobile View -->
+    <div class="block sm:hidden">
+      <!-- New Expense Form (Mobile) -->
+      {#if showNewExpenseRow}
+        <div class="mb-4 pb-4 border-b">
+          <ExpenseInlineForm
+            mode="new"
+            {categories}
+            {currency}
+            bind:date={newExpenseDate}
+            bind:categoryId={newExpenseCategoryId}
+            bind:amount={newExpenseAmount}
+            bind:note={newExpenseNote}
+            onSave={handleSaveNew}
+            onCancel={handleCancelNew}
+            variant="card"
+          />
+        </div>
+      {/if}
+
+      <!-- Expenses List (Mobile) -->
+      <div class="divide-y">
+        {#each sortedExpenses as expense (expense.id)}
+          {@const category = getCategoryById(categories, expense.categoryId)}
+
+          {#if editingExpenseId === expense.id}
+            <!-- Edit Mode (Mobile) -->
+            <div class="py-4">
+              <ExpenseInlineForm
+                mode="edit"
+                {categories}
+                {currency}
+                bind:date={editExpenseDate}
+                bind:categoryId={editExpenseCategoryId}
+                bind:amount={editExpenseAmount}
+                bind:note={editExpenseNote}
+                onSave={() => handleSaveEdit(expense.id)}
+                onCancel={handleCancelEdit}
+                variant="card"
+              />
+            </div>
+          {:else}
+            <!-- View Mode (Mobile) -->
+            <ExpenseRow
+              {expense}
+              {category}
               {currency}
-              bind:date={newExpenseDate}
-              bind:categoryId={newExpenseCategoryId}
-              bind:amount={newExpenseAmount}
-              bind:note={newExpenseNote}
-              onSave={handleSaveNew}
-              onCancel={handleCancelNew}
+              onEdit={() => handleStartEdit(expense)}
+              onDelete={() => onDelete(expense.id)}
+              disabled={showNewExpenseRow}
               variant="card"
             />
-          </div>
-        {/if}
+          {/if}
+        {/each}
+      </div>
+    </div>
 
-        <!-- Expenses List (Mobile) -->
-        <div class="divide-y">
+    <!-- Desktop View -->
+    <div class="hidden sm:block">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Category</TableHead>
+            <TableHead>Date</TableHead>
+            <TableHead>Note</TableHead>
+            <TableHead class="text-right">Amount</TableHead>
+            <TableHead class="text-right"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <!-- New Expense Row -->
+          {#if showNewExpenseRow}
+            <TableRow class="bg-muted/30">
+              <ExpenseInlineForm
+                mode="new"
+                {categories}
+                {currency}
+                bind:date={newExpenseDate}
+                bind:categoryId={newExpenseCategoryId}
+                bind:amount={newExpenseAmount}
+                bind:note={newExpenseNote}
+                onSave={handleSaveNew}
+                onCancel={handleCancelNew}
+                variant="table"
+              />
+            </TableRow>
+          {/if}
+
+          <!-- Existing Expenses -->
           {#each sortedExpenses as expense (expense.id)}
             {@const category = getCategoryById(categories, expense.categoryId)}
-            
+
             {#if editingExpenseId === expense.id}
-              <!-- Edit Mode (Mobile) -->
-              <div class="py-4">
+              <!-- Edit Mode -->
+              <TableRow class="bg-muted/30">
                 <ExpenseInlineForm
                   mode="edit"
                   {categories}
@@ -185,93 +252,26 @@
                   bind:note={editExpenseNote}
                   onSave={() => handleSaveEdit(expense.id)}
                   onCancel={handleCancelEdit}
-                  variant="card"
+                  variant="table"
                 />
-              </div>
+              </TableRow>
             {:else}
-              <!-- View Mode (Mobile) -->
-              <ExpenseRow
-                {expense}
-                {category}
-                {currency}
-                onEdit={() => handleStartEdit(expense)}
-                onDelete={() => onDelete(expense.id)}
-                disabled={showNewExpenseRow}
-                variant="card"
-              />
-            {/if}
-          {/each}
-        </div>
-      </div>
-
-      <!-- Desktop View -->
-      <div class="hidden sm:block">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Category</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Note</TableHead>
-              <TableHead class="text-right">Amount</TableHead>
-              <TableHead class="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <!-- New Expense Row -->
-            {#if showNewExpenseRow}
-              <TableRow class="bg-muted/30">
-                <ExpenseInlineForm
-                  mode="new"
-                  {categories}
+              <!-- View Mode -->
+              <TableRow>
+                <ExpenseRow
+                  {expense}
+                  {category}
                   {currency}
-                  bind:date={newExpenseDate}
-                  bind:categoryId={newExpenseCategoryId}
-                  bind:amount={newExpenseAmount}
-                  bind:note={newExpenseNote}
-                  onSave={handleSaveNew}
-                  onCancel={handleCancelNew}
+                  onEdit={() => handleStartEdit(expense)}
+                  onDelete={() => onDelete(expense.id)}
+                  disabled={showNewExpenseRow}
                   variant="table"
                 />
               </TableRow>
             {/if}
-
-            <!-- Existing Expenses -->
-            {#each sortedExpenses as expense (expense.id)}
-              {@const category = getCategoryById(categories, expense.categoryId)}
-              
-              {#if editingExpenseId === expense.id}
-                <!-- Edit Mode -->
-                <TableRow class="bg-muted/30">
-                  <ExpenseInlineForm
-                    mode="edit"
-                    {categories}
-                    {currency}
-                    bind:date={editExpenseDate}
-                    bind:categoryId={editExpenseCategoryId}
-                    bind:amount={editExpenseAmount}
-                    bind:note={editExpenseNote}
-                    onSave={() => handleSaveEdit(expense.id)}
-                    onCancel={handleCancelEdit}
-                    variant="table"
-                  />
-                </TableRow>
-              {:else}
-                <!-- View Mode -->
-                <TableRow>
-                  <ExpenseRow
-                    {expense}
-                    {category}
-                    {currency}
-                    onEdit={() => handleStartEdit(expense)}
-                    onDelete={() => onDelete(expense.id)}
-                    disabled={showNewExpenseRow}
-                    variant="table"
-                  />
-                </TableRow>
-              {/if}
-            {/each}
-          </TableBody>
-        </Table>
-      </div>
-    {/if}
-  </div>
+          {/each}
+        </TableBody>
+      </Table>
+    </div>
+  {/if}
+</div>

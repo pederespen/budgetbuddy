@@ -52,9 +52,9 @@
   }
 </script>
 
-<div class="space-y-6">
+<div class="h-screen flex flex-col overflow-hidden">
   <!-- Header -->
-  <div>
+  <div class="flex-shrink-0 pb-6">
     <h1 class="text-3xl font-bold">{budget.name}</h1>
     <p class="text-muted-foreground">
       Track your expenses and manage your budget
@@ -62,14 +62,14 @@
   </div>
 
   <!-- Tabs Navigation -->
-  <Tabs.Root bind:value={activeTab}>
-    <Tabs.List class="grid w-full grid-cols-2 max-w-md">
-      <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
-      <Tabs.Trigger value="expenses">Expenses</Tabs.Trigger>
+  <Tabs.Root bind:value={activeTab} class="flex flex-col flex-1 overflow-hidden">
+    <Tabs.List class="grid w-full grid-cols-2 max-w-xs flex-shrink-0">
+      <Tabs.Trigger value="overview" class="cursor-pointer">Overview</Tabs.Trigger>
+      <Tabs.Trigger value="expenses" class="cursor-pointer">Expenses</Tabs.Trigger>
     </Tabs.List>
 
     <!-- Overview Tab -->
-    <Tabs.Content value="overview" class="mt-6">
+    <Tabs.Content value="overview" class="mt-6 flex-1 overflow-auto">
       <div class="space-y-6">
         <div class="text-center py-12">
           <div class="text-5xl font-bold mb-2">
@@ -77,14 +77,17 @@
           </div>
           <p class="text-muted-foreground text-lg">Total Spent</p>
           <p class="text-sm text-muted-foreground mt-4">
-            {budget.entries.length} {budget.entries.length === 1 ? "expense" : "expenses"} • {budget.categories.length} {budget.categories.length === 1 ? "category" : "categories"}
+            {budget.entries.length}
+            {budget.entries.length === 1 ? "expense" : "expenses"} • {budget
+              .categories.length}
+            {budget.categories.length === 1 ? "category" : "categories"}
           </p>
         </div>
       </div>
     </Tabs.Content>
 
     <!-- Expenses Tab -->
-    <Tabs.Content value="expenses" class="mt-6">
+    <Tabs.Content value="expenses" class="mt-6 flex-1 overflow-auto">
       <ExpenseList
         expenses={budget.entries}
         categories={budget.categories}

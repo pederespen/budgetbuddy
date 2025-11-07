@@ -29,7 +29,7 @@
 
 {#if variant === "table"}
   <!-- Desktop Table Row: Category | Date | Note | Amount | Actions -->
-  <td>
+  <td class="w-[200px]">
     <div class="flex items-center gap-2">
       {#if category && Icon}
         <Icon class="w-5 h-5" style="color: {category.color}" />
@@ -37,14 +37,14 @@
       <span>{category?.name || "Unknown"}</span>
     </div>
   </td>
-  <td class="font-medium">{formatDate(expense.date)}</td>
-  <td class="max-w-xs truncate">
+  <td class="w-[140px] font-medium">{formatDate(expense.date)}</td>
+  <td class="truncate">
     {expense.note || ""}
   </td>
-  <td class="text-right font-semibold">
+  <td class="text-right font-semibold w-[120px]">
     {formatCurrency(expense.amount, currency)}
   </td>
-  <td class="text-right">
+  <td class="text-right w-[80px]">
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
         <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
@@ -52,11 +52,11 @@
         </Button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="end">
-        <DropdownMenu.Item onclick={onEdit} disabled={disabled}>
+        <DropdownMenu.Item onclick={onEdit} {disabled} class="cursor-pointer">
           <Pencil class="mr-2 h-4 w-4" />
           Edit
         </DropdownMenu.Item>
-        <DropdownMenu.Item onclick={onDelete}>
+        <DropdownMenu.Item onclick={onDelete} class="cursor-pointer">
           <Trash2 class="mr-2 h-4 w-4" />
           Delete
         </DropdownMenu.Item>
@@ -68,26 +68,30 @@
   <div class="flex items-center gap-3 py-3">
     <!-- Category Icon -->
     {#if category && Icon}
-      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+      <div
+        class="flex-shrink-0 w-10 h-10 rounded-full bg-muted flex items-center justify-center"
+      >
         <Icon class="w-5 h-5" style="color: {category.color}" />
       </div>
     {/if}
-    
+
     <!-- Content -->
     <div class="flex-1 min-w-0">
-      <div class="font-medium truncate">{expense.note || category?.name || "Unknown"}</div>
+      <div class="font-medium truncate">
+        {expense.note || category?.name || "Unknown"}
+      </div>
       <div class="text-sm text-muted-foreground">
         {formatDate(expense.date)}
       </div>
     </div>
-    
+
     <!-- Amount -->
     <div class="text-right flex-shrink-0">
       <div class="font-semibold">
         {formatCurrency(expense.amount, currency)}
       </div>
     </div>
-    
+
     <!-- Actions -->
     <div class="flex-shrink-0">
       <DropdownMenu.Root>
@@ -97,11 +101,11 @@
           </Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
-          <DropdownMenu.Item onclick={onEdit} disabled={disabled}>
+          <DropdownMenu.Item onclick={onEdit} {disabled} class="cursor-pointer">
             <Pencil class="mr-2 h-4 w-4" />
             Edit
           </DropdownMenu.Item>
-          <DropdownMenu.Item onclick={onDelete}>
+          <DropdownMenu.Item onclick={onDelete} class="cursor-pointer">
             <Trash2 class="mr-2 h-4 w-4" />
             Delete
           </DropdownMenu.Item>

@@ -116,7 +116,7 @@
         <Popover.Root bind:open={calendarOpen}>
           <Popover.Trigger
             class={cn(
-              "w-full justify-between text-left font-normal flex h-9 items-center rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow]",
+              "w-full justify-between text-left font-normal flex h-9 items-center rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] cursor-pointer",
               !selectedDate && "text-muted-foreground"
             )}
           >
@@ -126,7 +126,7 @@
             <CalendarIcon class="ml-2 h-4 w-4" />
           </Popover.Trigger>
           <Popover.Content class="w-auto p-0" align="start">
-            <Calendar bind:value={selectedDate} initialFocus />
+            <Calendar type="single" bind:value={selectedDate} initialFocus />
           </Popover.Content>
         </Popover.Root>
       </div>
@@ -134,7 +134,7 @@
       <div class="space-y-2">
         <Label for="category">Category</Label>
         <Select.Root type="single" bind:value={selectedCategoryId}>
-          <Select.Trigger id="category" class="w-full">
+          <Select.Trigger id="category" class="w-full cursor-pointer">
             <div class="flex items-center gap-2">
               {#if selectedCategoryId}
                 {@const cat = getCategoryById(
@@ -143,10 +143,7 @@
                 )}
                 {@const Icon = cat ? (LucideIcons as any)[cat.icon] : null}
                 {#if cat}
-                  <Icon
-                    class="w-5 h-5"
-                    style="color: {cat.color}"
-                  />
+                  <Icon class="w-5 h-5" style="color: {cat.color}" />
                   <span>{cat.name}</span>
                 {:else}
                   <span>Select category</span>
@@ -187,7 +184,7 @@
       </div>
 
       <div class="space-y-2">
-        <Label for="note">Note (optional)</Label>
+        <Label for="note">Note</Label>
         <Input
           id="note"
           type="text"
