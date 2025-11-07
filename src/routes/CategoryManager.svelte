@@ -4,9 +4,12 @@
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import * as Dialog from "$lib/components/ui/dialog";
-  import { POPULAR_ICONS, PRESET_COLORS } from "$lib/utils/categories";
+  import {
+    POPULAR_ICONS,
+    PRESET_COLORS,
+    getIconComponent,
+  } from "$lib/utils/categories";
   import { Trash2, Plus, Check, Pencil } from "lucide-svelte";
-  import * as LucideIcons from "lucide-svelte";
   import { toast } from "svelte-sonner";
 
   let {
@@ -111,10 +114,6 @@
 
   function getCategoryExpenseCount(categoryId: string): number {
     return expenses.filter((e) => e.categoryId === categoryId).length;
-  }
-
-  function getIconComponent(iconName: string) {
-    return (LucideIcons as any)[iconName] || LucideIcons.HelpCircle;
   }
 </script>
 

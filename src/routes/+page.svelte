@@ -1,6 +1,6 @@
 <script lang="ts">
   import { budgetStore } from "$lib/stores/budget";
-  import { createDefaultBudget, getDefaultCategories } from "$lib/storage";
+  import { getDefaultCategories } from "$lib/storage";
   import { Button } from "$lib/components/ui/button";
   import {
     Card,
@@ -9,23 +9,18 @@
     CardHeader,
     CardTitle,
   } from "$lib/components/ui/card";
-  import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
   import Dashboard from "./Dashboard.svelte";
   import BudgetSetupForm from "./BudgetSetupForm.svelte";
-  import type { Currency, BudgetPeriod } from "$lib/types";
+  import type { Currency, BudgetPeriod, Budget } from "$lib/types";
 
-  let state = $state({ budgets: [], activeBudgetId: null });
-  let activeBudget = $derived(
-    state.budgets.find((b) => b.id === state.activeBudgetId)
-  );
   let showCreateForm = $state(false);
 
-  onMount(() => {
-    budgetStore.subscribe((s) => {
-      state = s;
-    });
-  });
+  let activeBudget: Budget | undefined = $derived(
+    $budgetStore.budgets.find(
+      (b: Budget) => b.id === $budgetStore.activeBudgetId
+    )
+  );
 
   function handleCreateBudget(data: {
     name: string;

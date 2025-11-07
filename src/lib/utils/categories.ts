@@ -1,11 +1,15 @@
 import type { Category } from "../types";
+import * as LucideIcons from "lucide-svelte";
 
-// Helper to get category by ID
 export function getCategoryById(
   categories: Category[],
   categoryId: string
 ): Category | undefined {
   return categories.find((c) => c.id === categoryId);
+}
+
+export function getIconComponent(iconName: string) {
+  return (LucideIcons as any)[iconName] || LucideIcons.HelpCircle;
 }
 
 // Popular icon options for categories
@@ -82,7 +86,6 @@ export const POPULAR_ICONS = [
   "MoreHorizontal",
 ];
 
-// Preset color options
 export const PRESET_COLORS = [
   "#ff6b6b", // Red
   "#4ecdc4", // Teal
