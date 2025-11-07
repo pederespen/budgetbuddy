@@ -170,7 +170,7 @@
   </td>
 {:else}
   <!-- Card Variant for Mobile -->
-  <div class="rounded-lg border border-primary/50 bg-muted/30 p-3 space-y-3">
+  <div class="rounded-lg border bg-muted/30 p-3 space-y-3">
     <div class="font-medium text-sm">
       {mode === "new" ? "New Expense" : "Edit Expense"}
     </div>

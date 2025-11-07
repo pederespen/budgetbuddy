@@ -52,6 +52,22 @@
       description: `${data.name} is ready to track your ${data.period} expenses.`,
     });
   }
+
+  async function handleLoadDemo() {
+    try {
+      const response = await fetch("/demo-budget.json");
+      if (!response.ok) throw new Error("Failed to load demo data");
+      const demoData = await response.json();
+      budgetStore.set(demoData);
+      toast.success("Demo budget loaded!", {
+        description: "Explore the app with sample data.",
+      });
+    } catch (error) {
+      toast.error("Failed to load demo data", {
+        description: "Please try again or create a new budget.",
+      });
+    }
+  }
 </script>
 
 <div class="min-h-screen bg-background">
@@ -101,13 +117,23 @@
                 </div>
                 <div class="relative flex justify-center text-xs uppercase">
                   <span class="bg-background px-2 text-muted-foreground"
+                    >Or</span
+                  >
+                </div>
+              </div>
+              <Button variant="outline" class="w-full" onclick={handleLoadDemo}
+                >Load Demo Data</Button
+              >
+              <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                  <span class="w-full border-t"></span>
+                </div>
+                <div class="relative flex justify-center text-xs uppercase">
+                  <span class="bg-background px-2 text-muted-foreground"
                     >Coming soon</span
                   >
                 </div>
               </div>
-              <Button variant="outline" class="w-full" disabled
-                >Load Demo Data</Button
-              >
               <Button variant="outline" class="w-full" disabled
                 >Import from File</Button
               >

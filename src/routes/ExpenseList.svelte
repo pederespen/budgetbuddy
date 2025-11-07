@@ -132,16 +132,17 @@
   }
 </script>
 
-<div class="space-y-4">
-  <!-- Header -->
-  <div class="flex items-center justify-between">
-    <h2 class="text-2xl font-bold">Expenses</h2>
-    <Button size="sm" onclick={handleAddNew} disabled={showNewExpenseRow}>
-      <Plus class="mr-2 h-4 w-4" />
-      Add New
-    </Button>
-  </div>
+<!-- Header (Fixed) -->
+<div class="flex items-center justify-between mb-4">
+  <h2 class="text-2xl font-bold">Expenses</h2>
+  <Button size="sm" onclick={handleAddNew} disabled={showNewExpenseRow}>
+    <Plus class="mr-2 h-4 w-4" />
+    Add New
+  </Button>
+</div>
 
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-auto">
   {#if sortedExpenses.length === 0 && !showNewExpenseRow}
     <div class="py-8 text-center text-muted-foreground">
       <p>No expenses yet. Click "Add New" to get started!</p>
@@ -151,7 +152,7 @@
     <div class="block sm:hidden">
       <!-- New Expense Form (Mobile) -->
       {#if showNewExpenseRow}
-        <div class="mb-4 pb-4 border-b">
+        <div class="mb-4 pb-4">
           <ExpenseInlineForm
             mode="new"
             {categories}

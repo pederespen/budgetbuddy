@@ -124,7 +124,10 @@
     </Tabs.Content>
 
     <!-- Expenses Tab -->
-    <Tabs.Content value="expenses" class="mt-6 flex-1 overflow-auto">
+    <Tabs.Content
+      value="expenses"
+      class="mt-6 flex-1 overflow-hidden flex flex-col"
+    >
       <ExpenseList
         expenses={budget.entries}
         categories={budget.categories}

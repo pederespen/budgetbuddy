@@ -114,12 +114,7 @@
 
   <div class="flex gap-3 items-center">
     {#if oncancel}
-      <Button
-        type="button"
-        variant="ghost"
-        onclick={oncancel}
-        class="gap-2"
-      >
+      <Button type="button" variant="ghost" onclick={oncancel} class="gap-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
