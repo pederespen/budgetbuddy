@@ -56,11 +56,13 @@
   });
 
   let selectedCategoryId = $state<string>(expense?.categoryId || "");
+  let calendarOpen = $state(false);
 
-  // Update formData.date when selectedDate changes
+  // Update formData.date when selectedDate changes and close popover
   $effect(() => {
     if (selectedDate) {
       formData.date = selectedDate.toString();
+      calendarOpen = false;
     }
   });
 
@@ -111,7 +113,7 @@
     <form onsubmit={handleSubmit} class="space-y-4">
       <div class="space-y-2">
         <Label>Date</Label>
-        <Popover.Root>
+        <Popover.Root bind:open={calendarOpen}>
           <Popover.Trigger
             class={cn(
               "w-full justify-between text-left font-normal flex h-9 items-center rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow]",
@@ -139,9 +141,9 @@
                   budget.categories,
                   selectedCategoryId
                 )}
+                {@const Icon = cat ? (LucideIcons as any)[cat.icon] : null}
                 {#if cat}
-                  <svelte:component
-                    this={LucideIcons[cat.icon]}
+                  <Icon
                     class="w-5 h-5"
                     style="color: {cat.color}"
                   />
@@ -156,10 +158,10 @@
           </Select.Trigger>
           <Select.Content class="max-h-[300px]">
             {#each budget.categories as category}
+              {@const Icon = (LucideIcons as any)[category.icon]}
               <Select.Item value={category.id} label={category.name}>
                 <div class="flex items-center gap-2">
-                  <svelte:component
-                    this={LucideIcons[category.icon]}
+                  <Icon
                     class="w-5 h-5 flex-shrink-0"
                     style="color: {category.color}"
                   />
