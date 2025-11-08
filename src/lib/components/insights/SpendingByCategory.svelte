@@ -40,6 +40,8 @@
   });
 
   const total = $derived(chartData().reduce((sum, d) => sum + d.value, 0));
+
+  let hoveredCategory = $state<string | null>(null);
 </script>
 
 <Card>
@@ -50,8 +52,8 @@
     <div class="space-y-4">
       {#if chartData().length > 0}
         <!-- Donut Chart -->
-        <div class="flex items-center justify-center">
-          <div class="relative w-64 h-64">
+        <div class="flex items-center justify-center relative">
+          <div class="relative w-full max-w-[280px] aspect-square">
             <svg viewBox="0 0 200 200" class="transform -rotate-90">
               {#each chartData() as category, i}
                 {@const startAngle = chartData()
@@ -71,44 +73,51 @@
                 <path
                   d="M {x1} {y1} A 80 80 0 {largeArc} 1 {x2} {y2} L {x3} {y3} A 50 50 0 {largeArc} 0 {x4} {y4} Z"
                   fill={category.color}
-                  class="transition-opacity hover:opacity-80 cursor-pointer"
+                  class="transition-all duration-200 cursor-pointer"
+                  class:opacity-40={hoveredCategory &&
+                    hoveredCategory !== category.name}
+                  class:scale-105={hoveredCategory === category.name}
                   stroke="hsl(var(--background))"
                   stroke-width="2"
-                >
-                  <title
-                    >{category.name}: {budget.currency}
-                    {category.value.toFixed(2)} ({category.percentage.toFixed(
-                      1
-                    )}%)</title
-                  >
-                </path>
+                  onmouseenter={() => (hoveredCategory = category.name)}
+                  onmouseleave={() => (hoveredCategory = null)}
+                />
               {/each}
             </svg>
             <div
-              class="absolute inset-0 flex flex-col items-center justify-center"
+              class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
             >
-              <div class="text-2xl font-bold">{budget.currency}</div>
-              <div class="text-3xl font-bold">{total.toFixed(0)}</div>
+              {#if hoveredCategory}
+                {@const hovered = chartData().find(
+                  (c) => c.name === hoveredCategory
+                )}
+                {#if hovered}
+                  <div class="text-center">
+                    <div
+                      class="text-sm font-medium text-muted-foreground truncate max-w-[120px]"
+                    >
+                      {hovered.name}
+                    </div>
+                    <div class="text-2xl font-bold">
+                      {budget.currency}
+                      {hovered.value.toFixed(0)}
+                    </div>
+                    <div class="text-sm text-muted-foreground">
+                      {hovered.percentage.toFixed(1)}%
+                    </div>
+                  </div>
+                {/if}
+              {:else}
+                <div class="text-center">
+                  <div class="text-sm font-medium text-muted-foreground">
+                    Total
+                  </div>
+                  <div class="text-2xl font-bold">{budget.currency}</div>
+                  <div class="text-3xl font-bold">{total.toFixed(0)}</div>
+                </div>
+              {/if}
             </div>
           </div>
-        </div>
-
-        <!-- Legend -->
-        <div class="grid grid-cols-2 gap-3">
-          {#each chartData() as category}
-            <div class="flex items-center gap-2">
-              <div
-                class="w-4 h-4 rounded-sm flex-shrink-0"
-                style="background-color: {category.color}"
-              ></div>
-              <div class="flex-1 min-w-0">
-                <div class="text-sm font-medium truncate">{category.name}</div>
-                <div class="text-xs text-muted-foreground">
-                  {category.percentage.toFixed(1)}%
-                </div>
-              </div>
-            </div>
-          {/each}
         </div>
       {:else}
         <div

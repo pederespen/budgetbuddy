@@ -683,13 +683,9 @@
           </div>
 
           <!-- Charts Grid -->
-          <div class="grid gap-4 md:grid-cols-3">
-            <div class="md:col-span-2">
-              <SpendingTrend {budget} />
-            </div>
-            <div class="md:col-span-1">
-              <SpendingByCategory {budget} />
-            </div>
+          <div class="grid gap-4 md:grid-cols-2">
+            <SpendingTrend {budget} />
+            <SpendingByCategory {budget} />
           </div>
 
           <div class="grid gap-4 md:grid-cols-2">
