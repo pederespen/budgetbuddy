@@ -10,14 +10,23 @@
     TableHeader,
     TableRow,
   } from "$lib/components/ui/table";
-  import { Plus, Settings } from "lucide-svelte";
+  import {
+    Plus,
+    Settings,
+    ArrowUpDown,
+    ArrowUp,
+    ArrowDown,
+    Download,
+  } from "lucide-svelte";
   import { parseDate } from "@internationalized/date";
   import type { DateValue } from "@internationalized/date";
   import ExpenseInlineForm from "./ExpenseInlineForm.svelte";
   import ExpenseRow from "./ExpenseRow.svelte";
   import CategoryManager from "./CategoryManager.svelte";
+  import type { Budget } from "$lib/types";
 
   let {
+    budget,
     expenses,
     categories,
     currency,
@@ -28,6 +37,7 @@
     onUpdateCategory,
     onDeleteCategory,
   }: {
+    budget: Budget;
     expenses: Expense[];
     categories: Category[];
     currency: Currency;
@@ -42,6 +52,12 @@
   let showNewExpenseRow = $state(false);
   let editingExpenseId = $state<string | null>(null);
   let showCategoryManager = $state(false);
+
+  // Sorting state
+  type SortColumn = "category" | "date" | "amount";
+  type SortDirection = "asc" | "desc";
+  let sortColumn = $state<SortColumn>("date");
+  let sortDirection = $state<SortDirection>("desc");
 
   // Form state for new expense
   let newExpenseDate = $state<DateValue | undefined>(
@@ -59,10 +75,58 @@
 
   // Sort expenses by date (newest first)
   let sortedExpenses = $derived(
-    [...expenses].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    )
+    [...expenses].sort((a, b) => {
+      if (sortColumn === "date") {
+        const comparison =
+          new Date(a.date).getTime() - new Date(b.date).getTime();
+        return sortDirection === "asc" ? comparison : -comparison;
+      } else if (sortColumn === "amount") {
+        const comparison = a.amount - b.amount;
+        return sortDirection === "asc" ? comparison : -comparison;
+      } else if (sortColumn === "category") {
+        const catA = getCategoryById(categories, a.categoryId);
+        const catB = getCategoryById(categories, b.categoryId);
+        const nameA = catA?.name || "";
+        const nameB = catB?.name || "";
+        const comparison = nameA.localeCompare(nameB);
+        return sortDirection === "asc" ? comparison : -comparison;
+      }
+      return 0;
+    })
   );
+
+  function handleSort(column: SortColumn) {
+    if (sortColumn === column) {
+      // Toggle direction
+      sortDirection = sortDirection === "asc" ? "desc" : "asc";
+    } else {
+      // New column, default to ascending
+      sortColumn = column;
+      sortDirection = "asc";
+    }
+  }
+
+  function getSortIcon(column: SortColumn) {
+    if (sortColumn !== column) return ArrowUpDown;
+    return sortDirection === "asc" ? ArrowUp : ArrowDown;
+  }
+
+  function handleExport() {
+    const dataStr = JSON.stringify(
+      { budgets: [budget], activeBudgetId: budget.id },
+      null,
+      2
+    );
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${budget.name.replace(/\s+/g, "-").toLowerCase()}-${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
 
   function handleAddNew() {
     showNewExpenseRow = true;
@@ -144,6 +208,10 @@
 <div class="flex items-center justify-between mb-4">
   <h2 class="text-2xl font-bold">Expenses</h2>
   <div class="flex gap-2">
+    <Button variant="outline" size="sm" onclick={handleExport}>
+      <Download class="h-4 w-4 sm:mr-2" />
+      <span class="hidden sm:inline">Export</span>
+    </Button>
     <Button
       variant="outline"
       size="sm"
@@ -236,12 +304,39 @@
     <!-- Desktop View -->
     <div class="hidden sm:block">
       <Table>
-        <TableHeader>
+        <TableHeader class="sticky top-0 z-10 bg-background">
           <TableRow>
-            <TableHead>Category</TableHead>
-            <TableHead>Date</TableHead>
+            {@const CategoryIcon = getSortIcon("category")}
+            {@const DateIcon = getSortIcon("date")}
+            {@const AmountIcon = getSortIcon("amount")}
+            <TableHead>
+              <button
+                onclick={() => handleSort("category")}
+                class="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
+              >
+                Category
+                <CategoryIcon class="h-4 w-4" />
+              </button>
+            </TableHead>
+            <TableHead>
+              <button
+                onclick={() => handleSort("date")}
+                class="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
+              >
+                Date
+                <DateIcon class="h-4 w-4" />
+              </button>
+            </TableHead>
             <TableHead>Note</TableHead>
-            <TableHead class="text-right">Amount</TableHead>
+            <TableHead class="text-right">
+              <button
+                onclick={() => handleSort("amount")}
+                class="flex items-center gap-1 hover:text-foreground transition-colors ml-auto cursor-pointer"
+              >
+                Amount
+                <AmountIcon class="h-4 w-4" />
+              </button>
+            </TableHead>
             <TableHead class="text-right"></TableHead>
           </TableRow>
         </TableHeader>
@@ -286,7 +381,7 @@
               </TableRow>
             {:else}
               <!-- View Mode -->
-              <TableRow>
+              <TableRow class="h-12">
                 <ExpenseRow
                   {expense}
                   {category}

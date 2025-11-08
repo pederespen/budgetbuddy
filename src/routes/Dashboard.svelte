@@ -72,7 +72,7 @@
   }
 </script>
 
-<div class="h-screen flex flex-col overflow-hidden">
+<div class="h-full flex flex-col overflow-hidden">
   <!-- Header -->
   <div class="flex-shrink-0 pb-6">
     <h1 class="text-3xl font-bold">{budget.name}</h1>
@@ -144,6 +144,7 @@
       class="mt-6 flex-1 overflow-hidden flex flex-col"
     >
       <ExpenseList
+        {budget}
         expenses={budget.entries}
         categories={budget.categories}
         currency={budget.currency}

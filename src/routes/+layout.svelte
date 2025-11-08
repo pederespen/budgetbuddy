@@ -30,6 +30,10 @@
   />
 </svelte:head>
 
-<Header />
+<div class="h-screen flex flex-col overflow-hidden">
+  <Header />
+  <div class="flex-1 overflow-hidden">
+    {@render children()}
+  </div>
+</div>
 <Toaster />
-{@render children()}

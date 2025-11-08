@@ -65,80 +65,84 @@
   }
 </script>
 
-<div class="min-h-screen bg-background">
-  <div class="container mx-auto px-4 py-8">
-    {#if !activeBudget}
-      {#if showCreateForm}
-        <!-- Create Budget Form -->
-        <div class="flex min-h-[80vh] items-center justify-center">
-          <Card class="w-full max-w-md">
-            <CardHeader>
-              <CardTitle>Create New Budget</CardTitle>
-              <CardDescription>
-                Set up your budget with a name, currency, period, and optional
-                spending limit.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BudgetSetupForm
-                onsubmit={handleCreateBudget}
-                oncancel={() => (showCreateForm = false)}
-              />
-            </CardContent>
-          </Card>
-        </div>
+<div class="h-full flex flex-col bg-background overflow-hidden">
+  <div class="flex-1 overflow-auto">
+    <div class="container mx-auto px-4 py-4 h-full">
+      {#if !activeBudget}
+        {#if showCreateForm}
+          <!-- Create Budget Form -->
+          <div class="flex min-h-[80vh] items-center justify-center">
+            <Card class="w-full max-w-md">
+              <CardHeader>
+                <CardTitle>Create New Budget</CardTitle>
+                <CardDescription>
+                  Set up your budget with a name, currency, period, and optional
+                  spending limit.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <BudgetSetupForm
+                  onsubmit={handleCreateBudget}
+                  oncancel={() => (showCreateForm = false)}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        {:else}
+          <!-- Welcome Screen -->
+          <div class="flex min-h-[80vh] items-center justify-center">
+            <Card class="w-full max-w-md">
+              <CardHeader class="text-center">
+                <CardTitle class="text-3xl">Welcome to BudgetBuddy</CardTitle>
+                <CardDescription>
+                  Your privacy-focused budget tracker. All data stays on your
+                  device.
+                </CardDescription>
+              </CardHeader>
+              <CardContent class="space-y-4">
+                <Button
+                  onclick={() => (showCreateForm = true)}
+                  class="w-full"
+                  size="lg"
+                >
+                  Create New Budget
+                </Button>
+                <div class="relative">
+                  <div class="absolute inset-0 flex items-center">
+                    <span class="w-full border-t"></span>
+                  </div>
+                  <div class="relative flex justify-center text-xs uppercase">
+                    <span class="bg-background px-2 text-muted-foreground"
+                      >Or</span
+                    >
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  class="w-full"
+                  onclick={handleLoadDemo}>Load Demo Data</Button
+                >
+                <div class="relative">
+                  <div class="absolute inset-0 flex items-center">
+                    <span class="w-full border-t"></span>
+                  </div>
+                  <div class="relative flex justify-center text-xs uppercase">
+                    <span class="bg-background px-2 text-muted-foreground"
+                      >Coming soon</span
+                    >
+                  </div>
+                </div>
+                <Button variant="outline" class="w-full" disabled
+                  >Import from File</Button
+                >
+              </CardContent>
+            </Card>
+          </div>
+        {/if}
       {:else}
-        <!-- Welcome Screen -->
-        <div class="flex min-h-[80vh] items-center justify-center">
-          <Card class="w-full max-w-md">
-            <CardHeader class="text-center">
-              <CardTitle class="text-3xl">Welcome to BudgetBuddy</CardTitle>
-              <CardDescription>
-                Your privacy-focused budget tracker. All data stays on your
-                device.
-              </CardDescription>
-            </CardHeader>
-            <CardContent class="space-y-4">
-              <Button
-                onclick={() => (showCreateForm = true)}
-                class="w-full"
-                size="lg"
-              >
-                Create New Budget
-              </Button>
-              <div class="relative">
-                <div class="absolute inset-0 flex items-center">
-                  <span class="w-full border-t"></span>
-                </div>
-                <div class="relative flex justify-center text-xs uppercase">
-                  <span class="bg-background px-2 text-muted-foreground"
-                    >Or</span
-                  >
-                </div>
-              </div>
-              <Button variant="outline" class="w-full" onclick={handleLoadDemo}
-                >Load Demo Data</Button
-              >
-              <div class="relative">
-                <div class="absolute inset-0 flex items-center">
-                  <span class="w-full border-t"></span>
-                </div>
-                <div class="relative flex justify-center text-xs uppercase">
-                  <span class="bg-background px-2 text-muted-foreground"
-                    >Coming soon</span
-                  >
-                </div>
-              </div>
-              <Button variant="outline" class="w-full" disabled
-                >Import from File</Button
-              >
-            </CardContent>
-          </Card>
-        </div>
+        <!-- Main App -->
+        <Dashboard budget={activeBudget} />
       {/if}
-    {:else}
-      <!-- Main App -->
-      <Dashboard budget={activeBudget} />
-    {/if}
+    </div>
   </div>
 </div>
