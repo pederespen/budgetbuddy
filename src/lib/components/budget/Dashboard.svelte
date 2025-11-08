@@ -20,7 +20,15 @@
   import { Button } from "$lib/components/ui/button";
   import ExpenseList from "../expense/ExpenseList.svelte";
   import { toast } from "svelte-sonner";
-  import { Home, Receipt, TrendingUp, Settings, Pencil, Check, X } from "lucide-svelte";
+  import {
+    Home,
+    Receipt,
+    TrendingUp,
+    Settings,
+    Pencil,
+    Check,
+    X,
+  } from "lucide-svelte";
 
   let { budget }: { budget: Budget } = $props();
 
@@ -30,7 +38,7 @@
   let selectedCurrency = $state<Currency>(budget.currency);
   let selectedDateFormat = $state<DateFormat>(budget.dateFormat);
   let isConvertingCurrency = $state(false);
-  
+
   // Budget name editing
   let isEditingName = $state(false);
   let editedName = $state(budget.name);
