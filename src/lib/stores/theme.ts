@@ -7,10 +7,10 @@ function createThemeStore() {
   // Initialize theme from localStorage or system preference
   const getInitialTheme = (): Theme => {
     if (!browser) return "dark";
-    
+
     const stored = localStorage.getItem("theme") as Theme | null;
     if (stored) return stored;
-    
+
     return window.matchMedia("(prefers-color-scheme: dark)").matches
       ? "dark"
       : "light";

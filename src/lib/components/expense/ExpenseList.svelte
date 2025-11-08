@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { Expense, Currency, Category } from "$lib/types";
   import { getCategoryById } from "$lib/utils/categories";
+  import { exportAsJSON, exportAsCSV, exportAsXLSX } from "$lib/utils/export";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
   import {
     Table,
     TableBody,
@@ -17,6 +19,9 @@
     ArrowUp,
     ArrowDown,
     Download,
+    FileJson,
+    FileSpreadsheet,
+    FileText,
   } from "lucide-svelte";
   import { parseDate } from "@internationalized/date";
   import type { DateValue } from "@internationalized/date";
@@ -114,21 +119,16 @@
     return sortDirection === "asc" ? ArrowUp : ArrowDown;
   }
 
-  function handleExport() {
-    const dataStr = JSON.stringify(
-      { budgets: [budget], activeBudgetId: budget.id },
-      null,
-      2
-    );
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${budget.name.replace(/\s+/g, "-").toLowerCase()}-${new Date().toISOString().split("T")[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  function handleDuplicate(expense: Expense) {
+    const duplicatedExpense: Expense = {
+      id: crypto.randomUUID(),
+      date: new Date().toISOString().split("T")[0], // Today's date
+      categoryId: expense.categoryId,
+      amount: expense.amount,
+      note: expense.note,
+    };
+
+    onAdd(duplicatedExpense);
   }
 
   function handleAddNew() {
@@ -228,18 +228,6 @@
     editingExpenseId = null;
     showMobileDialog = false;
   }
-
-  function handleDuplicate(expense: Expense) {
-    const duplicatedExpense: Expense = {
-      id: crypto.randomUUID(),
-      date: new Date().toISOString().split("T")[0], // Today's date
-      categoryId: expense.categoryId,
-      amount: expense.amount,
-      note: expense.note,
-    };
-
-    onAdd(duplicatedExpense);
-  }
 </script>
 
 <!-- Mobile Dialog for Add/Edit -->
@@ -286,10 +274,37 @@
 <div class="flex items-center justify-between mb-4">
   <h2 class="text-2xl font-bold">Expenses</h2>
   <div class="flex gap-2">
-    <Button variant="outline" size="sm" onclick={handleExport}>
-      <Download class="h-4 w-4 sm:mr-2" />
-      <span class="hidden sm:inline">Export</span>
-    </Button>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>
+        <Button variant="outline" size="sm">
+          <Download class="h-4 w-4 sm:mr-2" />
+          <span class="hidden sm:inline">Export</span>
+        </Button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content align="end">
+        <DropdownMenu.Item
+          onclick={() => exportAsJSON(budget)}
+          class="cursor-pointer"
+        >
+          <FileJson class="mr-2 h-4 w-4" />
+          Export as JSON
+        </DropdownMenu.Item>
+        <DropdownMenu.Item
+          onclick={() => exportAsCSV(budget)}
+          class="cursor-pointer"
+        >
+          <FileText class="mr-2 h-4 w-4" />
+          Export as CSV
+        </DropdownMenu.Item>
+        <DropdownMenu.Item
+          onclick={() => exportAsXLSX(budget)}
+          class="cursor-pointer"
+        >
+          <FileSpreadsheet class="mr-2 h-4 w-4" />
+          Export as Excel
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
     <Button
       variant="outline"
       size="sm"
