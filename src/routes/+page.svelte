@@ -1,6 +1,6 @@
 <script lang="ts">
   import { budgetStore } from "$lib/stores/budget";
-  import { getDefaultCategories } from "$lib/storage";
+  import { getDefaultCategories } from "$lib/defaults";
   import { Button } from "$lib/components/ui/button";
   import {
     Card,
@@ -10,8 +10,8 @@
     CardTitle,
   } from "$lib/components/ui/card";
   import { toast } from "svelte-sonner";
-  import Dashboard from "./Dashboard.svelte";
-  import BudgetSetupForm from "./BudgetSetupForm.svelte";
+  import Dashboard from "$lib/components/budget/Dashboard.svelte";
+  import BudgetSetupForm from "$lib/components/forms/BudgetSetupForm.svelte";
   import type { Currency, BudgetPeriod, Budget } from "$lib/types";
 
   let showCreateForm = $state(false);

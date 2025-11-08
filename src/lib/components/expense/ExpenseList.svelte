@@ -22,7 +22,7 @@
   import type { DateValue } from "@internationalized/date";
   import ExpenseInlineForm from "./ExpenseInlineForm.svelte";
   import ExpenseRow from "./ExpenseRow.svelte";
-  import CategoryManager from "./CategoryManager.svelte";
+  import CategoryManager from "../budget/CategoryManager.svelte";
   import type { Budget } from "$lib/types";
 
   let {

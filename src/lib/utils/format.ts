@@ -1,12 +1,48 @@
-import type { Currency, DateFormat } from "../types";
+import type { Currency, DateFormat, BudgetPeriod } from "../types";
 
-const currencySymbols: Record<Currency, string> = {
+// Currency symbols for display
+export const currencySymbols: Record<Currency, string> = {
   NOK: "kr",
   USD: "$",
   EUR: "€",
   GBP: "£",
   SEK: "kr",
   DKK: "kr",
+};
+
+// Currency labels with full names
+export const currencyLabels: Record<Currency, string> = {
+  NOK: "NOK - Norwegian Krone",
+  USD: "USD - US Dollar",
+  EUR: "EUR - Euro",
+  GBP: "GBP - British Pound",
+  SEK: "SEK - Swedish Krona",
+  DKK: "DKK - Danish Krone",
+};
+
+// Short currency labels for compact display
+export const currencyShortLabels: Record<Currency, string> = {
+  NOK: "NOK (kr)",
+  USD: "USD ($)",
+  EUR: "EUR (€)",
+  GBP: "GBP (£)",
+  SEK: "SEK (kr)",
+  DKK: "DKK (kr)",
+};
+
+// Date format labels
+export const dateFormatLabels: Record<DateFormat, string> = {
+  "DD/MM/YYYY": "DD/MM/YYYY",
+  "MM/DD/YYYY": "MM/DD/YYYY",
+  "YYYY-MM-DD": "YYYY-MM-DD",
+  "DD.MM.YYYY": "DD.MM.YYYY",
+};
+
+// Budget period labels
+export const periodLabels: Record<BudgetPeriod, string> = {
+  weekly: "Weekly",
+  biweekly: "Biweekly",
+  monthly: "Monthly",
 };
 
 export function formatCurrency(amount: number, currency: Currency): string {

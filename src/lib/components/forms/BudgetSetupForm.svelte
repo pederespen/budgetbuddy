@@ -4,6 +4,7 @@
   import { Label } from "$lib/components/ui/label";
   import * as Select from "$lib/components/ui/select";
   import type { Currency, BudgetPeriod } from "$lib/types";
+  import { currencyLabels, periodLabels } from "$lib/utils/format";
 
   interface Props {
     onsubmit: (data: {
@@ -21,21 +22,6 @@
   let currency = $state<Currency>("NOK");
   let period = $state<BudgetPeriod>("monthly");
   let startingBalance = $state("");
-
-  const currencyLabels: Record<Currency, string> = {
-    NOK: "NOK - Norwegian Krone",
-    USD: "USD - US Dollar",
-    EUR: "EUR - Euro",
-    GBP: "GBP - British Pound",
-    SEK: "SEK - Swedish Krona",
-    DKK: "DKK - Danish Krone",
-  };
-
-  const periodLabels: Record<BudgetPeriod, string> = {
-    weekly: "Weekly",
-    biweekly: "Biweekly",
-    monthly: "Monthly",
-  };
 
   function handleSubmit(e: Event) {
     e.preventDefault();

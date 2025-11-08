@@ -13,6 +13,7 @@
     type DateValue,
     getLocalTimeZone,
   } from "@internationalized/date";
+  import { currencySymbols } from "$lib/utils/format";
 
   let {
     mode = "new",
@@ -43,15 +44,6 @@
     month: "short",
     year: "numeric",
   });
-
-  const currencySymbols: Record<Currency, string> = {
-    NOK: "kr",
-    USD: "$",
-    EUR: "€",
-    GBP: "£",
-    SEK: "kr",
-    DKK: "kr",
-  };
 
   const currencySymbol = currencySymbols[currency];
 

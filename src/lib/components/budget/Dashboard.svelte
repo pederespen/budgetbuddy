@@ -7,12 +7,16 @@
     DateFormat,
   } from "$lib/types";
   import { budgetStore } from "$lib/stores/budget";
-  import { formatCurrency } from "$lib/utils/format";
+  import {
+    formatCurrency,
+    currencyShortLabels,
+    dateFormatLabels,
+  } from "$lib/utils/format";
   import { getCategoryById } from "$lib/utils/categories";
   import * as Tabs from "$lib/components/ui/tabs";
   import * as Select from "$lib/components/ui/select";
   import { Label } from "$lib/components/ui/label";
-  import ExpenseList from "./ExpenseList.svelte";
+  import ExpenseList from "../expense/ExpenseList.svelte";
   import { toast } from "svelte-sonner";
   import { Home, Receipt, TrendingUp, Settings } from "lucide-svelte";
 
@@ -24,23 +28,6 @@
   let selectedCurrency = $state<Currency>(budget.currency);
   let selectedDateFormat = $state<DateFormat>(budget.dateFormat);
   let isConvertingCurrency = $state(false);
-
-  // Labels for display
-  const currencyLabels: Record<Currency, string> = {
-    NOK: "NOK (kr)",
-    USD: "USD ($)",
-    EUR: "EUR (€)",
-    GBP: "GBP (£)",
-    SEK: "SEK (kr)",
-    DKK: "DKK (kr)",
-  };
-
-  const dateFormatLabels: Record<DateFormat, string> = {
-    "DD/MM/YYYY": "DD/MM/YYYY",
-    "MM/DD/YYYY": "MM/DD/YYYY",
-    "YYYY-MM-DD": "YYYY-MM-DD",
-    "DD.MM.YYYY": "DD.MM.YYYY",
-  };
 
   // Sync local state with budget changes
   $effect(() => {
@@ -297,7 +284,7 @@
                     class="w-full"
                     disabled={isConvertingCurrency}
                   >
-                    <span>{currencyLabels[selectedCurrency]}</span>
+                    <span>{currencyShortLabels[selectedCurrency]}</span>
                   </Select.Trigger>
                   <Select.Content>
                     <Select.Item value="NOK" label="NOK (kr)"
@@ -553,7 +540,7 @@
                   class="w-full max-w-xs"
                   disabled={isConvertingCurrency}
                 >
-                  <span>{currencyLabels[selectedCurrency]}</span>
+                  <span>{currencyShortLabels[selectedCurrency]}</span>
                 </Select.Trigger>
                 <Select.Content>
                   <Select.Item value="NOK" label="NOK (kr)"
