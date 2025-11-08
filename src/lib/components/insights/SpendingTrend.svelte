@@ -217,9 +217,10 @@
                       tabindex="0"
                       onmouseenter={() => (hoveredIndex = i)}
                       onmouseleave={() => (hoveredIndex = null)}
-                      onclick={() => (hoveredIndex = hoveredIndex === i ? null : i)}
+                      onclick={() =>
+                        (hoveredIndex = hoveredIndex === i ? null : i)}
                       onkeydown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
+                        if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
                           hoveredIndex = hoveredIndex === i ? null : i;
                         }
