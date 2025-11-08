@@ -2,6 +2,12 @@ export type Currency = "NOK" | "USD" | "EUR" | "GBP" | "SEK" | "DKK";
 
 export type BudgetPeriod = "weekly" | "biweekly" | "monthly";
 
+export type DateFormat =
+  | "MM/DD/YYYY"
+  | "DD/MM/YYYY"
+  | "YYYY-MM-DD"
+  | "DD.MM.YYYY";
+
 export interface Category {
   id: string;
   name: string;
@@ -25,6 +31,7 @@ export interface Budget {
   id: string;
   name: string;
   currency: Currency;
+  dateFormat: DateFormat;
   period: BudgetPeriod;
   totalLimit?: number; // Optional total budget limit
   categories: Category[];

@@ -1,9 +1,17 @@
 <script lang="ts">
-  import type { Budget, Expense, Category } from "$lib/types";
+  import type {
+    Budget,
+    Expense,
+    Category,
+    Currency,
+    DateFormat,
+  } from "$lib/types";
   import { budgetStore } from "$lib/stores/budget";
   import { formatCurrency } from "$lib/utils/format";
   import { getCategoryById } from "$lib/utils/categories";
   import * as Tabs from "$lib/components/ui/tabs";
+  import * as Select from "$lib/components/ui/select";
+  import { Label } from "$lib/components/ui/label";
   import ExpenseList from "./ExpenseList.svelte";
   import { toast } from "svelte-sonner";
   import { Home, Receipt, TrendingUp, Settings } from "lucide-svelte";
@@ -11,6 +19,34 @@
   let { budget }: { budget: Budget } = $props();
 
   let activeTab = $state("overview");
+
+  // Local state for settings
+  let selectedCurrency = $state<Currency>(budget.currency);
+  let selectedDateFormat = $state<DateFormat>(budget.dateFormat);
+  let isConvertingCurrency = $state(false);
+
+  // Labels for display
+  const currencyLabels: Record<Currency, string> = {
+    NOK: "NOK (kr)",
+    USD: "USD ($)",
+    EUR: "EUR (€)",
+    GBP: "GBP (£)",
+    SEK: "SEK (kr)",
+    DKK: "DKK (kr)",
+  };
+
+  const dateFormatLabels: Record<DateFormat, string> = {
+    "DD/MM/YYYY": "DD/MM/YYYY",
+    "MM/DD/YYYY": "MM/DD/YYYY",
+    "YYYY-MM-DD": "YYYY-MM-DD",
+    "DD.MM.YYYY": "DD.MM.YYYY",
+  };
+
+  // Sync local state with budget changes
+  $effect(() => {
+    selectedCurrency = budget.currency;
+    selectedDateFormat = budget.dateFormat;
+  });
 
   // Calculate total spending
   let totalSpent = $derived(
@@ -21,6 +57,80 @@
   let isOverBudget = $derived(
     budget.totalLimit ? totalSpent > budget.totalLimit : false
   );
+
+  async function getExchangeRate(
+    from: Currency,
+    to: Currency
+  ): Promise<number> {
+    try {
+      const response = await fetch(
+        `https://api.exchangerate-api.com/v4/latest/${from}`
+      );
+      const data = await response.json();
+      return data.rates[to] || 1;
+    } catch (error) {
+      console.error("Failed to fetch exchange rate:", error);
+      toast.error("Currency conversion failed", {
+        description: "Using rate of 1.0. Please try again later.",
+      });
+      return 1;
+    }
+  }
+
+  async function handleCurrencyChange() {
+    if (selectedCurrency === budget.currency) return;
+
+    isConvertingCurrency = true;
+    const fromCurrency = budget.currency; // Capture original currency
+    const toCurrency = selectedCurrency;
+
+    try {
+      // Get exchange rate
+      const rate = await getExchangeRate(fromCurrency, toCurrency);
+
+      // Convert all expense amounts
+      const convertedEntries = budget.entries.map((entry) => ({
+        ...entry,
+        amount: entry.amount * rate,
+      }));
+
+      // Convert total limit if it exists
+      const convertedTotalLimit = budget.totalLimit
+        ? budget.totalLimit * rate
+        : undefined;
+
+      // Convert budget limits
+      const convertedBudgetLimits: { [key: string]: number } = {};
+      for (const [categoryId, limit] of Object.entries(budget.budgetLimits)) {
+        convertedBudgetLimits[categoryId] = limit * rate;
+      }
+
+      // Update budget with converted values
+      budgetStore.updateBudget(budget.id, {
+        currency: toCurrency,
+        entries: convertedEntries,
+        totalLimit: convertedTotalLimit,
+        budgetLimits: convertedBudgetLimits,
+      });
+
+      toast.success("Currency converted", {
+        description: `All amounts converted from ${fromCurrency} to ${toCurrency}`,
+      });
+    } catch (error) {
+      console.error("Currency conversion error:", error);
+      toast.error("Conversion failed", {
+        description: "Please try again",
+      });
+      // Reset to original currency
+      selectedCurrency = budget.currency;
+    } finally {
+      isConvertingCurrency = false;
+    }
+  }
+
+  function handleDateFormatChange() {
+    budgetStore.updateBudget(budget.id, { dateFormat: selectedDateFormat });
+  }
 
   function handleAddExpense(expense: Expense) {
     const category = getCategoryById(budget.categories, expense.categoryId);
@@ -144,18 +254,113 @@
       </div>
     {:else if activeTab === "settings"}
       <!-- Settings Content -->
-      <div class="p-1">
-        <div class="space-y-4">
-          <div class="border rounded-lg p-4">
-            <h3 class="font-semibold mb-2">Budget Name</h3>
-            <p class="text-sm text-muted-foreground">{budget.name}</p>
+      <div class="p-4">
+        <div class="space-y-8">
+          <!-- Budget Information Section -->
+          <div class="space-y-3">
+            <h3
+              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+            >
+              Budget Information
+            </h3>
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <div class="text-sm font-medium">Budget Name</div>
+                <p class="text-sm text-muted-foreground">{budget.name}</p>
+              </div>
+            </div>
           </div>
-          <div class="border rounded-lg p-4">
-            <h3 class="font-semibold mb-2">Currency</h3>
-            <p class="text-sm text-muted-foreground">{budget.currency}</p>
+
+          <!-- Display Settings Section -->
+          <div class="space-y-3">
+            <h3
+              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+            >
+              Display Settings
+            </h3>
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <Label for="currency-mobile">Currency</Label>
+                <Select.Root
+                  type="single"
+                  bind:value={selectedCurrency}
+                  onValueChange={handleCurrencyChange}
+                  disabled={isConvertingCurrency}
+                >
+                  <Select.Trigger
+                    id="currency-mobile"
+                    class="w-full"
+                    disabled={isConvertingCurrency}
+                  >
+                    <span>{currencyLabels[selectedCurrency]}</span>
+                  </Select.Trigger>
+                  <Select.Content>
+                    <Select.Item value="NOK" label="NOK (kr)"
+                      >NOK (kr)</Select.Item
+                    >
+                    <Select.Item value="USD" label="USD ($)"
+                      >USD ($)</Select.Item
+                    >
+                    <Select.Item value="EUR" label="EUR (€)"
+                      >EUR (€)</Select.Item
+                    >
+                    <Select.Item value="GBP" label="GBP (£)"
+                      >GBP (£)</Select.Item
+                    >
+                    <Select.Item value="SEK" label="SEK (kr)"
+                      >SEK (kr)</Select.Item
+                    >
+                    <Select.Item value="DKK" label="DKK (kr)"
+                      >DKK (kr)</Select.Item
+                    >
+                  </Select.Content>
+                </Select.Root>
+                <p class="text-xs text-muted-foreground">
+                  {#if isConvertingCurrency}
+                    Converting all amounts using live exchange rates...
+                  {:else}
+                    Changing currency will convert all amounts using live
+                    exchange rates
+                  {/if}
+                </p>
+              </div>
+
+              <div class="space-y-2">
+                <Label for="dateformat-mobile">Date Format</Label>
+                <Select.Root
+                  type="single"
+                  bind:value={selectedDateFormat}
+                  onValueChange={handleDateFormatChange}
+                >
+                  <Select.Trigger id="dateformat-mobile" class="w-full">
+                    <span>{dateFormatLabels[selectedDateFormat]}</span>
+                  </Select.Trigger>
+                  <Select.Content>
+                    <Select.Item value="DD/MM/YYYY" label="DD/MM/YYYY"
+                      >DD/MM/YYYY</Select.Item
+                    >
+                    <Select.Item value="MM/DD/YYYY" label="MM/DD/YYYY"
+                      >MM/DD/YYYY</Select.Item
+                    >
+                    <Select.Item value="YYYY-MM-DD" label="YYYY-MM-DD"
+                      >YYYY-MM-DD</Select.Item
+                    >
+                    <Select.Item value="DD.MM.YYYY" label="DD.MM.YYYY"
+                      >DD.MM.YYYY</Select.Item
+                    >
+                  </Select.Content>
+                </Select.Root>
+              </div>
+            </div>
           </div>
-          <div class="border rounded-lg p-4">
-            <h3 class="font-semibold mb-2">About</h3>
+
+          <!-- About Section -->
+          <div class="space-y-3">
+            <h3
+              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+            >
+              About
+            </h3>
             <p class="text-sm text-muted-foreground">
               BudgetBuddy helps you track expenses and manage your budget
               efficiently.
@@ -303,17 +508,112 @@
 
     <!-- Settings Tab -->
     <Tabs.Content value="settings" class="mt-6 flex-1 overflow-auto">
-      <div class="max-w-2xl mx-auto space-y-4">
-        <div class="border rounded-lg p-6">
-          <h3 class="font-semibold mb-2">Budget Name</h3>
-          <p class="text-sm text-muted-foreground">{budget.name}</p>
+      <div class="max-w-2xl mx-auto space-y-8">
+        <!-- Budget Information Section -->
+        <div class="space-y-4">
+          <h3
+            class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+          >
+            Budget Information
+          </h3>
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <div class="text-sm font-medium">Budget Name</div>
+              <p class="text-sm text-muted-foreground">{budget.name}</p>
+            </div>
+          </div>
         </div>
-        <div class="border rounded-lg p-6">
-          <h3 class="font-semibold mb-2">Currency</h3>
-          <p class="text-sm text-muted-foreground">{budget.currency}</p>
+
+        <!-- Divider -->
+        <div class="border-t"></div>
+
+        <!-- Display Settings Section -->
+        <div class="space-y-4">
+          <h3
+            class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+          >
+            Display Settings
+          </h3>
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <Label for="currency-desktop">Currency</Label>
+              <Select.Root
+                type="single"
+                bind:value={selectedCurrency}
+                onValueChange={handleCurrencyChange}
+                disabled={isConvertingCurrency}
+              >
+                <Select.Trigger
+                  id="currency-desktop"
+                  class="w-full max-w-xs"
+                  disabled={isConvertingCurrency}
+                >
+                  <span>{currencyLabels[selectedCurrency]}</span>
+                </Select.Trigger>
+                <Select.Content>
+                  <Select.Item value="NOK" label="NOK (kr)"
+                    >NOK (kr)</Select.Item
+                  >
+                  <Select.Item value="USD" label="USD ($)">USD ($)</Select.Item>
+                  <Select.Item value="EUR" label="EUR (€)">EUR (€)</Select.Item>
+                  <Select.Item value="GBP" label="GBP (£)">GBP (£)</Select.Item>
+                  <Select.Item value="SEK" label="SEK (kr)"
+                    >SEK (kr)</Select.Item
+                  >
+                  <Select.Item value="DKK" label="DKK (kr)"
+                    >DKK (kr)</Select.Item
+                  >
+                </Select.Content>
+              </Select.Root>
+              <p class="text-xs text-muted-foreground">
+                {#if isConvertingCurrency}
+                  Converting all amounts using live exchange rates...
+                {:else}
+                  Changing currency will convert all amounts using live exchange
+                  rates
+                {/if}
+              </p>
+            </div>
+
+            <div class="space-y-2">
+              <Label for="dateformat-desktop">Date Format</Label>
+              <Select.Root
+                type="single"
+                bind:value={selectedDateFormat}
+                onValueChange={handleDateFormatChange}
+              >
+                <Select.Trigger id="dateformat-desktop" class="w-full max-w-xs">
+                  <span>{dateFormatLabels[selectedDateFormat]}</span>
+                </Select.Trigger>
+                <Select.Content>
+                  <Select.Item value="DD/MM/YYYY" label="DD/MM/YYYY"
+                    >DD/MM/YYYY</Select.Item
+                  >
+                  <Select.Item value="MM/DD/YYYY" label="MM/DD/YYYY"
+                    >MM/DD/YYYY</Select.Item
+                  >
+                  <Select.Item value="YYYY-MM-DD" label="YYYY-MM-DD"
+                    >YYYY-MM-DD</Select.Item
+                  >
+                  <Select.Item value="DD.MM.YYYY" label="DD.MM.YYYY"
+                    >DD.MM.YYYY</Select.Item
+                  >
+                </Select.Content>
+              </Select.Root>
+            </div>
+          </div>
         </div>
-        <div class="border rounded-lg p-6">
-          <h3 class="font-semibold mb-2">About</h3>
+
+        <!-- Divider -->
+        <div class="border-t"></div>
+
+        <!-- About Section -->
+        <div class="space-y-4">
+          <h3
+            class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+          >
+            About
+          </h3>
           <p class="text-sm text-muted-foreground">
             BudgetBuddy helps you track expenses and manage your budget
             efficiently.

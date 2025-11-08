@@ -1,4 +1,4 @@
-import type { Currency } from "../types";
+import type { Currency, DateFormat } from "../types";
 
 const currencySymbols: Record<Currency, string> = {
   NOK: "kr",
@@ -22,13 +22,27 @@ export function formatCurrency(amount: number, currency: Currency): string {
   return `${symbol}${formatted}`;
 }
 
-export function formatDate(dateString: string): string {
+export function formatDate(
+  dateString: string,
+  format: DateFormat = "DD/MM/YYYY"
+): string {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat("en-GB", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(date);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  switch (format) {
+    case "MM/DD/YYYY":
+      return `${month}/${day}/${year}`;
+    case "DD/MM/YYYY":
+      return `${day}/${month}/${year}`;
+    case "YYYY-MM-DD":
+      return `${year}-${month}-${day}`;
+    case "DD.MM.YYYY":
+      return `${day}.${month}.${year}`;
+    default:
+      return `${day}/${month}/${year}`;
+  }
 }
 
 export function getMonthName(date: Date): string {

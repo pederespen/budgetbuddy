@@ -33,6 +33,7 @@
       id: crypto.randomUUID(),
       name: data.name,
       currency: data.currency,
+      dateFormat: "DD/MM/YYYY" as const,
       period: data.period,
       totalLimit: data.totalLimit,
       categories: getDefaultCategories(),

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Expense, Category, Currency } from "$lib/types";
+  import type { Expense, Category, Currency, DateFormat } from "$lib/types";
   import { formatCurrency, formatDate } from "$lib/utils/format";
   import { Button } from "$lib/components/ui/button";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
@@ -10,6 +10,7 @@
     expense,
     category,
     currency,
+    dateFormat = "DD/MM/YYYY",
     onEdit,
     onDelete,
     disabled = false,
@@ -18,6 +19,7 @@
     expense: Expense;
     category: Category | undefined;
     currency: Currency;
+    dateFormat?: DateFormat;
     onEdit: () => void;
     onDelete: () => void;
     disabled?: boolean;
@@ -42,7 +44,7 @@
       <span>{category?.name || "Unknown"}</span>
     </div>
   </td>
-  <td class="w-[140px] font-medium">{formatDate(expense.date)}</td>
+  <td class="w-[140px] font-medium">{formatDate(expense.date, dateFormat)}</td>
   <td class="truncate">
     {expense.note || ""}
   </td>
@@ -86,7 +88,7 @@
         {expense.note || category?.name || "Unknown"}
       </div>
       <div class="text-sm text-muted-foreground">
-        {formatDate(expense.date)}
+        {formatDate(expense.date, dateFormat)}
       </div>
     </div>
 

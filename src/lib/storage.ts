@@ -53,6 +53,7 @@ export function createDefaultBudget(): Budget {
     id: crypto.randomUUID(),
     name: "My Budget",
     currency: "NOK",
+    dateFormat: "DD/MM/YYYY",
     period: "monthly",
     categories: getDefaultCategories(),
     entries: [],

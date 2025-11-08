@@ -321,6 +321,7 @@
             {expense}
             {category}
             {currency}
+            dateFormat={budget.dateFormat}
             onEdit={() => handleStartEdit(expense)}
             onDelete={() => onDelete(expense.id)}
             disabled={false}
@@ -415,6 +416,7 @@
                   {expense}
                   {category}
                   {currency}
+                  dateFormat={budget.dateFormat}
                   onEdit={() => handleStartEdit(expense)}
                   onDelete={() => onDelete(expense.id)}
                   disabled={showNewExpenseRow}

@@ -4,6 +4,7 @@
       "id": "demo-budget-1",
       "name": "Monthly Budget Demo",
       "currency": "NOK",
+      "dateFormat": "DD/MM/YYYY",
       "period": "monthly",
       "totalLimit": 15000,
       "categories": [
