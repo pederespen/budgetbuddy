@@ -67,7 +67,7 @@
 
 <div class="h-full flex flex-col bg-background overflow-hidden">
   <div class="flex-1 overflow-auto">
-    <div class="container mx-auto px-4 py-4 h-full">
+    <div class="container mx-auto px-4 py-2 h-full">
       {#if !activeBudget}
         {#if showCreateForm}
           <!-- Create Budget Form -->

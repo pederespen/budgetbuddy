@@ -2,10 +2,10 @@
   import type { Expense, Currency, Category } from "$lib/types";
   import { getCategoryById } from "$lib/utils/categories";
   import { Button } from "$lib/components/ui/button";
+  import * as Dialog from "$lib/components/ui/dialog";
   import {
     Table,
     TableBody,
-    TableCell,
     TableHead,
     TableHeader,
     TableRow,
@@ -52,6 +52,9 @@
   let showNewExpenseRow = $state(false);
   let editingExpenseId = $state<string | null>(null);
   let showCategoryManager = $state(false);
+  let showMobileDialog = $state(false);
+  let mobileDialogMode = $state<"new" | "edit">("new");
+  let editingExpenseIdForMobile = $state<string>("");
 
   // Sorting state
   type SortColumn = "category" | "date" | "amount";
@@ -136,10 +139,18 @@
     newExpenseCategoryId = "";
     newExpenseAmount = "";
     newExpenseNote = "";
+    
+    // For mobile, open dialog
+    if (window.innerWidth < 640) {
+      mobileDialogMode = "new";
+      showMobileDialog = true;
+      showNewExpenseRow = false;
+    }
   }
 
   function handleCancelNew() {
     showNewExpenseRow = false;
+    showMobileDialog = false;
   }
 
   function handleSaveNew() {
@@ -164,19 +175,31 @@
 
     onAdd(expense);
     showNewExpenseRow = false;
+    showMobileDialog = false;
   }
 
   function handleStartEdit(expense: Expense) {
     editingExpenseId = expense.id;
     showNewExpenseRow = false;
-    editExpenseDate = parseDate(expense.date);
+    // Handle both date-only strings (YYYY-MM-DD) and ISO timestamps
+    const dateString = expense.date.includes('T') ? expense.date.split('T')[0] : expense.date;
+    editExpenseDate = parseDate(dateString);
     editExpenseCategoryId = expense.categoryId;
     editExpenseAmount = expense.amount.toString();
     editExpenseNote = expense.note;
+    
+    // For mobile, open dialog
+    if (window.innerWidth < 640) {
+      mobileDialogMode = "edit";
+      showMobileDialog = true;
+      editingExpenseIdForMobile = expense.id;
+      editingExpenseId = null; // Don't show inline on mobile
+    }
   }
 
   function handleCancelEdit() {
     editingExpenseId = null;
+    showMobileDialog = false;
   }
 
   function handleSaveEdit(expenseId: string) {
@@ -201,8 +224,49 @@
 
     onEdit(expense);
     editingExpenseId = null;
+    showMobileDialog = false;
   }
 </script>
+
+<!-- Mobile Dialog for Add/Edit -->
+<Dialog.Root bind:open={showMobileDialog}>
+  <Dialog.Content class="max-w-lg">
+    <Dialog.Header>
+      <Dialog.Title>
+        {mobileDialogMode === "new" ? "Add Expense" : "Edit Expense"}
+      </Dialog.Title>
+    </Dialog.Header>
+    <div class="py-4">
+      {#if mobileDialogMode === "new"}
+        <ExpenseInlineForm
+          mode="new"
+          {categories}
+          {currency}
+          bind:date={newExpenseDate}
+          bind:categoryId={newExpenseCategoryId}
+          bind:amount={newExpenseAmount}
+          bind:note={newExpenseNote}
+          onSave={handleSaveNew}
+          onCancel={handleCancelNew}
+          variant="card"
+        />
+      {:else}
+        <ExpenseInlineForm
+          mode="edit"
+          {categories}
+          {currency}
+          bind:date={editExpenseDate}
+          bind:categoryId={editExpenseCategoryId}
+          bind:amount={editExpenseAmount}
+          bind:note={editExpenseNote}
+          onSave={() => handleSaveEdit(editingExpenseIdForMobile)}
+          onCancel={handleCancelEdit}
+          variant="card"
+        />
+      {/if}
+    </div>
+  </Dialog.Content>
+</Dialog.Root>
 
 <!-- Header (Fixed) -->
 <div class="flex items-center justify-between mb-4">
@@ -246,57 +310,20 @@
   {:else}
     <!-- Mobile View -->
     <div class="block sm:hidden">
-      <!-- New Expense Form (Mobile) -->
-      {#if showNewExpenseRow}
-        <div class="mb-4 pb-4">
-          <ExpenseInlineForm
-            mode="new"
-            {categories}
-            {currency}
-            bind:date={newExpenseDate}
-            bind:categoryId={newExpenseCategoryId}
-            bind:amount={newExpenseAmount}
-            bind:note={newExpenseNote}
-            onSave={handleSaveNew}
-            onCancel={handleCancelNew}
-            variant="card"
-          />
-        </div>
-      {/if}
-
-      <!-- Expenses List (Mobile) -->
+      <!-- Expenses List (Mobile) - No inline forms anymore -->
       <div class="divide-y">
         {#each sortedExpenses as expense (expense.id)}
           {@const category = getCategoryById(categories, expense.categoryId)}
-
-          {#if editingExpenseId === expense.id}
-            <!-- Edit Mode (Mobile) -->
-            <div class="py-4">
-              <ExpenseInlineForm
-                mode="edit"
-                {categories}
-                {currency}
-                bind:date={editExpenseDate}
-                bind:categoryId={editExpenseCategoryId}
-                bind:amount={editExpenseAmount}
-                bind:note={editExpenseNote}
-                onSave={() => handleSaveEdit(expense.id)}
-                onCancel={handleCancelEdit}
-                variant="card"
-              />
-            </div>
-          {:else}
-            <!-- View Mode (Mobile) -->
-            <ExpenseRow
-              {expense}
-              {category}
-              {currency}
-              onEdit={() => handleStartEdit(expense)}
-              onDelete={() => onDelete(expense.id)}
-              disabled={showNewExpenseRow}
-              variant="card"
-            />
-          {/if}
+          <!-- View Mode (Mobile) -->
+          <ExpenseRow
+            {expense}
+            {category}
+            {currency}
+            onEdit={() => handleStartEdit(expense)}
+            onDelete={() => onDelete(expense.id)}
+            disabled={false}
+            variant="card"
+          />
         {/each}
       </div>
     </div>

@@ -53,84 +53,84 @@
       "entries": [
         {
           "id": "exp-1",
-          "date": "2025-11-01T10:30:00.000Z",
+          "date": "2025-11-01",
           "categoryId": "cat-1",
           "amount": 1250.5,
           "note": "Weekly groceries at Rema 1000"
         },
         {
           "id": "exp-2",
-          "date": "2025-11-02T14:15:00.000Z",
+          "date": "2025-11-02",
           "categoryId": "cat-2",
           "amount": 450,
           "note": "Fuel for car"
         },
         {
           "id": "exp-3",
-          "date": "2025-11-03T19:45:00.000Z",
+          "date": "2025-11-03",
           "categoryId": "cat-3",
           "amount": 189,
           "note": "Netflix subscription"
         },
         {
           "id": "exp-4",
-          "date": "2025-11-04T12:00:00.000Z",
+          "date": "2025-11-04",
           "categoryId": "cat-1",
           "amount": 85.75,
           "note": "Coffee and pastries"
         },
         {
           "id": "exp-5",
-          "date": "2025-11-05T16:30:00.000Z",
+          "date": "2025-11-05",
           "categoryId": "cat-4",
           "amount": 699,
           "note": "New shoes"
         },
         {
           "id": "exp-6",
-          "date": "2025-11-05T18:00:00.000Z",
+          "date": "2025-11-05",
           "categoryId": "cat-1",
           "amount": 320,
           "note": "Dinner at restaurant"
         },
         {
           "id": "exp-7",
-          "date": "2025-11-06T09:00:00.000Z",
+          "date": "2025-11-06",
           "categoryId": "cat-5",
           "amount": 2500,
           "note": "Monthly rent payment"
         },
         {
           "id": "exp-8",
-          "date": "2025-11-06T11:30:00.000Z",
+          "date": "2025-11-06",
           "categoryId": "cat-6",
           "amount": 450,
           "note": "Gym membership"
         },
         {
           "id": "exp-9",
-          "date": "2025-11-07T08:45:00.000Z",
+          "date": "2025-11-07",
           "categoryId": "cat-1",
           "amount": 950,
           "note": "Grocery shopping"
         },
         {
           "id": "exp-10",
-          "date": "2025-11-07T13:20:00.000Z",
+          "date": "2025-11-07",
           "categoryId": "cat-2",
           "amount": 125,
           "note": "Public transport monthly pass"
         },
         {
           "id": "exp-11",
-          "date": "2025-11-07T15:00:00.000Z",
+          "date": "2025-11-07",
           "categoryId": "cat-3",
           "amount": 249,
           "note": "Movie tickets"
         },
         {
           "id": "exp-12",
-          "date": "2025-11-07T20:30:00.000Z",
+          "date": "2025-11-07",
           "categoryId": "cat-7",
           "amount": 150,
           "note": "Miscellaneous items"
@@ -145,8 +145,8 @@
         "cat-6": 500,
         "cat-7": 500
       },
-      "createdAt": "2025-11-01T00:00:00.000Z",
-      "updatedAt": "2025-11-07T20:30:00.000Z"
+      "createdAt": "2025-11-01",
+      "updatedAt": "2025-11-07"
     }
   ],
   "activeBudgetId": "demo-budget-1"

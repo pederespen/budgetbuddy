@@ -70,11 +70,13 @@
 
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === "Enter" && !calendarOpen) {
+      e.preventDefault();
       // Check if all required fields are filled
       if (categoryId && date && amount && parseFloat(amount) > 0) {
         onSave();
       }
     } else if (e.key === "Escape") {
+      e.preventDefault();
       onCancel();
     }
   }
@@ -170,41 +172,19 @@
   </td>
 {:else}
   <!-- Card Variant for Mobile -->
-  <div class="rounded-lg border bg-muted/30 p-3 space-y-3">
-    <div class="font-medium text-sm">
-      {mode === "new" ? "New Expense" : "Edit Expense"}
-    </div>
-
-    <div class="space-y-2">
-      <!-- Date and Category on same row -->
-      <div class="flex gap-2">
-        <Popover.Root bind:open={calendarOpen}>
-          <Popover.Trigger
-            class={cn(
-              "flex-1 justify-between text-left font-normal flex h-9 items-center rounded-md border border-input bg-card px-3 py-2 text-sm cursor-pointer",
-              !date && "text-muted-foreground"
-            )}
-          >
-            <span
-              >{date
-                ? df.format(date.toDate(getLocalTimeZone()))
-                : "Pick date"}</span
-            >
-            <CalendarIcon class="h-4 w-4" />
-          </Popover.Trigger>
-          <Popover.Content class="w-auto p-0" align="start">
-            <Calendar type="single" bind:value={date} initialFocus />
-          </Popover.Content>
-        </Popover.Root>
-
+  <div class="space-y-4">
+    <div class="space-y-3">
+      <!-- Category -->
+      <div>
+        <label class="text-sm font-medium mb-1.5 block">Category</label>
         <Select.Root type="single" bind:value={categoryId}>
-          <Select.Trigger class="h-9 bg-card cursor-pointer flex-1">
+          <Select.Trigger class="h-10 bg-card cursor-pointer w-full">
             {#if categoryId}
               {@const cat = getCategoryById(categories, categoryId)}
               {@const Icon = cat ? (LucideIcons as any)[cat.icon] : null}
               {#if cat}
                 <div class="flex items-center gap-2">
-                  <Icon class="w-4 h-4" style="color: {cat.color}" />
+                  <Icon class="w-5 h-5" style="color: {cat.color}" />
                   <span>{cat.name}</span>
                 </div>
               {:else}
@@ -228,40 +208,66 @@
         </Select.Root>
       </div>
 
-      <!-- Amount and Note on same row -->
-      <div class="flex gap-2">
-        <div class="flex items-center gap-2 flex-1">
+      <!-- Date -->
+      <div>
+        <label class="text-sm font-medium mb-1.5 block">Date</label>
+        <Popover.Root bind:open={calendarOpen}>
+          <Popover.Trigger
+            class={cn(
+              "w-full justify-between text-left font-normal flex h-10 items-center rounded-md border border-input bg-card px-3 py-2 text-sm cursor-pointer",
+              !date && "text-muted-foreground"
+            )}
+          >
+            <span
+              >{date
+                ? df.format(date.toDate(getLocalTimeZone()))
+                : "Pick date"}</span
+            >
+            <CalendarIcon class="h-4 w-4" />
+          </Popover.Trigger>
+          <Popover.Content class="w-auto p-0" align="start">
+            <Calendar type="single" bind:value={date} initialFocus />
+          </Popover.Content>
+        </Popover.Root>
+      </div>
+
+      <!-- Amount -->
+      <div>
+        <label class="text-sm font-medium mb-1.5 block">Amount</label>
+        <div class="flex items-center gap-2">
           <Input
             type="number"
             step="0.01"
             min="0.01"
             bind:value={amount}
-            placeholder="Amount"
-            class="h-9 bg-card flex-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            placeholder="0.00"
+            class="h-10 bg-card flex-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             onkeydown={handleKeydown}
           />
-          <span class="text-muted-foreground font-semibold"
+          <span class="text-muted-foreground font-semibold text-sm"
             >{currencySymbol}</span
           >
         </div>
+      </div>
 
+      <!-- Note -->
+      <div>
+        <label class="text-sm font-medium mb-1.5 block">Note (optional)</label>
         <Input
           type="text"
           bind:value={note}
-          placeholder="Note"
-          class="h-9 bg-card flex-1"
+          placeholder="Add a note..."
+          class="h-10 bg-card"
           onkeydown={handleKeydown}
         />
       </div>
     </div>
 
-    <div class="flex gap-2">
-      <Button variant="outline" size="sm" onclick={onCancel} class="flex-1">
-        <X class="mr-1 h-3 w-3" />
+    <div class="flex gap-2 pt-2">
+      <Button variant="outline" size="default" onclick={onCancel} class="flex-1">
         Cancel
       </Button>
-      <Button size="sm" onclick={onSave} class="flex-1">
-        <Check class="mr-1 h-3 w-3" />
+      <Button size="default" onclick={onSave} class="flex-1">
         Save
       </Button>
     </div>

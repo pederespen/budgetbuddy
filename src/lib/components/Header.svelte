@@ -5,9 +5,9 @@
 <header
   class="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
 >
-  <div class="container mx-auto flex h-20 items-center px-4">
+  <div class="container mx-auto flex h-14 items-center px-4 mt-2">
     <div class="flex items-center">
-      <img src={logo} alt="BudgetBuddy" class="h-14" />
+      <img src={logo} alt="BudgetBuddy" class="h-10" />
     </div>
 
     <div class="ml-auto flex items-center gap-2">

@@ -121,9 +121,6 @@
   <Dialog.Content class="max-w-2xl max-h-[80vh] flex flex-col">
     <Dialog.Header>
       <Dialog.Title>Manage Categories</Dialog.Title>
-      <Dialog.Description>
-        Add, edit, or remove expense categories
-      </Dialog.Description>
     </Dialog.Header>
 
     <div class="flex-1 overflow-y-auto py-4">
@@ -192,13 +189,6 @@
               <Button size="sm" onclick={handleSaveAdd}>Save</Button>
             </div>
           </div>
-        </div>
-      {:else}
-        <div class="mb-4">
-          <Button size="sm" onclick={handleStartAdd}>
-            <Plus class="mr-2 h-4 w-4" />
-            Add Category
-          </Button>
         </div>
       {/if}
 
@@ -281,7 +271,7 @@
             {@const IconComponent = getIconComponent(category.icon)}
             {@const expenseCount = getCategoryExpenseCount(category.id)}
             <div
-              class="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+              class="flex items-center justify-between p-3 border rounded-lg transition-colors"
             >
               <div class="flex items-center gap-3">
                 <div
