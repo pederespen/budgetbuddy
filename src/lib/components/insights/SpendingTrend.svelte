@@ -49,6 +49,34 @@
     Math.max(...chartData().map((d) => d.cumulative), 100)
   );
 
+  // Round to nice numbers for Y-axis with better spacing
+  function roundToNice(value: number): number {
+    if (value === 0) return 0;
+    
+    // Add just a small padding (5%) to the max value
+    const paddedValue = value * 1.05;
+    
+    // Find the appropriate step size
+    const magnitude = Math.pow(10, Math.floor(Math.log10(paddedValue)));
+    
+    // Try different nice intervals: 1000, 2000, 2500, 5000
+    const steps = [1, 2, 2.5, 5, 10];
+    
+    for (const step of steps) {
+      const stepValue = step * magnitude;
+      const rounded = Math.ceil(paddedValue / stepValue) * stepValue;
+      // Use this if it's not too much overhead (less than 20% extra space)
+      if (rounded <= value * 1.2) {
+        return rounded;
+      }
+    }
+    
+    // Fallback
+    return Math.ceil(paddedValue / (magnitude * 10)) * (magnitude * 10);
+  }
+
+  const maxValueRounded = $derived(roundToNice(maxValue));
+
   function formatDate(date: Date) {
     return date.toLocaleDateString(undefined, {
       month: "short",
@@ -66,7 +94,7 @@
 
     const points = data.map((d, i) => ({
       x: (i / (data.length - 1)) * width,
-      y: height - (d.cumulative / maxValue) * height,
+      y: height - (d.cumulative / maxValueRounded) * height,
     }));
 
     if (points.length === 1) {
@@ -100,7 +128,7 @@
             class="absolute left-0 top-4 bottom-8 flex flex-col justify-between text-xs text-muted-foreground"
           >
             {#each [0, 0.25, 0.5, 0.75, 1] as tick}
-              <div>{budget.currency} {(maxValue * (1 - tick)).toFixed(0)}</div>
+              <div>{budget.currency} {Math.round(maxValueRounded * (1 - tick)).toLocaleString()}</div>
             {/each}
           </div>
 
@@ -131,11 +159,11 @@
                   >
                     <stop
                       offset="0%"
-                      style="stop-color:hsl(var(--primary));stop-opacity:0.4"
+                      style="stop-color: #10b981; stop-opacity: 0.4"
                     />
                     <stop
                       offset="100%"
-                      style="stop-color:hsl(var(--primary));stop-opacity:0.05"
+                      style="stop-color: #10b981; stop-opacity: 0.05"
                     />
                   </linearGradient>
                 </defs>
@@ -166,7 +194,7 @@
                     <path
                       d={smoothPath}
                       fill="none"
-                      stroke="hsl(var(--primary))"
+                      stroke="#10b981"
                       stroke-width="3"
                       class="transition-all"
                     />
@@ -194,9 +222,11 @@
 
               <!-- Perfectly round data point overlay -->
               {#if hoveredIndex !== null && chartData()[hoveredIndex]}
-                {@const xPercent = (hoveredIndex / (chartData().length - 1)) * 100}
-                {@const yPercent = (1 - chartData()[hoveredIndex].cumulative / maxValue) * 100}
-                <div 
+                {@const xPercent =
+                  (hoveredIndex / (chartData().length - 1)) * 100}
+                {@const yPercent =
+                  (1 - chartData()[hoveredIndex].cumulative / maxValueRounded) * 100}
+                <div
                   class="absolute w-2 h-2 rounded-full pointer-events-none transition-all z-10"
                   style="
                     left: {xPercent}%; 
@@ -212,7 +242,7 @@
               {#if hoveredIndex !== null && chartData()[hoveredIndex]}
                 {@const point = chartData()[hoveredIndex]}
                 {@const x = (hoveredIndex / (chartData().length - 1)) * 100}
-                {@const y = (1 - point.cumulative / maxValue) * 100}
+                {@const y = (1 - point.cumulative / maxValueRounded) * 100}
                 <div
                   class="absolute bg-popover text-popover-foreground shadow-md rounded border px-2 py-1 pointer-events-none z-10 text-xs"
                   style="left: {x}%; top: {y}%; transform: translate(-50%, calc(-100% - 12px))"

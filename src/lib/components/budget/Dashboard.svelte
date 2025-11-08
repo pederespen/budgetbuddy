@@ -24,7 +24,7 @@
   import CategoryStats from "./CategoryStats.svelte";
   import SpendingByCategory from "../insights/SpendingByCategory.svelte";
   import SpendingTrend from "../insights/SpendingTrend.svelte";
-  import BudgetProgress from "../insights/BudgetProgress.svelte";
+  import SpendingByDayOfWeek from "../insights/SpendingByDayOfWeek.svelte";
   import TopCategories from "../insights/TopCategories.svelte";
   import { toast } from "svelte-sonner";
   import {
@@ -341,11 +341,44 @@
       </div>
     {:else if activeTab === "insights"}
       <!-- Insights Content -->
-      <div class="p-1">
-        <div class="text-center py-12 text-muted-foreground">
-          <TrendingUp class="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <p>Insights coming soon...</p>
-        </div>
+      <div class="p-3">
+        {#if budget.entries.length === 0}
+          <div class="text-center py-12 text-muted-foreground">
+            <TrendingUp class="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p class="text-sm">No expenses yet</p>
+            <p class="text-xs mt-2">Add expenses to see insights</p>
+          </div>
+        {:else}
+          <div class="space-y-4">
+            <!-- Overview Cards -->
+            <div class="grid grid-cols-2 gap-2">
+              <StatCard
+                title="Total Spending"
+                value={formatCurrency(totalSpent, budget.currency)}
+                subtitle="{budget.entries.length} transactions"
+              >
+                {#snippet icon()}
+                  <Receipt class="h-4 w-4 text-muted-foreground" />
+                {/snippet}
+              </StatCard>
+              <StatCard
+                title="Active Categories"
+                value={new Set(budget.entries.map((e) => e.categoryId)).size.toString()}
+                subtitle="Out of {budget.categories.length} total"
+              >
+                {#snippet icon()}
+                  <ListOrdered class="h-4 w-4 text-muted-foreground" />
+                {/snippet}
+              </StatCard>
+            </div>
+
+            <!-- Charts -->
+            <SpendingTrend {budget} />
+            <SpendingByCategory {budget} />
+            <SpendingByDayOfWeek {budget} />
+            <TopCategories {budget} />
+          </div>
+        {/if}
       </div>
     {:else if activeTab === "settings"}
       <!-- Settings Content -->
@@ -689,7 +722,7 @@
           </div>
 
           <div class="grid gap-4 md:grid-cols-2">
-            <BudgetProgress {budget} />
+            <SpendingByDayOfWeek {budget} />
             <TopCategories {budget} />
           </div>
         </div>
