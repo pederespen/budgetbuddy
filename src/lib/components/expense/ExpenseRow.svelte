@@ -82,7 +82,8 @@
     <!-- Category Icon -->
     {#if category && Icon}
       <div
-        class="flex-shrink-0 w-10 h-10 rounded-full bg-muted flex items-center justify-center"
+        class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+        style="background-color: {category.color}20"
       >
         <Icon class="w-5 h-5" style="color: {category.color}" />
       </div>

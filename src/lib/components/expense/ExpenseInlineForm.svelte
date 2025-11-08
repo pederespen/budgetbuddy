@@ -2,6 +2,7 @@
   import type { Category, Currency } from "$lib/types";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
   import * as Select from "$lib/components/ui/select";
   import * as Popover from "$lib/components/ui/popover";
   import { Calendar } from "$lib/components/ui/calendar";
@@ -168,7 +169,7 @@
     <div class="space-y-3">
       <!-- Category -->
       <div>
-        <label class="text-sm font-medium mb-1.5 block">Category</label>
+        <Label class="text-sm font-medium mb-1.5 block">Category</Label>
         <Select.Root type="single" bind:value={categoryId}>
           <Select.Trigger class="h-10 bg-card cursor-pointer w-full">
             {#if categoryId}
@@ -202,7 +203,7 @@
 
       <!-- Date -->
       <div>
-        <label class="text-sm font-medium mb-1.5 block">Date</label>
+        <Label class="text-sm font-medium mb-1.5 block">Date</Label>
         <Popover.Root bind:open={calendarOpen}>
           <Popover.Trigger
             class={cn(
@@ -225,7 +226,7 @@
 
       <!-- Amount -->
       <div>
-        <label class="text-sm font-medium mb-1.5 block">Amount</label>
+        <Label class="text-sm font-medium mb-1.5 block">Amount</Label>
         <div class="flex items-center gap-2">
           <Input
             type="number"
@@ -244,7 +245,7 @@
 
       <!-- Note -->
       <div>
-        <label class="text-sm font-medium mb-1.5 block">Note (optional)</label>
+        <Label class="text-sm font-medium mb-1.5 block">Note (optional)</Label>
         <Input
           type="text"
           bind:value={note}

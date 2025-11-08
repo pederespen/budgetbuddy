@@ -4,20 +4,13 @@
   import { Toaster } from "$lib/components/ui/sonner";
   import Header from "$lib/components/Header.svelte";
   import { onMount } from "svelte";
+  import { themeStore } from "$lib/stores/theme";
 
   let { children } = $props();
 
-  // Dark mode support
+  // Initialize theme on mount
   onMount(() => {
-    // Check for saved theme preference or default to dark mode
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-
-    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-      document.documentElement.classList.add("dark");
-    }
+    themeStore.init();
   });
 </script>
 
