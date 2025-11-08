@@ -19,6 +19,9 @@
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
   import ExpenseList from "../expense/ExpenseList.svelte";
+  import StatCard from "./StatCard.svelte";
+  import RecentActivity from "./RecentActivity.svelte";
+  import CategoryStats from "./CategoryStats.svelte";
   import { toast } from "svelte-sonner";
   import {
     Home,
@@ -28,6 +31,9 @@
     Pencil,
     Check,
     X,
+    Wallet,
+    CreditCard,
+    ListOrdered,
   } from "lucide-svelte";
 
   let { budget }: { budget: Budget } = $props();
@@ -63,6 +69,18 @@
   // Determine if over budget (spent more than starting balance)
   let isOverBudget = $derived(
     budget.startingBalance ? totalSpent > budget.startingBalance : false
+  );
+
+  // Calculate largest single expense
+  let largestExpense = $derived(
+    budget.entries.length > 0
+      ? Math.max(...budget.entries.map((e) => e.amount))
+      : 0
+  );
+
+  // Calculate average expense
+  let averageExpense = $derived(
+    budget.entries.length > 0 ? totalSpent / budget.entries.length : 0
   );
 
   async function getExchangeRate(
@@ -217,44 +235,89 @@
   <div class="flex-1 overflow-auto pb-20">
     {#if activeTab === "overview"}
       <!-- Overview Content -->
-      <div class="space-y-6 p-1">
-        <div class="text-center py-8">
-          <div class="text-4xl font-bold mb-2">
-            {formatCurrency(totalSpent, budget.currency)}
-          </div>
-          <p class="text-muted-foreground">Total Spent</p>
+      <div class="space-y-3 p-3">
+        <!-- Key Metrics Grid -->
+        <div class="grid grid-cols-2 gap-2">
+          <StatCard
+            title="Total Spent"
+            value={formatCurrency(totalSpent, budget.currency)}
+            variant={isOverBudget ? "danger" : "default"}
+          >
+            {#snippet icon()}
+              <Wallet class="h-4 w-4 text-muted-foreground" />
+            {/snippet}
+          </StatCard>
 
           {#if budget.startingBalance}
-            <div class="mt-6">
-              <p class="text-sm" class:text-destructive={isOverBudget}>
-                {formatCurrency(totalSpent, budget.currency)} of {formatCurrency(
-                  budget.startingBalance,
-                  budget.currency
-                )}
-              </p>
-              <p class="text-xs text-muted-foreground mt-1">
-                {#if isOverBudget}
-                  {formatCurrency(
-                    totalSpent - budget.startingBalance,
-                    budget.currency
-                  )} over balance
-                {:else}
-                  {formatCurrency(
-                    budget.startingBalance - totalSpent,
-                    budget.currency
-                  )} remaining
-                {/if}
-              </p>
-            </div>
+            <StatCard
+              title="Remaining"
+              value={formatCurrency(
+                Math.max(0, budget.startingBalance - totalSpent),
+                budget.currency
+              )}
+              subtitle={isOverBudget
+                ? `${formatCurrency(totalSpent - budget.startingBalance, budget.currency)} over`
+                : `of ${formatCurrency(budget.startingBalance, budget.currency)}`}
+              variant={isOverBudget
+                ? "danger"
+                : remainingBalance &&
+                    remainingBalance < budget.startingBalance * 0.2
+                  ? "warning"
+                  : "success"}
+            >
+              {#snippet icon()}
+                <CreditCard class="h-4 w-4 text-muted-foreground" />
+              {/snippet}
+            </StatCard>
+          {:else}
+            <StatCard
+              title="Transactions"
+              value={budget.entries.length.toString()}
+              subtitle={budget.entries.length === 1 ? "expense" : "expenses"}
+            >
+              {#snippet icon()}
+                <Receipt class="h-4 w-4 text-muted-foreground" />
+              {/snippet}
+            </StatCard>
           {/if}
 
-          <p class="text-sm text-muted-foreground mt-4">
-            {budget.entries.length}
-            {budget.entries.length === 1 ? "expense" : "expenses"} • {budget
-              .categories.length}
-            {budget.categories.length === 1 ? "category" : "categories"}
-          </p>
+          <StatCard
+            title="Largest Expense"
+            value={formatCurrency(largestExpense, budget.currency)}
+            subtitle={budget.entries.length > 0
+              ? "single transaction"
+              : "no expenses yet"}
+          >
+            {#snippet icon()}
+              <TrendingUp class="h-4 w-4 text-muted-foreground" />
+            {/snippet}
+          </StatCard>
+
+          <StatCard
+            title="Avg. Expense"
+            value={formatCurrency(averageExpense, budget.currency)}
+            subtitle={budget.entries.length > 0 ? "per transaction" : "no data"}
+          >
+            {#snippet icon()}
+              <ListOrdered class="h-4 w-4 text-muted-foreground" />
+            {/snippet}
+          </StatCard>
         </div>
+
+        <!-- Recent Activity -->
+        <RecentActivity
+          expenses={budget.entries}
+          categories={budget.categories}
+          currency={budget.currency}
+          dateFormat={budget.dateFormat}
+          onAddClick={() => (activeTab = "expenses")}
+        />
+
+        <!-- Category Stats -->
+        <CategoryStats
+          {budget}
+          onViewInsights={() => (activeTab = "insights")}
+        />
       </div>
     {:else if activeTab === "expenses"}
       <!-- Expenses Content -->
@@ -452,44 +515,92 @@
     </Tabs.List>
 
     <!-- Overview Tab -->
-    <Tabs.Content value="overview" class="mt-6 flex-1 overflow-auto">
-      <div class="space-y-6">
-        <div class="text-center py-12">
-          <div class="text-5xl font-bold mb-2">
-            {formatCurrency(totalSpent, budget.currency)}
-          </div>
-          <p class="text-muted-foreground text-lg">Total Spent</p>
+    <Tabs.Content value="overview" class="mt-4 flex-1 overflow-auto">
+      <div class="space-y-4 max-w-6xl mx-auto px-4 pb-4">
+        <!-- Key Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <StatCard
+            title="Total Spent"
+            value={formatCurrency(totalSpent, budget.currency)}
+            variant={isOverBudget ? "danger" : "default"}
+          >
+            {#snippet icon()}
+              <Wallet class="h-4 w-4 text-muted-foreground" />
+            {/snippet}
+          </StatCard>
 
           {#if budget.startingBalance}
-            <div class="mt-6 max-w-md mx-auto">
-              <p class="text-sm" class:text-destructive={isOverBudget}>
-                {formatCurrency(totalSpent, budget.currency)} of {formatCurrency(
-                  budget.startingBalance,
-                  budget.currency
-                )}
-              </p>
-              <p class="text-xs text-muted-foreground mt-1">
-                {#if isOverBudget}
-                  {formatCurrency(
-                    totalSpent - budget.startingBalance,
-                    budget.currency
-                  )} over balance
-                {:else}
-                  {formatCurrency(
-                    budget.startingBalance - totalSpent,
-                    budget.currency
-                  )} remaining
-                {/if}
-              </p>
-            </div>
+            <StatCard
+              title="Remaining"
+              value={formatCurrency(
+                Math.max(0, budget.startingBalance - totalSpent),
+                budget.currency
+              )}
+              subtitle={isOverBudget
+                ? `${formatCurrency(totalSpent - budget.startingBalance, budget.currency)} over`
+                : `of ${formatCurrency(budget.startingBalance, budget.currency)}`}
+              variant={isOverBudget
+                ? "danger"
+                : remainingBalance &&
+                    remainingBalance < budget.startingBalance * 0.2
+                  ? "warning"
+                  : "success"}
+            >
+              {#snippet icon()}
+                <CreditCard class="h-4 w-4 text-muted-foreground" />
+              {/snippet}
+            </StatCard>
+          {:else}
+            <StatCard
+              title="Transactions"
+              value={budget.entries.length.toString()}
+              subtitle={budget.entries.length === 1 ? "expense" : "expenses"}
+            >
+              {#snippet icon()}
+                <Receipt class="h-4 w-4 text-muted-foreground" />
+              {/snippet}
+            </StatCard>
           {/if}
 
-          <p class="text-sm text-muted-foreground mt-4">
-            {budget.entries.length}
-            {budget.entries.length === 1 ? "expense" : "expenses"} • {budget
-              .categories.length}
-            {budget.categories.length === 1 ? "category" : "categories"}
-          </p>
+          <StatCard
+            title="Largest Expense"
+            value={formatCurrency(largestExpense, budget.currency)}
+            subtitle={budget.entries.length > 0
+              ? "single transaction"
+              : "no expenses yet"}
+          >
+            {#snippet icon()}
+              <TrendingUp class="h-4 w-4 text-muted-foreground" />
+            {/snippet}
+          </StatCard>
+
+          <StatCard
+            title="Avg. Expense"
+            value={formatCurrency(averageExpense, budget.currency)}
+            subtitle={budget.entries.length > 0 ? "per transaction" : "no data"}
+          >
+            {#snippet icon()}
+              <ListOrdered class="h-4 w-4 text-muted-foreground" />
+            {/snippet}
+          </StatCard>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <!-- Recent Activity -->
+          <RecentActivity
+            expenses={budget.entries}
+            categories={budget.categories}
+            currency={budget.currency}
+            dateFormat={budget.dateFormat}
+            onAddClick={() => (activeTab = "expenses")}
+          />
+
+          <!-- Category Stats -->
+          <CategoryStats
+            {budget}
+            onViewInsights={() => (activeTab = "insights")}
+          />
         </div>
       </div>
     </Tabs.Content>

@@ -316,7 +316,7 @@
 <div class="mb-4">
   <div class="flex items-center justify-between gap-3">
     <h2 class="text-2xl font-bold">Expenses</h2>
-    
+
     <div class="flex items-center gap-2">
       <!-- Desktop: Inline Filters -->
       {#if showFilters}
@@ -383,7 +383,7 @@
           <span class="hidden sm:inline">Filters</span>
         </Button>
       {/if}
-      
+
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           <Button variant="outline" size="sm">
@@ -392,84 +392,85 @@
           </Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
-        <DropdownMenu.Item
-          onclick={() => exportAsJSON(budget)}
-          class="cursor-pointer"
-        >
-          <FileJson class="mr-2 h-4 w-4" />
-          Export as JSON
-        </DropdownMenu.Item>
-        <DropdownMenu.Item
-          onclick={() => exportAsCSV(budget)}
-          class="cursor-pointer"
-        >
-          <FileText class="mr-2 h-4 w-4" />
-          Export as CSV
-        </DropdownMenu.Item>
-        <DropdownMenu.Item
-          onclick={() => exportAsXLSX(budget)}
-          class="cursor-pointer"
-        >
-          <FileSpreadsheet class="mr-2 h-4 w-4" />
-          Export as Excel
-        </DropdownMenu.Item>
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
-    <Button
-      variant="outline"
-      size="sm"
-      onclick={() => (showCategoryManager = true)}
-    >
-      <Settings class="h-4 w-4 sm:mr-2" />
-      <span class="hidden sm:inline">Edit Categories</span>
-    </Button>
-    <Button size="sm" onclick={handleAddNew} disabled={showNewExpenseRow}>
-      <Plus class="h-4 w-4 sm:mr-2" />
-      <span class="hidden sm:inline">Add New</span>
-    </Button>
-  </div>
-</div>
-
-<!-- Mobile: Collapsible Filters Section -->
-{#if showFilters}
-  <div class="block sm:hidden p-4 bg-muted/50 rounded-lg space-y-3">
-    <!-- Search -->
-    <div class="relative">
-      <Search
-        class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
-      />
-      <Input
-        type="text"
-        placeholder="Search expenses..."
-        bind:value={searchQuery}
-        class="pl-9"
-      />
+          <DropdownMenu.Item
+            onclick={() => exportAsJSON(budget)}
+            class="cursor-pointer"
+          >
+            <FileJson class="mr-2 h-4 w-4" />
+            Export as JSON
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            onclick={() => exportAsCSV(budget)}
+            class="cursor-pointer"
+          >
+            <FileText class="mr-2 h-4 w-4" />
+            Export as CSV
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            onclick={() => exportAsXLSX(budget)}
+            class="cursor-pointer"
+          >
+            <FileSpreadsheet class="mr-2 h-4 w-4" />
+            Export as Excel
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+      <Button
+        variant="outline"
+        size="sm"
+        onclick={() => (showCategoryManager = true)}
+      >
+        <Settings class="h-4 w-4 sm:mr-2" />
+        <span class="hidden sm:inline">Edit Categories</span>
+      </Button>
+      <Button size="sm" onclick={handleAddNew} disabled={showNewExpenseRow}>
+        <Plus class="h-4 w-4 sm:mr-2" />
+        <span class="hidden sm:inline">Add New</span>
+      </Button>
     </div>
-
-    <!-- Category Filter -->
-    <Select.Root type="single" bind:value={filterCategory}>
-      <Select.Trigger class="w-full">
-        <span>
-          {filterCategory === "all"
-            ? "All Categories"
-            : getCategoryById(categories, filterCategory)?.name ||
-              "All Categories"}
-        </span>
-      </Select.Trigger>
-      <Select.Content>
-        <Select.Item value="all" label="All Categories">
-          All Categories
-        </Select.Item>
-        {#each categories as category}
-          <Select.Item value={category.id} label={category.name}>
-            {category.name}
-          </Select.Item>
-        {/each}
-      </Select.Content>
-    </Select.Root>
   </div>
-{/if}
-</div><!-- Category Manager Dialog -->
+
+  <!-- Mobile: Collapsible Filters Section -->
+  {#if showFilters}
+    <div class="block sm:hidden p-4 bg-muted/50 rounded-lg space-y-3">
+      <!-- Search -->
+      <div class="relative">
+        <Search
+          class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
+        />
+        <Input
+          type="text"
+          placeholder="Search expenses..."
+          bind:value={searchQuery}
+          class="pl-9"
+        />
+      </div>
+
+      <!-- Category Filter -->
+      <Select.Root type="single" bind:value={filterCategory}>
+        <Select.Trigger class="w-full">
+          <span>
+            {filterCategory === "all"
+              ? "All Categories"
+              : getCategoryById(categories, filterCategory)?.name ||
+                "All Categories"}
+          </span>
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Item value="all" label="All Categories">
+            All Categories
+          </Select.Item>
+          {#each categories as category}
+            <Select.Item value={category.id} label={category.name}>
+              {category.name}
+            </Select.Item>
+          {/each}
+        </Select.Content>
+      </Select.Root>
+    </div>
+  {/if}
+</div>
+<!-- Category Manager Dialog -->
 <CategoryManager
   {categories}
   {expenses}
