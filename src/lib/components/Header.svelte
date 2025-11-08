@@ -31,7 +31,7 @@
           class="h-10"
         />
       </a>
-      
+
       <nav class="hidden md:flex items-center gap-1">
         <Button
           variant={currentPath === "/" ? "secondary" : "ghost"}

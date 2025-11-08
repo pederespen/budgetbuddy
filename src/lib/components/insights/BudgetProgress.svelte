@@ -1,6 +1,11 @@
 <script lang="ts">
   import type { Budget } from "$lib/types";
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+  } from "$lib/components/ui/card";
   import { Progress } from "$lib/components/ui/progress";
 
   type Props = {
@@ -54,12 +59,18 @@
                 <span class="font-medium">{category.name}</span>
               </div>
               <div class="flex items-center gap-2">
-                <span class={category.isOverBudget ? "text-destructive font-semibold" : ""}>
-                  {budget.currency} {category.spent.toFixed(2)}
+                <span
+                  class={category.isOverBudget
+                    ? "text-destructive font-semibold"
+                    : ""}
+                >
+                  {budget.currency}
+                  {category.spent.toFixed(2)}
                 </span>
                 {#if category.limit > 0}
                   <span class="text-muted-foreground">
-                    / {budget.currency} {category.limit.toFixed(2)}
+                    / {budget.currency}
+                    {category.limit.toFixed(2)}
                   </span>
                 {/if}
               </div>
@@ -72,7 +83,9 @@
                   style="--progress-background: {category.color}"
                 />
                 {#if category.isOverBudget}
-                  <div class="absolute inset-0 flex items-center justify-end pr-1">
+                  <div
+                    class="absolute inset-0 flex items-center justify-end pr-1"
+                  >
                     <span class="text-xs font-bold text-destructive">
                       {(category.percentage - 100).toFixed(0)}% over
                     </span>
@@ -85,7 +98,9 @@
           </div>
         {/each}
       {:else}
-        <div class="flex items-center justify-center py-8 text-muted-foreground text-sm">
+        <div
+          class="flex items-center justify-center py-8 text-muted-foreground text-sm"
+        >
           No budget limits set
         </div>
       {/if}
@@ -97,7 +112,7 @@
   :global([data-progress-root]) {
     background-color: hsl(var(--muted));
   }
-  
+
   :global([data-progress-indicator]) {
     background-color: var(--progress-background, hsl(var(--primary)));
   }

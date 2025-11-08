@@ -1,8 +1,13 @@
 <script lang="ts">
-  console.log('🚀🚀🚀 INSIGHTS PAGE LOADED - NEW VERSION! 🚀🚀🚀');
-  
+  console.log("🚀🚀🚀 INSIGHTS PAGE LOADED - NEW VERSION! 🚀🚀🚀");
+
   import { budgetStore } from "$lib/stores/budget";
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+  } from "$lib/components/ui/card";
   import SpendingByCategory from "$lib/components/insights/SpendingByCategory.svelte";
   import SpendingTrend from "$lib/components/insights/SpendingTrend.svelte";
   import BudgetProgress from "$lib/components/insights/BudgetProgress.svelte";
@@ -18,9 +23,9 @@
 
   // Debug
   $effect(() => {
-    console.log('Active Budget:', activeBudget);
-    console.log('Has Data:', hasData);
-    console.log('Entries:', activeBudget?.entries.length);
+    console.log("Active Budget:", activeBudget);
+    console.log("Has Data:", hasData);
+    console.log("Entries:", activeBudget?.entries.length);
   });
 </script>
 
@@ -35,7 +40,9 @@
   {#if !activeBudget}
     <Card>
       <CardContent class="pt-6">
-        <div class="flex flex-col items-center justify-center py-12 text-center">
+        <div
+          class="flex flex-col items-center justify-center py-12 text-center"
+        >
           <PieChart class="h-12 w-12 text-muted-foreground mb-4" />
           <h3 class="text-lg font-semibold mb-2">No Active Budget</h3>
           <p class="text-muted-foreground max-w-sm">
@@ -47,7 +54,9 @@
   {:else if !hasData}
     <Card>
       <CardContent class="pt-6">
-        <div class="flex flex-col items-center justify-center py-12 text-center">
+        <div
+          class="flex flex-col items-center justify-center py-12 text-center"
+        >
           <BarChart3 class="h-12 w-12 text-muted-foreground mb-4" />
           <h3 class="text-lg font-semibold mb-2">No Expenses Yet</h3>
           <p class="text-muted-foreground max-w-sm">
@@ -60,13 +69,18 @@
     <!-- Overview Cards -->
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader
+          class="flex flex-row items-center justify-between space-y-0 pb-2"
+        >
           <CardTitle class="text-sm font-medium">Total Spending</CardTitle>
           <TrendingUp class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">
-            {activeBudget.currency} {activeBudget.entries.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}
+            {activeBudget.currency}
+            {activeBudget.entries
+              .reduce((sum, e) => sum + e.amount, 0)
+              .toFixed(2)}
           </div>
           <p class="text-xs text-muted-foreground">
             Across {activeBudget.entries.length} transactions
@@ -75,7 +89,9 @@
       </Card>
 
       <Card>
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader
+          class="flex flex-row items-center justify-between space-y-0 pb-2"
+        >
           <CardTitle class="text-sm font-medium">Active Categories</CardTitle>
           <PieChart class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
@@ -90,16 +106,25 @@
       </Card>
 
       <Card>
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader
+          class="flex flex-row items-center justify-between space-y-0 pb-2"
+        >
           <CardTitle class="text-sm font-medium">Budget Usage</CardTitle>
           <Target class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">
             {(() => {
-              const totalBudget = Object.values(activeBudget.budgetLimits).reduce((sum, limit) => sum + limit, 0);
-              const totalSpent = activeBudget.entries.reduce((sum, e) => sum + e.amount, 0);
-              return totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
+              const totalBudget = Object.values(
+                activeBudget.budgetLimits
+              ).reduce((sum, limit) => sum + limit, 0);
+              const totalSpent = activeBudget.entries.reduce(
+                (sum, e) => sum + e.amount,
+                0
+              );
+              return totalBudget > 0
+                ? Math.round((totalSpent / totalBudget) * 100)
+                : 0;
             })()}%
           </div>
           <p class="text-xs text-muted-foreground">Of total budget</p>
@@ -107,13 +132,16 @@
       </Card>
 
       <Card>
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader
+          class="flex flex-row items-center justify-between space-y-0 pb-2"
+        >
           <CardTitle class="text-sm font-medium">Avg. Transaction</CardTitle>
           <BarChart3 class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">
-            {activeBudget.currency} {(
+            {activeBudget.currency}
+            {(
               activeBudget.entries.reduce((sum, e) => sum + e.amount, 0) /
               activeBudget.entries.length
             ).toFixed(2)}

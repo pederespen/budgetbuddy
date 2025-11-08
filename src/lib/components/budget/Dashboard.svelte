@@ -634,7 +634,9 @@
         <div class="text-center py-12 text-muted-foreground">
           <TrendingUp class="h-16 w-16 mx-auto mb-4 opacity-50" />
           <p class="text-lg">No expenses yet</p>
-          <p class="text-sm mt-2">Add some expenses to see insights and analytics</p>
+          <p class="text-sm mt-2">
+            Add some expenses to see insights and analytics
+          </p>
         </div>
       {:else}
         <div class="space-y-6 pb-6">
@@ -651,7 +653,9 @@
             </StatCard>
             <StatCard
               title="Active Categories"
-              value={new Set(budget.entries.map((e) => e.categoryId)).size.toString()}
+              value={new Set(
+                budget.entries.map((e) => e.categoryId)
+              ).size.toString()}
               subtitle="Out of {budget.categories.length} total"
             >
               {#snippet icon()}

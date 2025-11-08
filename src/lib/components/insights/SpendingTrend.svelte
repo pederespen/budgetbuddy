@@ -1,6 +1,11 @@
 <script lang="ts">
   import type { Budget } from "$lib/types";
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+  } from "$lib/components/ui/card";
 
   type Props = {
     budget: Budget;
@@ -38,10 +43,15 @@
     });
   });
 
-  const maxValue = $derived(Math.max(...chartData().map((d) => d.cumulative), 100));
+  const maxValue = $derived(
+    Math.max(...chartData().map((d) => d.cumulative), 100)
+  );
 
   function formatDate(date: Date) {
-    return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    return date.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    });
   }
 </script>
 
@@ -54,7 +64,9 @@
       {#if chartData().length > 0}
         <div class="relative h-full w-full pt-4 pb-8 px-2">
           <!-- Y-axis labels -->
-          <div class="absolute left-0 top-4 bottom-8 flex flex-col justify-between text-xs text-muted-foreground">
+          <div
+            class="absolute left-0 top-4 bottom-8 flex flex-col justify-between text-xs text-muted-foreground"
+          >
             {#each [0, 0.25, 0.5, 0.75, 1] as tick}
               <div>{budget.currency} {(maxValue * (1 - tick)).toFixed(0)}</div>
             {/each}
@@ -75,18 +87,32 @@
               <!-- Area chart -->
               <svg class="absolute inset-0 w-full h-full overflow-visible">
                 <defs>
-                  <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:hsl(var(--primary));stop-opacity:0.4" />
-                    <stop offset="100%" style="stop-color:hsl(var(--primary));stop-opacity:0.05" />
+                  <linearGradient
+                    id="areaGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="0%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color:hsl(var(--primary));stop-opacity:0.4"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color:hsl(var(--primary));stop-opacity:0.05"
+                    />
                   </linearGradient>
                 </defs>
 
                 {#if chartData().length > 1}
-                  {@const points = chartData().map((d, i) => {
-                    const x = (i / (chartData().length - 1)) * 100;
-                    const y = (1 - d.cumulative / maxValue) * 100;
-                    return `${x},${y}`;
-                  }).join(" ")}
+                  {@const points = chartData()
+                    .map((d, i) => {
+                      const x = (i / (chartData().length - 1)) * 100;
+                      const y = (1 - d.cumulative / maxValue) * 100;
+                      return `${x},${y}`;
+                    })
+                    .join(" ")}
 
                   <!-- Area fill -->
                   <polygon
@@ -97,7 +123,7 @@
 
                   <!-- Line -->
                   <polyline
-                    points={points}
+                    {points}
                     fill="none"
                     stroke="hsl(var(--primary))"
                     stroke-width="2"
@@ -117,7 +143,10 @@
                       stroke-width="2"
                       class="transition-all hover:r-6 cursor-pointer"
                     >
-                      <title>{formatDate(point.date)}: {budget.currency} {point.cumulative.toFixed(2)}</title>
+                      <title
+                        >{formatDate(point.date)}: {budget.currency}
+                        {point.cumulative.toFixed(2)}</title
+                      >
                     </circle>
                   {/each}
                 {/if}
@@ -125,18 +154,26 @@
             </div>
 
             <!-- X-axis labels -->
-            <div class="flex justify-between mt-2 text-xs text-muted-foreground">
+            <div
+              class="flex justify-between mt-2 text-xs text-muted-foreground"
+            >
               {#if chartData().length > 0}
                 <span>{formatDate(chartData()[0].date)}</span>
                 {#if chartData().length > 1}
-                  <span>{formatDate(chartData()[chartData().length - 1].date)}</span>
+                  <span
+                    >{formatDate(
+                      chartData()[chartData().length - 1].date
+                    )}</span
+                  >
                 {/if}
               {/if}
             </div>
           </div>
         </div>
       {:else}
-        <div class="flex items-center justify-center h-full text-muted-foreground">
+        <div
+          class="flex items-center justify-center h-full text-muted-foreground"
+        >
           No spending data available
         </div>
       {/if}
