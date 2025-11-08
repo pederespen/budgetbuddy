@@ -3,8 +3,10 @@
   import { getCategoryById } from "$lib/utils/categories";
   import { exportAsJSON, exportAsCSV, exportAsXLSX } from "$lib/utils/export";
   import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
   import * as Dialog from "$lib/components/ui/dialog";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+  import * as Select from "$lib/components/ui/select";
   import {
     Table,
     TableBody,
@@ -22,6 +24,9 @@
     FileJson,
     FileSpreadsheet,
     FileText,
+    Search,
+    Filter,
+    X,
   } from "lucide-svelte";
   import { parseDate } from "@internationalized/date";
   import type { DateValue } from "@internationalized/date";
@@ -67,6 +72,11 @@
   let sortColumn = $state<SortColumn>("date");
   let sortDirection = $state<SortDirection>("desc");
 
+  // Filter and search state
+  let searchQuery = $state("");
+  let filterCategory = $state<string>("all");
+  let showFilters = $state(false);
+
   // Form state for new expense
   let newExpenseDate = $state<DateValue | undefined>(
     parseDate(new Date().toISOString().split("T")[0])
@@ -81,9 +91,28 @@
   let editExpenseAmount = $state<string>("");
   let editExpenseNote = $state<string>("");
 
-  // Sort expenses by date (newest first)
-  let sortedExpenses = $derived(
-    [...expenses].sort((a, b) => {
+  // Filter and sort expenses
+  let filteredAndSortedExpenses = $derived(() => {
+    let filtered = expenses;
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((expense) => {
+        const category = getCategoryById(categories, expense.categoryId);
+        const categoryName = category?.name.toLowerCase() || "";
+        const note = expense.note.toLowerCase();
+        return categoryName.includes(query) || note.includes(query);
+      });
+    }
+
+    // Apply category filter
+    if (filterCategory !== "all") {
+      filtered = filtered.filter((e) => e.categoryId === filterCategory);
+    }
+
+    // Sort
+    return [...filtered].sort((a, b) => {
       if (sortColumn === "date") {
         const comparison =
           new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -100,8 +129,16 @@
         return sortDirection === "asc" ? comparison : -comparison;
       }
       return 0;
-    })
-  );
+    });
+  });
+
+  // Get active filter count
+  let activeFiltersCount = $derived(() => {
+    let count = 0;
+    if (searchQuery.trim()) count++;
+    if (filterCategory !== "all") count++;
+    return count;
+  });
 
   function handleSort(column: SortColumn) {
     if (sortColumn === column) {
@@ -117,6 +154,11 @@
   function getSortIcon(column: SortColumn) {
     if (sortColumn !== column) return ArrowUpDown;
     return sortDirection === "asc" ? ArrowUp : ArrowDown;
+  }
+
+  function clearFilters() {
+    searchQuery = "";
+    filterCategory = "all";
   }
 
   function handleDuplicate(expense: Expense) {
@@ -271,17 +313,85 @@
 </Dialog.Root>
 
 <!-- Header (Fixed) -->
-<div class="flex items-center justify-between mb-4">
-  <h2 class="text-2xl font-bold">Expenses</h2>
-  <div class="flex gap-2">
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
-        <Button variant="outline" size="sm">
-          <Download class="h-4 w-4 sm:mr-2" />
-          <span class="hidden sm:inline">Export</span>
+<div class="mb-4">
+  <div class="flex items-center justify-between gap-3">
+    <h2 class="text-2xl font-bold">Expenses</h2>
+    
+    <div class="flex items-center gap-2">
+      <!-- Desktop: Inline Filters -->
+      {#if showFilters}
+        <div class="hidden sm:flex items-center gap-2">
+          <!-- Search -->
+          <div class="w-[160px] relative">
+            <Search
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"
+            />
+            <Input
+              type="text"
+              placeholder="Search..."
+              bind:value={searchQuery}
+              class="pl-8 h-8 text-sm bg-background placeholder:text-foreground/40"
+            />
+          </div>
+
+          <!-- Category Filter -->
+          <div class="w-[160px]">
+            <Select.Root type="single" bind:value={filterCategory}>
+              <Select.Trigger class="w-full !h-8 text-sm !py-1 bg-background">
+                <span class="truncate">
+                  {filterCategory === "all"
+                    ? "All Categories"
+                    : getCategoryById(categories, filterCategory)?.name ||
+                      "All Categories"}
+                </span>
+              </Select.Trigger>
+              <Select.Content>
+                <Select.Item value="all" label="All Categories">
+                  All Categories
+                </Select.Item>
+                {#each categories as category}
+                  <Select.Item value={category.id} label={category.name}>
+                    {category.name}
+                  </Select.Item>
+                {/each}
+              </Select.Content>
+            </Select.Root>
+          </div>
+        </div>
+      {/if}
+
+      <!-- Filter/Clear Button -->
+      {#if showFilters}
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => {
+            clearFilters();
+            showFilters = false;
+          }}
+        >
+          <X class="h-4 w-4 sm:mr-2" />
+          <span class="hidden sm:inline">Clear</span>
         </Button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content align="end">
+      {:else}
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => (showFilters = !showFilters)}
+        >
+          <Filter class="h-4 w-4 sm:mr-2" />
+          <span class="hidden sm:inline">Filters</span>
+        </Button>
+      {/if}
+      
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <Button variant="outline" size="sm">
+            <Download class="h-4 w-4 sm:mr-2" />
+            <span class="hidden sm:inline">Export</span>
+          </Button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="end">
         <DropdownMenu.Item
           onclick={() => exportAsJSON(budget)}
           class="cursor-pointer"
@@ -320,7 +430,46 @@
   </div>
 </div>
 
-<!-- Category Manager Dialog -->
+<!-- Mobile: Collapsible Filters Section -->
+{#if showFilters}
+  <div class="block sm:hidden p-4 bg-muted/50 rounded-lg space-y-3">
+    <!-- Search -->
+    <div class="relative">
+      <Search
+        class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
+      />
+      <Input
+        type="text"
+        placeholder="Search expenses..."
+        bind:value={searchQuery}
+        class="pl-9"
+      />
+    </div>
+
+    <!-- Category Filter -->
+    <Select.Root type="single" bind:value={filterCategory}>
+      <Select.Trigger class="w-full">
+        <span>
+          {filterCategory === "all"
+            ? "All Categories"
+            : getCategoryById(categories, filterCategory)?.name ||
+              "All Categories"}
+        </span>
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Item value="all" label="All Categories">
+          All Categories
+        </Select.Item>
+        {#each categories as category}
+          <Select.Item value={category.id} label={category.name}>
+            {category.name}
+          </Select.Item>
+        {/each}
+      </Select.Content>
+    </Select.Root>
+  </div>
+{/if}
+</div><!-- Category Manager Dialog -->
 <CategoryManager
   {categories}
   {expenses}
@@ -332,16 +481,23 @@
 
 <!-- Scrollable Content -->
 <div class="flex-1 overflow-auto">
-  {#if sortedExpenses.length === 0 && !showNewExpenseRow}
+  {#if filteredAndSortedExpenses().length === 0 && !showNewExpenseRow}
     <div class="py-8 text-center text-muted-foreground">
-      <p>No expenses yet. Click "Add New" to get started!</p>
+      {#if activeFiltersCount() > 0}
+        <p>No expenses match your filters.</p>
+        <Button variant="link" onclick={clearFilters} class="mt-2">
+          Clear filters
+        </Button>
+      {:else}
+        <p>No expenses yet. Click "Add New" to get started!</p>
+      {/if}
     </div>
   {:else}
     <!-- Mobile View -->
     <div class="block sm:hidden">
       <!-- Expenses List (Mobile) - No inline forms anymore -->
       <div class="divide-y">
-        {#each sortedExpenses as expense (expense.id)}
+        {#each filteredAndSortedExpenses() as expense (expense.id)}
           {@const category = getCategoryById(categories, expense.categoryId)}
           <!-- View Mode (Mobile) -->
           <ExpenseRow
@@ -418,7 +574,7 @@
           {/if}
 
           <!-- Existing Expenses -->
-          {#each sortedExpenses as expense (expense.id)}
+          {#each filteredAndSortedExpenses() as expense (expense.id)}
             {@const category = getCategoryById(categories, expense.categoryId)}
 
             {#if editingExpenseId === expense.id}

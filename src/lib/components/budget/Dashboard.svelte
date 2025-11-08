@@ -656,9 +656,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Divider -->
-        <div class="border-t"></div>
       </div>
     </Tabs.Content>
   </Tabs.Root>
