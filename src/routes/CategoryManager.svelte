@@ -323,7 +323,17 @@
     </div>
 
     <Dialog.Footer>
-      <Button variant="outline" onclick={() => (open = false)}>Close</Button>
+      <div class="flex gap-2 w-full justify-between">
+        <Button variant="outline" onclick={() => (open = false)}>Close</Button>
+        {#if !showAddForm && !editingId}
+          <Button size="sm" onclick={handleStartAdd}>
+            <Plus class="mr-2 h-4 w-4" />
+            Add Category
+          </Button>
+        {:else}
+          <div></div>
+        {/if}
+      </div>
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>

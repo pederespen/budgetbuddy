@@ -79,7 +79,7 @@
   <div class="flex-1 overflow-auto pb-20">
     {#if activeTab === "overview"}
       <!-- Overview Content -->
-      <div class="space-y-6 p-4">
+      <div class="space-y-6 p-1">
         <div class="text-center py-8">
           <div class="text-4xl font-bold mb-2">
             {formatCurrency(totalSpent, budget.currency)}
@@ -137,7 +137,6 @@
     {:else if activeTab === "insights"}
       <!-- Insights Content -->
       <div class="p-1">
-        <h2 class="text-2xl font-bold mb-4">Insights</h2>
         <div class="text-center py-12 text-muted-foreground">
           <TrendingUp class="h-12 w-12 mx-auto mb-4 opacity-50" />
           <p>Insights coming soon...</p>
@@ -146,7 +145,6 @@
     {:else if activeTab === "settings"}
       <!-- Settings Content -->
       <div class="p-1">
-        <h2 class="text-2xl font-bold mb-4">Settings</h2>
         <div class="space-y-4">
           <div class="border rounded-lg p-4">
             <h3 class="font-semibold mb-2">Budget Name</h3>

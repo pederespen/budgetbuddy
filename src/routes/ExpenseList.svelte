@@ -139,7 +139,7 @@
     newExpenseCategoryId = "";
     newExpenseAmount = "";
     newExpenseNote = "";
-    
+
     // For mobile, open dialog
     if (window.innerWidth < 640) {
       mobileDialogMode = "new";
@@ -182,12 +182,14 @@
     editingExpenseId = expense.id;
     showNewExpenseRow = false;
     // Handle both date-only strings (YYYY-MM-DD) and ISO timestamps
-    const dateString = expense.date.includes('T') ? expense.date.split('T')[0] : expense.date;
+    const dateString = expense.date.includes("T")
+      ? expense.date.split("T")[0]
+      : expense.date;
     editExpenseDate = parseDate(dateString);
     editExpenseCategoryId = expense.categoryId;
     editExpenseAmount = expense.amount.toString();
     editExpenseNote = expense.note;
-    
+
     // For mobile, open dialog
     if (window.innerWidth < 640) {
       mobileDialogMode = "edit";

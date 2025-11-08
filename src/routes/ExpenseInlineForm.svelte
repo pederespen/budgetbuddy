@@ -264,12 +264,15 @@
     </div>
 
     <div class="flex gap-2 pt-2">
-      <Button variant="outline" size="default" onclick={onCancel} class="flex-1">
+      <Button
+        variant="outline"
+        size="default"
+        onclick={onCancel}
+        class="flex-1"
+      >
         Cancel
       </Button>
-      <Button size="default" onclick={onSave} class="flex-1">
-        Save
-      </Button>
+      <Button size="default" onclick={onSave} class="flex-1">Save</Button>
     </div>
   </div>
 {/if}

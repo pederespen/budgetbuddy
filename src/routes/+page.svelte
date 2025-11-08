@@ -63,6 +63,37 @@
       });
     }
   }
+
+  function handleImportFile() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+
+        // Basic validation
+        if (!data.budgets || !Array.isArray(data.budgets)) {
+          throw new Error("Invalid budget file format");
+        }
+
+        budgetStore.set(data);
+        toast.success("Budget imported!", {
+          description: `Successfully loaded ${data.budgets.length} budget(s).`,
+        });
+      } catch (error) {
+        toast.error("Import failed", {
+          description:
+            error instanceof Error ? error.message : "Invalid file format",
+        });
+      }
+    };
+    input.click();
+  }
 </script>
 
 <div class="h-full flex flex-col bg-background overflow-hidden">
@@ -128,12 +159,14 @@
                   </div>
                   <div class="relative flex justify-center text-xs uppercase">
                     <span class="bg-background px-2 text-muted-foreground"
-                      >Coming soon</span
+                      >Or</span
                     >
                   </div>
                 </div>
-                <Button variant="outline" class="w-full" disabled
-                  >Import from File</Button
+                <Button
+                  variant="outline"
+                  class="w-full"
+                  onclick={handleImportFile}>Import from File</Button
                 >
               </CardContent>
             </Card>
