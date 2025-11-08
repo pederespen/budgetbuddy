@@ -42,10 +42,7 @@ export function exportAsCSV(budget: Budget): void {
   ].join("\n");
 
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  downloadFile(
-    blob,
-    `${sanitizeFilename(budget.name)}-${getDateString()}.csv`
-  );
+  downloadFile(blob, `${sanitizeFilename(budget.name)}-${getDateString()}.csv`);
 }
 
 /**
@@ -67,27 +64,27 @@ export function exportAsXLSX(budget: Budget): void {
 
   // Create a new workbook
   const workbook = XLSX.utils.book_new();
-  
+
   // Create worksheet from data
   const worksheet = XLSX.utils.json_to_sheet(data);
-  
+
   // Set column widths
-  worksheet['!cols'] = [
+  worksheet["!cols"] = [
     { wch: 12 }, // Date
     { wch: 20 }, // Category
     { wch: 12 }, // Amount
     { wch: 40 }, // Note
   ];
-  
+
   // Add worksheet to workbook
   XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
-  
+
   // Generate Excel file
-  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  const blob = new Blob([excelBuffer], { 
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([excelBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
-  
+
   downloadFile(
     blob,
     `${sanitizeFilename(budget.name)}-${getDateString()}.xlsx`

@@ -16,9 +16,11 @@
   import * as Tabs from "$lib/components/ui/tabs";
   import * as Select from "$lib/components/ui/select";
   import { Label } from "$lib/components/ui/label";
+  import { Input } from "$lib/components/ui/input";
+  import { Button } from "$lib/components/ui/button";
   import ExpenseList from "../expense/ExpenseList.svelte";
   import { toast } from "svelte-sonner";
-  import { Home, Receipt, TrendingUp, Settings } from "lucide-svelte";
+  import { Home, Receipt, TrendingUp, Settings, Pencil, Check, X } from "lucide-svelte";
 
   let { budget }: { budget: Budget } = $props();
 
@@ -28,11 +30,16 @@
   let selectedCurrency = $state<Currency>(budget.currency);
   let selectedDateFormat = $state<DateFormat>(budget.dateFormat);
   let isConvertingCurrency = $state(false);
+  
+  // Budget name editing
+  let isEditingName = $state(false);
+  let editedName = $state(budget.name);
 
   // Sync local state with budget changes
   $effect(() => {
     selectedCurrency = budget.currency;
     selectedDateFormat = budget.dateFormat;
+    editedName = budget.name;
   });
 
   // Calculate total spending
@@ -122,6 +129,27 @@
 
   function handleDateFormatChange() {
     budgetStore.updateBudget(budget.id, { dateFormat: selectedDateFormat });
+  }
+
+  function handleStartEditName() {
+    isEditingName = true;
+    editedName = budget.name;
+  }
+
+  function handleSaveName() {
+    const trimmedName = editedName.trim();
+    if (!trimmedName) {
+      toast.error("Budget name cannot be empty");
+      return;
+    }
+    budgetStore.updateBudget(budget.id, { name: trimmedName });
+    isEditingName = false;
+    toast.success("Budget name updated");
+  }
+
+  function handleCancelEditName() {
+    isEditingName = false;
+    editedName = budget.name;
   }
 
   function handleAddExpense(expense: Expense) {
@@ -345,19 +373,6 @@
               </div>
             </div>
           </div>
-
-          <!-- About Section -->
-          <div class="space-y-3">
-            <h3
-              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
-            >
-              About
-            </h3>
-            <p class="text-sm text-muted-foreground">
-              BudgetBuddy helps you track expenses and manage your budget
-              efficiently.
-            </p>
-          </div>
         </div>
       </div>
     {/if}
@@ -413,7 +428,7 @@
     bind:value={activeTab}
     class="flex flex-col flex-1 overflow-hidden"
   >
-    <Tabs.List class="grid w-full grid-cols-4 max-w-2xl flex-shrink-0">
+    <Tabs.List class="grid w-full grid-cols-4 max-w-2xl flex-shrink-0 mx-auto">
       <Tabs.Trigger value="overview" class="cursor-pointer"
         >Overview</Tabs.Trigger
       >
@@ -510,8 +525,46 @@
           </h3>
           <div class="space-y-4">
             <div class="space-y-2">
-              <div class="text-sm font-medium">Budget Name</div>
-              <p class="text-sm text-muted-foreground">{budget.name}</p>
+              <Label for="budget-name">Budget Name</Label>
+              {#if isEditingName}
+                <div class="flex gap-2 max-w-xs">
+                  <Input
+                    id="budget-name"
+                    type="text"
+                    bind:value={editedName}
+                    class="flex-1"
+                    placeholder="Budget name"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onclick={handleSaveName}
+                    title="Save"
+                  >
+                    <Check class="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onclick={handleCancelEditName}
+                    title="Cancel"
+                  >
+                    <X class="h-4 w-4" />
+                  </Button>
+                </div>
+              {:else}
+                <div class="flex items-center gap-2 max-w-xs">
+                  <p class="text-sm flex-1">{budget.name}</p>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onclick={handleStartEditName}
+                    title="Edit name"
+                  >
+                    <Pencil class="h-4 w-4" />
+                  </Button>
+                </div>
+              {/if}
             </div>
           </div>
         </div>
@@ -598,19 +651,6 @@
 
         <!-- Divider -->
         <div class="border-t"></div>
-
-        <!-- About Section -->
-        <div class="space-y-4">
-          <h3
-            class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
-          >
-            About
-          </h3>
-          <p class="text-sm text-muted-foreground">
-            BudgetBuddy helps you track expenses and manage your budget
-            efficiently.
-          </p>
-        </div>
       </div>
     </Tabs.Content>
   </Tabs.Root>
