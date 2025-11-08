@@ -363,7 +363,9 @@
               </StatCard>
               <StatCard
                 title="Active Categories"
-                value={new Set(budget.entries.map((e) => e.categoryId)).size.toString()}
+                value={new Set(
+                  budget.entries.map((e) => e.categoryId)
+                ).size.toString()}
                 subtitle="Out of {budget.categories.length} total"
               >
                 {#snippet icon()}

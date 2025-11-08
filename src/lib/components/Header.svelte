@@ -29,11 +29,7 @@
           class="h-10"
         />
       {:else}
-        <img
-          src={logo}
-          alt="BudgetBuddy"
-          class="h-10"
-        />
+        <img src={logo} alt="BudgetBuddy" class="h-10" />
       {/if}
     </div>
 

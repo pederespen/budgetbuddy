@@ -48,22 +48,35 @@
           {#each dayData() as day}
             <div class="flex-1 flex flex-col items-center gap-2 h-full">
               <!-- Bar container -->
-              <div class="flex-1 w-full flex flex-col justify-end relative group">
+              <div
+                class="flex-1 w-full flex flex-col justify-end relative group"
+              >
                 <div
                   class="w-full bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-t-md transition-all hover:from-emerald-600 hover:to-emerald-500 relative"
                   style="height: {day.percentage}%"
                 >
                   <!-- Tooltip on hover -->
-                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    <div class="bg-popover text-popover-foreground shadow-md rounded border px-2 py-1 text-xs whitespace-nowrap">
-                      <div class="font-semibold">{budget.currency} {day.total.toFixed(0)}</div>
-                      <div class="text-[10px] text-muted-foreground">{day.count} transaction{day.count === 1 ? "" : "s"}</div>
+                  <div
+                    class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                  >
+                    <div
+                      class="bg-popover text-popover-foreground shadow-md rounded border px-2 py-1 text-xs whitespace-nowrap"
+                    >
+                      <div class="font-semibold">
+                        {budget.currency}
+                        {day.total.toFixed(0)}
+                      </div>
+                      <div class="text-[10px] text-muted-foreground">
+                        {day.count} transaction{day.count === 1 ? "" : "s"}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
               <!-- Day label -->
-              <div class="text-xs font-medium text-muted-foreground">{day.day}</div>
+              <div class="text-xs font-medium text-muted-foreground">
+                {day.day}
+              </div>
             </div>
           {/each}
         </div>

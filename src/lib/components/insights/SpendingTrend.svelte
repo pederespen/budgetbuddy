@@ -52,16 +52,16 @@
   // Round to nice numbers for Y-axis with better spacing
   function roundToNice(value: number): number {
     if (value === 0) return 0;
-    
+
     // Add just a small padding (5%) to the max value
     const paddedValue = value * 1.05;
-    
+
     // Find the appropriate step size
     const magnitude = Math.pow(10, Math.floor(Math.log10(paddedValue)));
-    
+
     // Try different nice intervals: 1000, 2000, 2500, 5000
     const steps = [1, 2, 2.5, 5, 10];
-    
+
     for (const step of steps) {
       const stepValue = step * magnitude;
       const rounded = Math.ceil(paddedValue / stepValue) * stepValue;
@@ -70,7 +70,7 @@
         return rounded;
       }
     }
-    
+
     // Fallback
     return Math.ceil(paddedValue / (magnitude * 10)) * (magnitude * 10);
   }
@@ -128,7 +128,10 @@
             class="absolute left-0 top-4 bottom-8 flex flex-col justify-between text-xs text-muted-foreground"
           >
             {#each [0, 0.25, 0.5, 0.75, 1] as tick}
-              <div>{budget.currency} {Math.round(maxValueRounded * (1 - tick)).toLocaleString()}</div>
+              <div>
+                {budget.currency}
+                {Math.round(maxValueRounded * (1 - tick)).toLocaleString()}
+              </div>
             {/each}
           </div>
 
@@ -225,7 +228,8 @@
                 {@const xPercent =
                   (hoveredIndex / (chartData().length - 1)) * 100}
                 {@const yPercent =
-                  (1 - chartData()[hoveredIndex].cumulative / maxValueRounded) * 100}
+                  (1 - chartData()[hoveredIndex].cumulative / maxValueRounded) *
+                  100}
                 <div
                   class="absolute w-2 h-2 rounded-full pointer-events-none transition-all z-10"
                   style="
