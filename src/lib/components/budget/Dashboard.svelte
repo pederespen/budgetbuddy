@@ -22,6 +22,10 @@
   import StatCard from "./StatCard.svelte";
   import RecentActivity from "./RecentActivity.svelte";
   import CategoryStats from "./CategoryStats.svelte";
+  import SpendingByCategory from "../insights/SpendingByCategory.svelte";
+  import SpendingTrend from "../insights/SpendingTrend.svelte";
+  import BudgetProgress from "../insights/BudgetProgress.svelte";
+  import TopCategories from "../insights/TopCategories.svelte";
   import { toast } from "svelte-sonner";
   import {
     Home,
@@ -626,10 +630,70 @@
 
     <!-- Insights Tab -->
     <Tabs.Content value="insights" class="mt-6 flex-1 overflow-auto">
-      <div class="text-center py-12 text-muted-foreground">
-        <TrendingUp class="h-16 w-16 mx-auto mb-4 opacity-50" />
-        <p class="text-lg">Insights coming soon...</p>
-      </div>
+      {#if budget.entries.length === 0}
+        <div class="text-center py-12 text-muted-foreground">
+          <TrendingUp class="h-16 w-16 mx-auto mb-4 opacity-50" />
+          <p class="text-lg">No expenses yet</p>
+          <p class="text-sm mt-2">Add some expenses to see insights and analytics</p>
+        </div>
+      {:else}
+        <div class="space-y-6 pb-6">
+          <!-- Overview Cards -->
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              title="Total Spending"
+              value={formatCurrency(totalSpent, budget.currency)}
+              subtitle="{budget.entries.length} transactions"
+            >
+              {#snippet icon()}
+                <Receipt class="h-4 w-4 text-muted-foreground" />
+              {/snippet}
+            </StatCard>
+            <StatCard
+              title="Active Categories"
+              value={new Set(budget.entries.map((e) => e.categoryId)).size.toString()}
+              subtitle="Out of {budget.categories.length} total"
+            >
+              {#snippet icon()}
+                <ListOrdered class="h-4 w-4 text-muted-foreground" />
+              {/snippet}
+            </StatCard>
+            <StatCard
+              title="Largest Expense"
+              value={formatCurrency(largestExpense, budget.currency)}
+              subtitle="Single transaction"
+            >
+              {#snippet icon()}
+                <TrendingUp class="h-4 w-4 text-muted-foreground" />
+              {/snippet}
+            </StatCard>
+            <StatCard
+              title="Avg. Transaction"
+              value={formatCurrency(averageExpense, budget.currency)}
+              subtitle="Per expense"
+            >
+              {#snippet icon()}
+                <Wallet class="h-4 w-4 text-muted-foreground" />
+              {/snippet}
+            </StatCard>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="grid gap-4 md:grid-cols-3">
+            <div class="md:col-span-2">
+              <SpendingTrend {budget} />
+            </div>
+            <div class="md:col-span-1">
+              <SpendingByCategory {budget} />
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <BudgetProgress {budget} />
+            <TopCategories {budget} />
+          </div>
+        </div>
+      {/if}
     </Tabs.Content>
 
     <!-- Settings Tab -->
