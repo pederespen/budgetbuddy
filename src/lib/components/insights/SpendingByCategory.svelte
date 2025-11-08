@@ -81,6 +81,7 @@
                   stroke-width="2"
                   onmouseenter={() => (hoveredCategory = category.name)}
                   onmouseleave={() => (hoveredCategory = null)}
+                  onclick={() => (hoveredCategory = hoveredCategory === category.name ? null : category.name)}
                 />
               {/each}
             </svg>

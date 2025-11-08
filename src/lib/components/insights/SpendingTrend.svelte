@@ -86,15 +86,16 @@
 
   // Create smooth curve path using cubic bezier curves
   function createSmoothPath(
-    data: typeof chartData,
+    data: Array<{ date: Date; amount: number; cumulative: number }>,
     width: number,
-    height: number
+    height: number,
+    maxValue: number
   ) {
     if (data.length === 0) return "";
 
     const points = data.map((d, i) => ({
       x: (i / (data.length - 1)) * width,
-      y: height - (d.cumulative / maxValueRounded) * height,
+      y: height - (d.cumulative / maxValue) * height,
     }));
 
     if (points.length === 1) {
@@ -148,80 +149,85 @@
               {/each}
 
               <!-- Area chart -->
-              <svg
-                class="absolute inset-0 w-full h-full overflow-visible"
-                preserveAspectRatio="none"
-              >
-                <defs>
-                  <linearGradient
-                    id="areaGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="0%"
-                    y2="100%"
-                  >
-                    <stop
-                      offset="0%"
-                      style="stop-color: #10b981; stop-opacity: 0.4"
-                    />
-                    <stop
-                      offset="100%"
-                      style="stop-color: #10b981; stop-opacity: 0.05"
-                    />
-                  </linearGradient>
-                </defs>
+              {#if chartData().length > 0}
+                {@const svgWidth = 1000}
+                {@const svgHeight = 300}
+                {@const smoothPath = createSmoothPath(
+                  chartData(),
+                  svgWidth,
+                  svgHeight,
+                  maxValueRounded
+                )}
+                {@const columnWidth = svgWidth / chartData().length}
 
-                {#if chartData().length > 0}
-                  {@const svgWidth = 1000}
-                  {@const svgHeight = 300}
-                  {@const smoothPath = createSmoothPath(
-                    chartData(),
-                    svgWidth,
-                    svgHeight
-                  )}
-                  {@const columnWidth = svgWidth / chartData().length}
-
-                  <svg
-                    viewBox="0 0 {svgWidth} {svgHeight}"
-                    class="w-full h-full"
-                    preserveAspectRatio="none"
-                  >
-                    <!-- Area fill -->
-                    <path
-                      d="{smoothPath} L {svgWidth} {svgHeight} L 0 {svgHeight} Z"
-                      fill="url(#areaGradient)"
-                      class="transition-all"
-                    />
-
-                    <!-- Smooth line -->
-                    <path
-                      d={smoothPath}
-                      fill="none"
-                      stroke="#10b981"
-                      stroke-width="3"
-                      class="transition-all"
-                    />
-
-                    <!-- Invisible hover columns for data points -->
-                    {#each chartData() as point, i}
-                      {@const x = (i / (chartData().length - 1)) * svgWidth}
-                      {@const columnX = i * columnWidth}
-
-                      <!-- Hover column -->
-                      <rect
-                        x={columnX}
-                        y="0"
-                        width={columnWidth}
-                        height={svgHeight}
-                        fill="transparent"
-                        class="cursor-pointer"
-                        onmouseenter={() => (hoveredIndex = i)}
-                        onmouseleave={() => (hoveredIndex = null)}
+                <svg
+                  viewBox="0 0 {svgWidth} {svgHeight}"
+                  class="absolute inset-0 w-full h-full overflow-visible"
+                  preserveAspectRatio="none"
+                >
+                  <defs>
+                    <linearGradient
+                      id="areaGradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="0%"
+                      y2="100%"
+                    >
+                      <stop
+                        offset="0%"
+                        style="stop-color: #10b981; stop-opacity: 0.4"
                       />
-                    {/each}
-                  </svg>
-                {/if}
-              </svg>
+                      <stop
+                        offset="100%"
+                        style="stop-color: #10b981; stop-opacity: 0.05"
+                      />
+                    </linearGradient>
+                  </defs>
+
+                  <!-- Area fill -->
+                  <path
+                    d="{smoothPath} L {svgWidth} {svgHeight} L 0 {svgHeight} Z"
+                    fill="url(#areaGradient)"
+                    class="transition-all"
+                  />
+
+                  <!-- Smooth line -->
+                  <path
+                    d={smoothPath}
+                    fill="none"
+                    stroke="#10b981"
+                    stroke-width="3"
+                    class="transition-all"
+                  />
+
+                  <!-- Invisible hover columns for data points -->
+                  {#each chartData() as point, i}
+                    {@const x = (i / (chartData().length - 1)) * svgWidth}
+                    {@const columnX = i * columnWidth}
+
+                    <!-- Hover column -->
+                    <rect
+                      x={columnX}
+                      y="0"
+                      width={columnWidth}
+                      height={svgHeight}
+                      fill="transparent"
+                      class="cursor-pointer"
+                      role="button"
+                      tabindex="0"
+                      onmouseenter={() => (hoveredIndex = i)}
+                      onmouseleave={() => (hoveredIndex = null)}
+                      onclick={() => (hoveredIndex = hoveredIndex === i ? null : i)}
+                      onkeydown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          hoveredIndex = hoveredIndex === i ? null : i;
+                        }
+                      }}
+                    />
+                  {/each}
+                </svg>
+              {/if}
 
               <!-- Perfectly round data point overlay -->
               {#if hoveredIndex !== null && chartData()[hoveredIndex]}
