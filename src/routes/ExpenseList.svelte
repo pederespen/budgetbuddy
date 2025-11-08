@@ -228,6 +228,18 @@
     editingExpenseId = null;
     showMobileDialog = false;
   }
+
+  function handleDuplicate(expense: Expense) {
+    const duplicatedExpense: Expense = {
+      id: crypto.randomUUID(),
+      date: new Date().toISOString().split("T")[0], // Today's date
+      categoryId: expense.categoryId,
+      amount: expense.amount,
+      note: expense.note,
+    };
+
+    onAdd(duplicatedExpense);
+  }
 </script>
 
 <!-- Mobile Dialog for Add/Edit -->
@@ -324,6 +336,7 @@
             dateFormat={budget.dateFormat}
             onEdit={() => handleStartEdit(expense)}
             onDelete={() => onDelete(expense.id)}
+            onDuplicate={() => handleDuplicate(expense)}
             disabled={false}
             variant="card"
           />
@@ -419,6 +432,7 @@
                   dateFormat={budget.dateFormat}
                   onEdit={() => handleStartEdit(expense)}
                   onDelete={() => onDelete(expense.id)}
+                  onDuplicate={() => handleDuplicate(expense)}
                   disabled={showNewExpenseRow}
                   variant="table"
                 />

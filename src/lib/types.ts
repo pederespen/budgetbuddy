@@ -33,7 +33,7 @@ export interface Budget {
   currency: Currency;
   dateFormat: DateFormat;
   period: BudgetPeriod;
-  totalLimit?: number; // Optional total budget limit
+  startingBalance?: number; // Optional starting balance for the period
   categories: Category[];
   entries: Expense[];
   budgetLimits: BudgetLimit;

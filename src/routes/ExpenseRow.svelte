@@ -3,7 +3,7 @@
   import { formatCurrency, formatDate } from "$lib/utils/format";
   import { Button } from "$lib/components/ui/button";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
-  import { Pencil, Trash2, MoreHorizontal } from "lucide-svelte";
+  import { Pencil, Trash2, MoreHorizontal, Copy } from "lucide-svelte";
   import * as LucideIcons from "lucide-svelte";
 
   let {
@@ -13,6 +13,7 @@
     dateFormat = "DD/MM/YYYY",
     onEdit,
     onDelete,
+    onDuplicate,
     disabled = false,
     variant = "table",
   }: {
@@ -22,6 +23,7 @@
     dateFormat?: DateFormat;
     onEdit: () => void;
     onDelete: () => void;
+    onDuplicate: () => void;
     disabled?: boolean;
     variant?: "table" | "card";
   } = $props();
@@ -62,6 +64,10 @@
         <DropdownMenu.Item onclick={onEdit} {disabled} class="cursor-pointer">
           <Pencil class="mr-2 h-4 w-4" />
           Edit
+        </DropdownMenu.Item>
+        <DropdownMenu.Item onclick={onDuplicate} class="cursor-pointer">
+          <Copy class="mr-2 h-4 w-4" />
+          Duplicate
         </DropdownMenu.Item>
         <DropdownMenu.Item onclick={onDelete} class="cursor-pointer">
           <Trash2 class="mr-2 h-4 w-4" />
@@ -111,6 +117,10 @@
           <DropdownMenu.Item onclick={onEdit} {disabled} class="cursor-pointer">
             <Pencil class="mr-2 h-4 w-4" />
             Edit
+          </DropdownMenu.Item>
+          <DropdownMenu.Item onclick={onDuplicate} class="cursor-pointer">
+            <Copy class="mr-2 h-4 w-4" />
+            Duplicate
           </DropdownMenu.Item>
           <DropdownMenu.Item onclick={onDelete} class="cursor-pointer">
             <Trash2 class="mr-2 h-4 w-4" />

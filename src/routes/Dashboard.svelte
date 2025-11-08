@@ -53,9 +53,14 @@
     budget.entries.reduce((sum, entry) => sum + entry.amount, 0)
   );
 
-  // Determine if over budget
+  // Calculate remaining balance
+  let remainingBalance = $derived(
+    budget.startingBalance ? budget.startingBalance - totalSpent : null
+  );
+
+  // Determine if over budget (spent more than starting balance)
   let isOverBudget = $derived(
-    budget.totalLimit ? totalSpent > budget.totalLimit : false
+    budget.startingBalance ? totalSpent > budget.startingBalance : false
   );
 
   async function getExchangeRate(
@@ -94,9 +99,9 @@
         amount: entry.amount * rate,
       }));
 
-      // Convert total limit if it exists
-      const convertedTotalLimit = budget.totalLimit
-        ? budget.totalLimit * rate
+      // Convert starting balance if it exists
+      const convertedStartingBalance = budget.startingBalance
+        ? budget.startingBalance * rate
         : undefined;
 
       // Convert budget limits
@@ -109,7 +114,7 @@
       budgetStore.updateBudget(budget.id, {
         currency: toCurrency,
         entries: convertedEntries,
-        totalLimit: convertedTotalLimit,
+        startingBalance: convertedStartingBalance,
         budgetLimits: convertedBudgetLimits,
       });
 
@@ -196,23 +201,23 @@
           </div>
           <p class="text-muted-foreground">Total Spent</p>
 
-          {#if budget.totalLimit}
+          {#if budget.startingBalance}
             <div class="mt-6">
               <p class="text-sm" class:text-destructive={isOverBudget}>
                 {formatCurrency(totalSpent, budget.currency)} of {formatCurrency(
-                  budget.totalLimit,
+                  budget.startingBalance,
                   budget.currency
                 )}
               </p>
               <p class="text-xs text-muted-foreground mt-1">
                 {#if isOverBudget}
                   {formatCurrency(
-                    totalSpent - budget.totalLimit,
+                    totalSpent - budget.startingBalance,
                     budget.currency
-                  )} over budget
+                  )} over balance
                 {:else}
                   {formatCurrency(
-                    budget.totalLimit - totalSpent,
+                    budget.startingBalance - totalSpent,
                     budget.currency
                   )} remaining
                 {/if}
@@ -445,23 +450,23 @@
           </div>
           <p class="text-muted-foreground text-lg">Total Spent</p>
 
-          {#if budget.totalLimit}
+          {#if budget.startingBalance}
             <div class="mt-6 max-w-md mx-auto">
               <p class="text-sm" class:text-destructive={isOverBudget}>
                 {formatCurrency(totalSpent, budget.currency)} of {formatCurrency(
-                  budget.totalLimit,
+                  budget.startingBalance,
                   budget.currency
                 )}
               </p>
               <p class="text-xs text-muted-foreground mt-1">
                 {#if isOverBudget}
                   {formatCurrency(
-                    totalSpent - budget.totalLimit,
+                    totalSpent - budget.startingBalance,
                     budget.currency
-                  )} over budget
+                  )} over balance
                 {:else}
                   {formatCurrency(
-                    budget.totalLimit - totalSpent,
+                    budget.startingBalance - totalSpent,
                     budget.currency
                   )} remaining
                 {/if}

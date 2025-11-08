@@ -10,7 +10,7 @@
       name: string;
       currency: Currency;
       period: BudgetPeriod;
-      totalLimit?: number;
+      startingBalance?: number;
     }) => void;
     oncancel?: () => void;
   }
@@ -20,7 +20,7 @@
   let name = $state("My Budget");
   let currency = $state<Currency>("NOK");
   let period = $state<BudgetPeriod>("monthly");
-  let totalLimit = $state("");
+  let startingBalance = $state("");
 
   const currencyLabels: Record<Currency, string> = {
     NOK: "NOK - Norwegian Krone",
@@ -39,8 +39,8 @@
 
   function handleSubmit(e: Event) {
     e.preventDefault();
-    const limit = totalLimit ? parseFloat(totalLimit) : undefined;
-    onsubmit({ name, currency, period, totalLimit: limit });
+    const balance = startingBalance ? parseFloat(startingBalance) : undefined;
+    onsubmit({ name, currency, period, startingBalance: balance });
   }
 </script>
 
@@ -53,6 +53,7 @@
       bind:value={name}
       placeholder="e.g., Monthly Expenses"
       required
+      class="bg-background"
     />
   </div>
 
@@ -98,17 +99,18 @@
   </div>
 
   <div class="space-y-2">
-    <Label for="total-limit">Total Budget Limit (Optional)</Label>
+    <Label for="starting-balance">Starting Balance (Optional)</Label>
     <Input
-      id="total-limit"
+      id="starting-balance"
       type="number"
       step="0.01"
       min="0"
-      bind:value={totalLimit}
-      placeholder="e.g., 1000"
+      bind:value={startingBalance}
+      placeholder="e.g., 15000"
+      class="bg-background"
     />
     <p class="text-sm text-muted-foreground">
-      Set a maximum spending limit for this {period} budget
+      How much money you have available for this {period} period
     </p>
   </div>
 

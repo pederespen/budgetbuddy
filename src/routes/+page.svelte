@@ -26,7 +26,7 @@
     name: string;
     currency: Currency;
     period: BudgetPeriod;
-    totalLimit?: number;
+    startingBalance?: number;
   }) {
     const now = new Date().toISOString();
     const newBudget = {
@@ -35,7 +35,7 @@
       currency: data.currency,
       dateFormat: "DD/MM/YYYY" as const,
       period: data.period,
-      totalLimit: data.totalLimit,
+      startingBalance: data.startingBalance,
       categories: getDefaultCategories(),
       entries: [],
       budgetLimits: {},
