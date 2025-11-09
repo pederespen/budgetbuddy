@@ -1,38 +1,50 @@
-# sv
+# BudgetBuddy
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+> Your personal finance companion that keeps budgeting simple and insightful.
 
-## Creating a project
+A lightweight, privacy-first budgeting app built with SvelteKit. Track expenses, manage categories, and gain insights into your spending habits—all locally in your browser.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Features
 
-```sh
-# create a new project in the current directory
-npx sv create
+- 📊 **Visual Insights** – Charts and trends to understand your spending patterns
+- 🏷️ **Custom Categories** – Organize expenses your way with flexible budget limits
+- 📅 **Flexible Periods** – Daily, weekly, monthly, or yearly budget tracking
+- 💾 **Local Storage** – Your data stays on your device, no cloud required
+- 🌓 **Dark Mode** – Easy on the eyes, day or night
+- 📤 **Import/Export** – Backup and restore your budgets as JSON files
 
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Getting Started
 
 ```sh
-npm run dev
+# Install dependencies
+pnpm install
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+# Start development server
+pnpm start
+
+# Build for production
+pnpm build
 ```
 
-## Building
+The app will be available at `http://localhost:3000`.
 
-To create a production version of your app:
+## Usage
 
-```sh
-npm run build
-```
+1. Create a new budget or load the demo to explore features
+2. Add expenses with categories and amounts
+3. Set budget limits for different spending categories
+4. View insights to track spending trends over time
+5. Export your data anytime to keep backups
 
-You can preview the production build with `npm run preview`.
+## Tech Stack
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Built with:
+
+- SvelteKit + Svelte 5
+- TailwindCSS + shadcn-svelte
+- TypeScript
+- Local storage for data persistence
+
+## License
+
+MIT
