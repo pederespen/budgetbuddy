@@ -47,7 +47,6 @@
       dateRangeStore.setPreset(value as DateRangePreset);
     }
   }
-
 </script>
 
 <header
@@ -96,7 +95,8 @@
         >
           <Select.Trigger class="w-[160px] h-9">
             <Calendar class="h-4 w-4 mr-2" />
-            {dateRangeOptions.find(o => o.value === dateRange.preset)?.label || "All Time"}
+            {dateRangeOptions.find((o) => o.value === dateRange.preset)
+              ?.label || "All Time"}
           </Select.Trigger>
           <Select.Content>
             {#each dateRangeOptions as option}

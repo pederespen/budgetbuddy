@@ -95,7 +95,9 @@
     if (dateRange.startDate && dateRange.endDate) {
       const start = new Date(dateRange.startDate);
       const end = new Date(dateRange.endDate);
-      const daysInRange = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+      const daysInRange =
+        Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) +
+        1;
 
       // Determine days in budget period
       let daysInPeriod: number;

@@ -103,7 +103,9 @@
 
     const points = data.map((d, i) => ({
       x: (i / (data.length - 1)) * width,
-      y: height - ((viewMode === "daily" ? d.amount : d.cumulative) / maxValue) * height,
+      y:
+        height -
+        ((viewMode === "daily" ? d.amount : d.cumulative) / maxValue) * height,
     }));
 
     if (points.length === 1) {
@@ -254,9 +256,11 @@
               {#if hoveredIndex !== null && chartData()[hoveredIndex]}
                 {@const xPercent =
                   (hoveredIndex / (chartData().length - 1)) * 100}
-                {@const value = viewMode === "daily" ? chartData()[hoveredIndex].amount : chartData()[hoveredIndex].cumulative}
-                {@const yPercent =
-                  (1 - value / maxValueRounded) * 100}
+                {@const value =
+                  viewMode === "daily"
+                    ? chartData()[hoveredIndex].amount
+                    : chartData()[hoveredIndex].cumulative}
+                {@const yPercent = (1 - value / maxValueRounded) * 100}
                 <div
                   class="absolute w-2 h-2 rounded-full pointer-events-none transition-all z-10"
                   style="
@@ -273,7 +277,8 @@
               {#if hoveredIndex !== null && chartData()[hoveredIndex]}
                 {@const point = chartData()[hoveredIndex]}
                 {@const x = (hoveredIndex / (chartData().length - 1)) * 100}
-                {@const value = viewMode === "daily" ? point.amount : point.cumulative}
+                {@const value =
+                  viewMode === "daily" ? point.amount : point.cumulative}
                 {@const y = (1 - value / maxValueRounded) * 100}
                 <div
                   class="absolute bg-popover text-popover-foreground shadow-md rounded border px-2 py-1 pointer-events-none z-10 text-xs"

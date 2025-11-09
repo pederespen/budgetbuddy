@@ -18,7 +18,7 @@
 
   const state = $derived($budgetStore);
   const dateRange = $derived($dateRangeStore);
-  
+
   const activeBudget = $derived(
     state.budgets.find((b) => b.id === state.activeBudgetId)
   );
@@ -103,9 +103,7 @@
         <CardContent>
           <div class="text-2xl font-bold">
             {activeBudget.currency}
-            {filteredEntries
-              .reduce((sum, e) => sum + e.amount, 0)
-              .toFixed(2)}
+            {filteredEntries.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}
           </div>
           <p class="text-xs text-muted-foreground">
             Across {filteredEntries.length} transactions

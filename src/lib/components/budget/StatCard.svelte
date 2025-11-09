@@ -33,8 +33,13 @@
         <p class="text-sm font-medium text-muted-foreground mb-1">
           {title}
         </p>
-        <div class="font-bold {variantClasses[variant]} leading-none sm:text-3xl">
-          <span class="block sm:hidden" style="font-size: clamp(1rem, 5vw, 1.5rem);">{value}</span>
+        <div
+          class="font-bold {variantClasses[variant]} leading-none sm:text-3xl"
+        >
+          <span
+            class="block sm:hidden"
+            style="font-size: clamp(1rem, 5vw, 1.5rem);">{value}</span
+          >
           <span class="hidden sm:block">{value}</span>
         </div>
         {#if subtitle}

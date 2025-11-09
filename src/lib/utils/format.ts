@@ -111,7 +111,7 @@ export function filterExpensesByDateRange<T extends { date: string }>(
 
   return expenses.filter((expense) => {
     const expenseDate = new Date(expense.date);
-    
+
     // Set time to start of day for comparison
     const expenseDay = new Date(
       expenseDate.getFullYear(),
