@@ -100,7 +100,7 @@
 
 <div class="h-full flex flex-col bg-background overflow-hidden">
   <div class="flex-1 overflow-auto">
-    <div class="max-w-6xl mx-auto px-4 h-full">
+    <div class="max-w-6xl mx-auto h-full mb-4 px-4">
       {#if !activeBudget}
         {#if showCreateForm}
           <!-- Create Budget Form -->

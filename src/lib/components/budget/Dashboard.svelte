@@ -694,9 +694,7 @@
       </div>
     {:else if activeTab === "expenses"}
       <!-- Expenses Tab -->
-    {:else if activeTab === "expenses"}
-      <!-- Expenses Tab -->
-      <div class="px-4 py-4 flex-1 overflow-hidden flex flex-col">
+      <div class="py-4 flex-1 overflow-hidden flex flex-col">
         <ExpenseList
           {budget}
           expenses={filteredEntries}

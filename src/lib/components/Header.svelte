@@ -67,7 +67,9 @@
       </div>
 
       {#if showTabs}
-        <div class="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div
+          class="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        >
           <Tabs.Root bind:value={activeTab}>
             <Tabs.List class="grid w-full grid-cols-4 max-w-2xl">
               <Tabs.Trigger value="overview" class="cursor-pointer px-6">
@@ -88,39 +90,40 @@
       {/if}
 
       <div class="ml-auto flex items-center gap-2 z-10">
-      {#if showTabs}
-        <Select.Root
-          type="single"
-          value={dateRange.preset}
-          onValueChange={handleDateRangeChange}
-        >
-          <Select.Trigger class="w-[160px] h-9">
-            <Calendar class="h-4 w-4 mr-2" />
-            {dateRangeOptions.find((o) => o.value === dateRange.preset)
-              ?.label || "All Time"}
-          </Select.Trigger>
-          <Select.Content>
-            {#each dateRangeOptions as option}
-              <Select.Item value={option.value}>
-                {option.label}
-              </Select.Item>
-            {/each}
-          </Select.Content>
-        </Select.Root>
-      {/if}
-
-      <Button
-        variant="ghost"
-        size="icon"
-        onclick={toggleTheme}
-        aria-label="Toggle theme"
-      >
-        {#if theme === "dark"}
-          <Sun class="h-5 w-5" />
-        {:else}
-          <Moon class="h-5 w-5" />
+        {#if showTabs}
+          <Select.Root
+            type="single"
+            value={dateRange.preset}
+            onValueChange={handleDateRangeChange}
+          >
+            <Select.Trigger class="w-[160px] h-9">
+              <Calendar class="h-4 w-4 mr-2" />
+              {dateRangeOptions.find((o) => o.value === dateRange.preset)
+                ?.label || "All Time"}
+            </Select.Trigger>
+            <Select.Content>
+              {#each dateRangeOptions as option}
+                <Select.Item value={option.value}>
+                  {option.label}
+                </Select.Item>
+              {/each}
+            </Select.Content>
+          </Select.Root>
         {/if}
-      </Button>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          onclick={toggleTheme}
+          aria-label="Toggle theme"
+        >
+          {#if theme === "dark"}
+            <Sun class="h-5 w-5" />
+          {:else}
+            <Moon class="h-5 w-5" />
+          {/if}
+        </Button>
+      </div>
     </div>
   </div>
 </header>
