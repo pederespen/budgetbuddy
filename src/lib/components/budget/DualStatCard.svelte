@@ -49,11 +49,12 @@
         </p>
       </div>
       <div
-        class="text-xl sm:text-3xl font-bold {variantClasses[
+        class="font-bold {variantClasses[
           variant1
-        ]} leading-none"
+        ]} leading-none sm:text-3xl"
       >
-        {value1}
+        <span class="block sm:hidden" style="font-size: clamp(0.875rem, 4.5vw, 1.25rem);">{value1}</span>
+        <span class="hidden sm:block">{value1}</span>
       </div>
       {#if subtitle1}
         <p
@@ -80,11 +81,12 @@
         </p>
       </div>
       <div
-        class="text-xl sm:text-3xl font-bold {variantClasses[
+        class="font-bold {variantClasses[
           variant2
-        ]} leading-none"
+        ]} leading-none sm:text-3xl"
       >
-        {value2}
+        <span class="block sm:hidden" style="font-size: clamp(0.875rem, 4.5vw, 1.25rem);">{value2}</span>
+        <span class="hidden sm:block">{value2}</span>
       </div>
       {#if subtitle2}
         <p

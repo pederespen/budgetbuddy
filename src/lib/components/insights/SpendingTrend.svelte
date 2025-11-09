@@ -6,6 +6,7 @@
     CardHeader,
     CardTitle,
   } from "$lib/components/ui/card";
+  import { Button } from "$lib/components/ui/button";
 
   type Props = {
     budget: Budget;
@@ -14,6 +15,7 @@
   let { budget }: Props = $props();
 
   let hoveredIndex = $state<number | null>(null);
+  let viewMode = $state<"daily" | "cumulative">("daily");
 
   // Generate a unique ID for this instance
   const uniqueId = `gradient-${Math.random().toString(36).substr(2, 9)}`;
@@ -48,8 +50,11 @@
     });
   });
 
+  // Use daily amounts or cumulative based on view mode
   const maxValue = $derived(
-    Math.max(...chartData().map((d) => d.cumulative), 100)
+    viewMode === "daily"
+      ? Math.max(...chartData().map((d) => d.amount), 100)
+      : Math.max(...chartData().map((d) => d.cumulative), 100)
   );
 
   // Round to nice numbers for Y-axis with better spacing
@@ -98,7 +103,7 @@
 
     const points = data.map((d, i) => ({
       x: (i / (data.length - 1)) * width,
-      y: height - (d.cumulative / maxValue) * height,
+      y: height - ((viewMode === "daily" ? d.amount : d.cumulative) / maxValue) * height,
     }));
 
     if (points.length === 1) {
@@ -120,8 +125,26 @@
 </script>
 
 <Card>
-  <CardHeader>
+  <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3">
     <CardTitle>Spending Trend</CardTitle>
+    <div class="flex gap-1">
+      <Button
+        variant={viewMode === "daily" ? "default" : "outline"}
+        size="sm"
+        class="h-7 text-xs"
+        onclick={() => (viewMode = "daily")}
+      >
+        Daily
+      </Button>
+      <Button
+        variant={viewMode === "cumulative" ? "default" : "outline"}
+        size="sm"
+        class="h-7 text-xs"
+        onclick={() => (viewMode = "cumulative")}
+      >
+        Cumulative
+      </Button>
+    </div>
   </CardHeader>
   <CardContent>
     <div class="h-[300px]">
@@ -231,9 +254,9 @@
               {#if hoveredIndex !== null && chartData()[hoveredIndex]}
                 {@const xPercent =
                   (hoveredIndex / (chartData().length - 1)) * 100}
+                {@const value = viewMode === "daily" ? chartData()[hoveredIndex].amount : chartData()[hoveredIndex].cumulative}
                 {@const yPercent =
-                  (1 - chartData()[hoveredIndex].cumulative / maxValueRounded) *
-                  100}
+                  (1 - value / maxValueRounded) * 100}
                 <div
                   class="absolute w-2 h-2 rounded-full pointer-events-none transition-all z-10"
                   style="
@@ -250,7 +273,8 @@
               {#if hoveredIndex !== null && chartData()[hoveredIndex]}
                 {@const point = chartData()[hoveredIndex]}
                 {@const x = (hoveredIndex / (chartData().length - 1)) * 100}
-                {@const y = (1 - point.cumulative / maxValueRounded) * 100}
+                {@const value = viewMode === "daily" ? point.amount : point.cumulative}
+                {@const y = (1 - value / maxValueRounded) * 100}
                 <div
                   class="absolute bg-popover text-popover-foreground shadow-md rounded border px-2 py-1 pointer-events-none z-10 text-xs"
                   style="left: {x}%; top: {y}%; transform: translate(-50%, calc(-100% - 12px))"
@@ -262,13 +286,12 @@
                   </div>
                   <div class="font-semibold whitespace-nowrap leading-tight">
                     {budget.currency}
-                    {point.cumulative.toFixed(2)}
+                    {value.toFixed(2)}
                   </div>
                   <div
                     class="text-[10px] text-muted-foreground whitespace-nowrap"
                   >
-                    +{budget.currency}
-                    {point.amount.toFixed(2)}
+                    {viewMode === "daily" ? "Daily spending" : "Total so far"}
                   </div>
                 </div>
               {/if}

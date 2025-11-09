@@ -7,10 +7,12 @@
     DateFormat,
   } from "$lib/types";
   import { budgetStore } from "$lib/stores/budget";
+  import { dateRangeStore } from "$lib/stores/dateRange";
   import {
     formatCurrency,
     currencyShortLabels,
     dateFormatLabels,
+    filterExpensesByDateRange,
   } from "$lib/utils/format";
   import { getCategoryById } from "$lib/utils/categories";
   import * as Select from "$lib/components/ui/select";
@@ -44,6 +46,7 @@
   let { budget }: { budget: Budget } = $props();
 
   let activeTab = $state($activeTabStore);
+  let dateRange = $state($dateRangeStore);
 
   $effect(() => {
     activeTab = $activeTabStore;
@@ -51,6 +54,10 @@
 
   $effect(() => {
     activeTabStore.set(activeTab);
+  });
+
+  $effect(() => {
+    dateRange = $dateRangeStore;
   });
 
   // Local state for settings
@@ -69,32 +76,84 @@
     editedName = budget.name;
   });
 
-  // Calculate total spending
+  // Filter expenses based on date range
+  let filteredEntries = $derived(
+    filterExpensesByDateRange(
+      budget.entries,
+      dateRange.startDate,
+      dateRange.endDate
+    )
+  );
+
+  // Calculate prorated starting balance based on the date range and budget period
+  let proratedStartingBalance = $derived.by(() => {
+    if (!budget.startingBalance || dateRange.preset === "all") {
+      return budget.startingBalance;
+    }
+
+    // If we have a date range, calculate how many days are in the filter
+    if (dateRange.startDate && dateRange.endDate) {
+      const start = new Date(dateRange.startDate);
+      const end = new Date(dateRange.endDate);
+      const daysInRange = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+      // Determine days in budget period
+      let daysInPeriod: number;
+      switch (budget.period) {
+        case "weekly":
+          daysInPeriod = 7;
+          break;
+        case "biweekly":
+          daysInPeriod = 14;
+          break;
+        case "monthly":
+          daysInPeriod = 30; // Use average month
+          break;
+        default:
+          daysInPeriod = 30;
+      }
+
+      // Prorate the balance based on the ratio
+      const ratio = Math.min(daysInRange / daysInPeriod, 1);
+      return budget.startingBalance * ratio;
+    }
+
+    return budget.startingBalance;
+  });
+
+  // Calculate total spending (using filtered entries)
   let totalSpent = $derived(
-    budget.entries.reduce((sum, entry) => sum + entry.amount, 0)
+    filteredEntries.reduce((sum, entry) => sum + entry.amount, 0)
   );
 
-  // Calculate remaining balance
+  // Calculate remaining balance using prorated starting balance
   let remainingBalance = $derived(
-    budget.startingBalance ? budget.startingBalance - totalSpent : null
+    proratedStartingBalance ? proratedStartingBalance - totalSpent : null
   );
 
-  // Determine if over budget (spent more than starting balance)
+  // Determine if over budget (spent more than prorated starting balance)
   let isOverBudget = $derived(
-    budget.startingBalance ? totalSpent > budget.startingBalance : false
+    proratedStartingBalance ? totalSpent > proratedStartingBalance : false
   );
 
   // Calculate largest single expense
   let largestExpense = $derived(
-    budget.entries.length > 0
-      ? Math.max(...budget.entries.map((e) => e.amount))
+    filteredEntries.length > 0
+      ? Math.max(...filteredEntries.map((e) => e.amount))
       : 0
   );
 
   // Calculate average expense
   let averageExpense = $derived(
-    budget.entries.length > 0 ? totalSpent / budget.entries.length : 0
+    filteredEntries.length > 0 ? totalSpent / filteredEntries.length : 0
   );
+
+  // Create a budget object with filtered entries for child components
+  let filteredBudget = $derived({
+    ...budget,
+    entries: filteredEntries,
+    startingBalance: proratedStartingBalance,
+  });
 
   async function getExchangeRate(
     from: Currency,
@@ -259,22 +318,20 @@
             title2={budget.startingBalance ? "Remaining" : "Transactions"}
             value2={budget.startingBalance
               ? formatCurrency(
-                  Math.max(0, budget.startingBalance - totalSpent),
+                  Math.max(0, (proratedStartingBalance ?? 0) - totalSpent),
                   budget.currency
                 )
-              : budget.entries.length.toString()}
+              : filteredEntries.length.toString()}
             subtitle2={budget.startingBalance
-              ? isOverBudget
-                ? `${formatCurrency(totalSpent - budget.startingBalance, budget.currency)} over`
-                : undefined
-              : budget.entries.length === 1
+              ? undefined
+              : filteredEntries.length === 1
                 ? "expense"
                 : "expenses"}
             variant2={budget.startingBalance
               ? isOverBudget
                 ? "danger"
                 : remainingBalance &&
-                    remainingBalance < budget.startingBalance * 0.2
+                    remainingBalance < (proratedStartingBalance ?? 0) * 0.2
                   ? "warning"
                   : "success"
               : "default"}
@@ -295,12 +352,12 @@
           <DualStatCard
             title1="Largest Expense"
             value1={formatCurrency(largestExpense, budget.currency)}
-            subtitle1={budget.entries.length > 0
+            subtitle1={filteredEntries.length > 0
               ? "single transaction"
               : "no expenses yet"}
             title2="Avg. Expense"
             value2={formatCurrency(averageExpense, budget.currency)}
-            subtitle2={budget.entries.length > 0
+            subtitle2={filteredEntries.length > 0
               ? "per transaction"
               : "no data"}
           >
@@ -315,7 +372,7 @@
 
         <!-- Recent Activity -->
         <RecentActivity
-          expenses={budget.entries}
+          expenses={filteredEntries}
           categories={budget.categories}
           currency={budget.currency}
           dateFormat={budget.dateFormat}
@@ -325,6 +382,7 @@
         <!-- Category Stats -->
         <CategoryStats
           {budget}
+          filteredExpenses={filteredEntries}
           onViewInsights={() => (activeTab = "insights")}
         />
       </div>
@@ -333,7 +391,7 @@
       <div class="h-full flex flex-col p-1">
         <ExpenseList
           {budget}
-          expenses={budget.entries}
+          expenses={filteredEntries}
           categories={budget.categories}
           currency={budget.currency}
           onAdd={handleAddExpense}
@@ -347,7 +405,7 @@
     {:else if activeTab === "insights"}
       <!-- Insights Content -->
       <div class="p-3">
-        {#if budget.entries.length === 0}
+        {#if filteredEntries.length === 0}
           <div class="text-center py-12 text-muted-foreground">
             <TrendingUp class="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p class="text-sm">No expenses yet</p>
@@ -356,10 +414,10 @@
         {:else}
           <div class="space-y-4">
             <!-- Charts -->
-            <SpendingTrend {budget} />
-            <SpendingByCategory {budget} />
-            <SpendingByDayOfWeek {budget} />
-            <TopCategories {budget} />
+            <SpendingTrend budget={filteredBudget} />
+            <SpendingByCategory budget={filteredBudget} />
+            <SpendingByDayOfWeek budget={filteredBudget} />
+            <TopCategories budget={filteredBudget} />
           </div>
         {/if}
       </div>
@@ -561,22 +619,20 @@
             title2={budget.startingBalance ? "Remaining" : "Transactions"}
             value2={budget.startingBalance
               ? formatCurrency(
-                  Math.max(0, budget.startingBalance - totalSpent),
+                  Math.max(0, (proratedStartingBalance ?? 0) - totalSpent),
                   budget.currency
                 )
-              : budget.entries.length.toString()}
+              : filteredEntries.length.toString()}
             subtitle2={budget.startingBalance
-              ? isOverBudget
-                ? `${formatCurrency(totalSpent - budget.startingBalance, budget.currency)} over`
-                : undefined
-              : budget.entries.length === 1
+              ? undefined
+              : filteredEntries.length === 1
                 ? "expense"
                 : "expenses"}
             variant2={budget.startingBalance
               ? isOverBudget
                 ? "danger"
                 : remainingBalance &&
-                    remainingBalance < budget.startingBalance * 0.2
+                    remainingBalance < (proratedStartingBalance ?? 0) * 0.2
                   ? "warning"
                   : "success"
               : "default"}
@@ -597,12 +653,12 @@
           <DualStatCard
             title1="Largest Expense"
             value1={formatCurrency(largestExpense, budget.currency)}
-            subtitle1={budget.entries.length > 0
+            subtitle1={filteredEntries.length > 0
               ? "single transaction"
               : "no expenses yet"}
             title2="Avg. Expense"
             value2={formatCurrency(averageExpense, budget.currency)}
-            subtitle2={budget.entries.length > 0
+            subtitle2={filteredEntries.length > 0
               ? "per transaction"
               : "no data"}
           >
@@ -619,7 +675,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <!-- Recent Activity -->
           <RecentActivity
-            expenses={budget.entries}
+            expenses={filteredEntries}
             categories={budget.categories}
             currency={budget.currency}
             dateFormat={budget.dateFormat}
@@ -629,6 +685,7 @@
           <!-- Category Stats -->
           <CategoryStats
             {budget}
+            filteredExpenses={filteredEntries}
             onViewInsights={() => (activeTab = "insights")}
           />
         </div>
@@ -638,7 +695,7 @@
       <div class="mt-4 flex-1 overflow-hidden flex flex-col">
         <ExpenseList
           {budget}
-          expenses={budget.entries}
+          expenses={filteredEntries}
           categories={budget.categories}
           currency={budget.currency}
           onAdd={handleAddExpense}
@@ -652,7 +709,7 @@
     {:else if activeTab === "insights"}
       <!-- Insights Tab -->
       <div class="mt-4 flex-1 overflow-auto">
-        {#if budget.entries.length === 0}
+        {#if filteredEntries.length === 0}
           <div class="text-center py-12 text-muted-foreground">
             <TrendingUp class="h-16 w-16 mx-auto mb-4 opacity-50" />
             <p class="text-lg">No expenses yet</p>
@@ -664,13 +721,13 @@
           <div class="space-y-6 pb-6">
             <!-- Charts Grid -->
             <div class="grid gap-4 md:grid-cols-2">
-              <SpendingTrend {budget} />
-              <SpendingByCategory {budget} />
+              <SpendingTrend budget={filteredBudget} />
+              <SpendingByCategory budget={filteredBudget} />
             </div>
 
             <div class="grid gap-4 md:grid-cols-2">
-              <SpendingByDayOfWeek {budget} />
-              <TopCategories {budget} />
+              <SpendingByDayOfWeek budget={filteredBudget} />
+              <TopCategories budget={filteredBudget} />
             </div>
           </div>
         {/if}

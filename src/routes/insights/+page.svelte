@@ -2,6 +2,8 @@
   console.log("🚀🚀🚀 INSIGHTS PAGE LOADED - NEW VERSION! 🚀🚀🚀");
 
   import { budgetStore } from "$lib/stores/budget";
+  import { dateRangeStore } from "$lib/stores/dateRange";
+  import { filterExpensesByDateRange } from "$lib/utils/format";
   import {
     Card,
     CardContent,
@@ -15,17 +17,40 @@
   import { TrendingUp, PieChart, Target, BarChart3 } from "lucide-svelte";
 
   const state = $derived($budgetStore);
+  const dateRange = $derived($dateRangeStore);
+  
   const activeBudget = $derived(
     state.budgets.find((b) => b.id === state.activeBudgetId)
   );
 
-  const hasData = $derived(activeBudget && activeBudget.entries.length > 0);
+  // Filter expenses based on date range
+  const filteredEntries = $derived(
+    activeBudget
+      ? filterExpensesByDateRange(
+          activeBudget.entries,
+          dateRange.startDate,
+          dateRange.endDate
+        )
+      : []
+  );
+
+  // Create filtered budget for child components
+  const filteredBudget = $derived(
+    activeBudget
+      ? {
+          ...activeBudget,
+          entries: filteredEntries,
+        }
+      : undefined
+  );
+
+  const hasData = $derived(filteredEntries.length > 0);
 
   // Debug
   $effect(() => {
     console.log("Active Budget:", activeBudget);
+    console.log("Filtered Entries:", filteredEntries.length);
     console.log("Has Data:", hasData);
-    console.log("Entries:", activeBudget?.entries.length);
   });
 </script>
 
@@ -78,12 +103,12 @@
         <CardContent>
           <div class="text-2xl font-bold">
             {activeBudget.currency}
-            {activeBudget.entries
+            {filteredEntries
               .reduce((sum, e) => sum + e.amount, 0)
               .toFixed(2)}
           </div>
           <p class="text-xs text-muted-foreground">
-            Across {activeBudget.entries.length} transactions
+            Across {filteredEntries.length} transactions
           </p>
         </CardContent>
       </Card>
@@ -97,7 +122,7 @@
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">
-            {new Set(activeBudget.entries.map((e) => e.categoryId)).size}
+            {new Set(filteredEntries.map((e) => e.categoryId)).size}
           </div>
           <p class="text-xs text-muted-foreground">
             Out of {activeBudget.categories.length} total
@@ -118,7 +143,7 @@
               const totalBudget = Object.values(
                 activeBudget.budgetLimits
               ).reduce((sum, limit) => sum + limit, 0);
-              const totalSpent = activeBudget.entries.reduce(
+              const totalSpent = filteredEntries.reduce(
                 (sum, e) => sum + e.amount,
                 0
               );
@@ -141,10 +166,12 @@
         <CardContent>
           <div class="text-2xl font-bold">
             {activeBudget.currency}
-            {(
-              activeBudget.entries.reduce((sum, e) => sum + e.amount, 0) /
-              activeBudget.entries.length
-            ).toFixed(2)}
+            {filteredEntries.length > 0
+              ? (
+                  filteredEntries.reduce((sum, e) => sum + e.amount, 0) /
+                  filteredEntries.length
+                ).toFixed(2)
+              : "0.00"}
           </div>
           <p class="text-xs text-muted-foreground">Per expense</p>
         </CardContent>
@@ -153,17 +180,21 @@
 
     <!-- Charts Grid -->
     <div class="grid gap-4 md:grid-cols-2">
-      <SpendingByCategory budget={activeBudget} />
-      <BudgetProgress budget={activeBudget} />
+      {#if filteredBudget}
+        <SpendingByCategory budget={filteredBudget} />
+        <BudgetProgress budget={filteredBudget} />
+      {/if}
     </div>
 
     <div class="grid gap-4 md:grid-cols-3">
-      <div class="md:col-span-2">
-        <SpendingTrend budget={activeBudget} />
-      </div>
-      <div class="md:col-span-1">
-        <TopCategories budget={activeBudget} />
-      </div>
+      {#if filteredBudget}
+        <div class="md:col-span-2">
+          <SpendingTrend budget={filteredBudget} />
+        </div>
+        <div class="md:col-span-1">
+          <TopCategories budget={filteredBudget} />
+        </div>
+      {/if}
     </div>
   {/if}
 </div>

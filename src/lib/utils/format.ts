@@ -98,3 +98,59 @@ export function getCurrentMonth(): { start: string; end: string } {
     end: end.toISOString().split("T")[0],
   };
 }
+
+// Filter expenses by date range
+export function filterExpensesByDateRange<T extends { date: string }>(
+  expenses: T[],
+  startDate: Date | null,
+  endDate: Date | null
+): T[] {
+  if (!startDate && !endDate) {
+    return expenses;
+  }
+
+  return expenses.filter((expense) => {
+    const expenseDate = new Date(expense.date);
+    
+    // Set time to start of day for comparison
+    const expenseDay = new Date(
+      expenseDate.getFullYear(),
+      expenseDate.getMonth(),
+      expenseDate.getDate()
+    );
+
+    if (startDate && endDate) {
+      const start = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+      );
+      const end = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
+      );
+      return expenseDay >= start && expenseDay <= end;
+    }
+
+    if (startDate) {
+      const start = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+      );
+      return expenseDay >= start;
+    }
+
+    if (endDate) {
+      const end = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
+      );
+      return expenseDay <= end;
+    }
+
+    return true;
+  });
+}

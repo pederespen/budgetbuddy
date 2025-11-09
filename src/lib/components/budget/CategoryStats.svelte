@@ -8,25 +8,30 @@
   import { Button } from "$lib/components/ui/button";
   import { formatCurrency } from "$lib/utils/format";
   import * as LucideIcons from "lucide-svelte";
-  import type { Budget, Category, Currency } from "$lib/types";
+  import type { Budget, Category, Currency, Expense } from "$lib/types";
 
   let {
     budget,
+    filteredExpenses,
     onViewInsights,
   }: {
     budget: Budget;
+    filteredExpenses?: Expense[];
     onViewInsights: () => void;
   } = $props();
+
+  // Use filtered expenses if provided, otherwise use all entries
+  let expenses = $derived(filteredExpenses ?? budget.entries);
 
   // Calculate spending per category
   let categoryStats = $derived(
     budget.categories
       .map((category) => {
-        const categoryExpenses = budget.entries.filter(
+        const categoryExpenses = expenses.filter(
           (e) => e.categoryId === category.id
         );
         const spent = categoryExpenses.reduce((sum, e) => sum + e.amount, 0);
-        const totalSpent = budget.entries.reduce((sum, e) => sum + e.amount, 0);
+        const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
         const percentOfTotal = totalSpent > 0 ? (spent / totalSpent) * 100 : 0;
 
         return {
@@ -44,7 +49,7 @@
   // Count total categories with spending
   let totalCategoriesWithSpending = $derived(
     budget.categories.filter((category) => {
-      const spent = budget.entries
+      const spent = expenses
         .filter((e) => e.categoryId === category.id)
         .reduce((sum, e) => sum + e.amount, 0);
       return spent > 0;

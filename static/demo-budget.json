@@ -6,7 +6,7 @@
       "currency": "NOK",
       "dateFormat": "DD/MM/YYYY",
       "period": "monthly",
-      "startingBalance": 15000,
+      "startingBalance": 40000,
       "categories": [
         {
           "id": "cat-1",
@@ -135,6 +135,237 @@
           "categoryId": "cat-7",
           "amount": 150,
           "note": "Miscellaneous items"
+        },
+        {
+          "id": "exp-13",
+          "date": "2025-10-28",
+          "categoryId": "cat-1",
+          "amount": 1150,
+          "note": "Weekly groceries"
+        },
+        {
+          "id": "exp-14",
+          "date": "2025-10-25",
+          "categoryId": "cat-2",
+          "amount": 480,
+          "note": "Gas station"
+        },
+        {
+          "id": "exp-15",
+          "date": "2025-10-22",
+          "categoryId": "cat-4",
+          "amount": 899,
+          "note": "Electronics store"
+        },
+        {
+          "id": "exp-16",
+          "date": "2025-10-20",
+          "categoryId": "cat-1",
+          "amount": 245,
+          "note": "Lunch with colleagues"
+        },
+        {
+          "id": "exp-17",
+          "date": "2025-10-18",
+          "categoryId": "cat-3",
+          "amount": 320,
+          "note": "Concert tickets"
+        },
+        {
+          "id": "exp-18",
+          "date": "2025-10-15",
+          "categoryId": "cat-1",
+          "amount": 1320,
+          "note": "Big grocery haul"
+        },
+        {
+          "id": "exp-19",
+          "date": "2025-10-12",
+          "categoryId": "cat-5",
+          "amount": 890,
+          "note": "Electricity bill"
+        },
+        {
+          "id": "exp-20",
+          "date": "2025-10-10",
+          "categoryId": "cat-6",
+          "amount": 275,
+          "note": "Yoga classes"
+        },
+        {
+          "id": "exp-21",
+          "date": "2025-10-08",
+          "categoryId": "cat-2",
+          "amount": 95,
+          "note": "Taxi ride"
+        },
+        {
+          "id": "exp-22",
+          "date": "2025-10-05",
+          "categoryId": "cat-1",
+          "amount": 680,
+          "note": "Grocery shopping"
+        },
+        {
+          "id": "exp-23",
+          "date": "2025-10-03",
+          "categoryId": "cat-4",
+          "amount": 1250,
+          "note": "New winter jacket"
+        },
+        {
+          "id": "exp-24",
+          "date": "2025-10-01",
+          "categoryId": "cat-5",
+          "amount": 2500,
+          "note": "Rent payment"
+        },
+        {
+          "id": "exp-25",
+          "date": "2025-09-28",
+          "categoryId": "cat-1",
+          "amount": 890,
+          "note": "Weekly groceries"
+        },
+        {
+          "id": "exp-26",
+          "date": "2025-09-25",
+          "categoryId": "cat-3",
+          "amount": 450,
+          "note": "Theater tickets"
+        },
+        {
+          "id": "exp-27",
+          "date": "2025-09-22",
+          "categoryId": "cat-2",
+          "amount": 520,
+          "note": "Car fuel"
+        },
+        {
+          "id": "exp-28",
+          "date": "2025-09-20",
+          "categoryId": "cat-1",
+          "amount": 195,
+          "note": "Coffee shop"
+        },
+        {
+          "id": "exp-29",
+          "date": "2025-09-18",
+          "categoryId": "cat-6",
+          "amount": 320,
+          "note": "Pharmacy"
+        },
+        {
+          "id": "exp-30",
+          "date": "2025-09-15",
+          "categoryId": "cat-1",
+          "amount": 1450,
+          "note": "Big shop at Meny"
+        },
+        {
+          "id": "exp-31",
+          "date": "2025-09-12",
+          "categoryId": "cat-4",
+          "amount": 599,
+          "note": "Books and magazines"
+        },
+        {
+          "id": "exp-32",
+          "date": "2025-09-10",
+          "categoryId": "cat-3",
+          "amount": 189,
+          "note": "Spotify subscription"
+        },
+        {
+          "id": "exp-33",
+          "date": "2025-09-08",
+          "categoryId": "cat-2",
+          "amount": 125,
+          "note": "Public transport pass"
+        },
+        {
+          "id": "exp-34",
+          "date": "2025-09-05",
+          "categoryId": "cat-1",
+          "amount": 780,
+          "note": "Grocery shopping"
+        },
+        {
+          "id": "exp-35",
+          "date": "2025-09-03",
+          "categoryId": "cat-5",
+          "amount": 1200,
+          "note": "Internet and phone bill"
+        },
+        {
+          "id": "exp-36",
+          "date": "2025-09-01",
+          "categoryId": "cat-5",
+          "amount": 2500,
+          "note": "Monthly rent"
+        },
+        {
+          "id": "exp-37",
+          "date": "2025-08-28",
+          "categoryId": "cat-1",
+          "amount": 920,
+          "note": "Weekend groceries"
+        },
+        {
+          "id": "exp-38",
+          "date": "2025-08-25",
+          "categoryId": "cat-3",
+          "amount": 680,
+          "note": "Gaming subscription"
+        },
+        {
+          "id": "exp-39",
+          "date": "2025-08-20",
+          "categoryId": "cat-2",
+          "amount": 450,
+          "note": "Gas"
+        },
+        {
+          "id": "exp-40",
+          "date": "2025-08-15",
+          "categoryId": "cat-1",
+          "amount": 1100,
+          "note": "Grocery shopping"
+        },
+        {
+          "id": "exp-41",
+          "date": "2025-08-12",
+          "categoryId": "cat-6",
+          "amount": 450,
+          "note": "Gym membership"
+        },
+        {
+          "id": "exp-42",
+          "date": "2025-08-10",
+          "categoryId": "cat-4",
+          "amount": 1899,
+          "note": "New phone accessories"
+        },
+        {
+          "id": "exp-43",
+          "date": "2025-08-05",
+          "categoryId": "cat-1",
+          "amount": 850,
+          "note": "Food shopping"
+        },
+        {
+          "id": "exp-44",
+          "date": "2025-08-03",
+          "categoryId": "cat-7",
+          "amount": 420,
+          "note": "Various household items"
+        },
+        {
+          "id": "exp-45",
+          "date": "2025-08-01",
+          "categoryId": "cat-5",
+          "amount": 2500,
+          "note": "Rent"
         }
       ],
       "budgetLimits": {
@@ -146,7 +377,7 @@
         "cat-6": 500,
         "cat-7": 500
       },
-      "createdAt": "2025-11-01",
+      "createdAt": "2025-08-01",
       "updatedAt": "2025-11-07"
     }
   ],
