@@ -7,10 +7,10 @@
   import { Sun, Moon } from "lucide-svelte";
   import { browser } from "$app/environment";
 
-  let { 
+  let {
     activeTab = $bindable(),
-    showTabs = false 
-  }: { 
+    showTabs = false,
+  }: {
     activeTab?: string;
     showTabs?: boolean;
   } = $props();

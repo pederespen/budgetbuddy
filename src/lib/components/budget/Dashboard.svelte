@@ -358,30 +358,6 @@
           </div>
         {:else}
           <div class="space-y-4">
-            <!-- Overview Cards -->
-            <div class="grid grid-cols-2 gap-2">
-              <StatCard
-                title="Total Spending"
-                value={formatCurrency(totalSpent, budget.currency)}
-                subtitle="{budget.entries.length} transactions"
-              >
-                {#snippet icon()}
-                  <Receipt class="h-4 w-4 text-muted-foreground" />
-                {/snippet}
-              </StatCard>
-              <StatCard
-                title="Active Categories"
-                value={new Set(
-                  budget.entries.map((e) => e.categoryId)
-                ).size.toString()}
-                subtitle="Out of {budget.categories.length} total"
-              >
-                {#snippet icon()}
-                  <ListOrdered class="h-4 w-4 text-muted-foreground" />
-                {/snippet}
-              </StatCard>
-            </div>
-
             <!-- Charts -->
             <SpendingTrend {budget} />
             <SpendingByCategory {budget} />
@@ -660,48 +636,6 @@
           </div>
         {:else}
           <div class="space-y-6 pb-6">
-            <!-- Overview Cards -->
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <StatCard
-                title="Total Spending"
-                value={formatCurrency(totalSpent, budget.currency)}
-                subtitle="{budget.entries.length} transactions"
-              >
-                {#snippet icon()}
-                  <Receipt class="h-4 w-4 text-muted-foreground" />
-                {/snippet}
-              </StatCard>
-              <StatCard
-                title="Active Categories"
-                value={new Set(
-                  budget.entries.map((e) => e.categoryId)
-                ).size.toString()}
-                subtitle="Out of {budget.categories.length} total"
-              >
-                {#snippet icon()}
-                  <ListOrdered class="h-4 w-4 text-muted-foreground" />
-                {/snippet}
-              </StatCard>
-              <StatCard
-                title="Largest Expense"
-                value={formatCurrency(largestExpense, budget.currency)}
-                subtitle="Single transaction"
-              >
-                {#snippet icon()}
-                  <TrendingUp class="h-4 w-4 text-muted-foreground" />
-                {/snippet}
-              </StatCard>
-              <StatCard
-                title="Avg. Transaction"
-                value={formatCurrency(averageExpense, budget.currency)}
-                subtitle="Per expense"
-              >
-                {#snippet icon()}
-                  <Wallet class="h-4 w-4 text-muted-foreground" />
-                {/snippet}
-              </StatCard>
-            </div>
-
             <!-- Charts Grid -->
             <div class="grid gap-4 md:grid-cols-2">
               <SpendingTrend {budget} />

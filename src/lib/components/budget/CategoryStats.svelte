@@ -54,7 +54,7 @@
 
 <Card>
   <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-    <CardTitle class="text-sm font-semibold">Top Categories</CardTitle>
+    <CardTitle class="text-base font-semibold">Top Categories</CardTitle>
     <!-- Empty space to match RecentActivity button - sm button is h-8 -->
     <div class="h-8"></div>
   </CardHeader>
@@ -72,23 +72,23 @@
           >
             <div class="flex items-center gap-2 flex-1 min-w-0">
               <div
-                class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                 style="background-color: {category.color}20;"
               >
                 {#if Icon}
-                  <Icon class="w-3.5 h-3.5" style="color: {category.color}" />
+                  <Icon class="w-4 h-4" style="color: {category.color}" />
                 {/if}
               </div>
               <div class="flex-1 min-w-0">
-                <div class="font-medium text-xs truncate">{category.name}</div>
-                <div class="text-xs text-muted-foreground">
+                <div class="font-medium text-sm truncate">{category.name}</div>
+                <div class="text-sm text-muted-foreground">
                   {transactionCount}
                   {transactionCount === 1 ? "transaction" : "transactions"}
                   • {percentOfTotal.toFixed(0)}% of total
                 </div>
               </div>
             </div>
-            <div class="font-semibold text-xs flex-shrink-0 ml-2">
+            <div class="font-semibold text-sm flex-shrink-0 ml-2">
               {formatCurrency(spent, budget.currency)}
             </div>
           </div>

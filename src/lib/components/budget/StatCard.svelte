@@ -30,20 +30,20 @@
   <CardContent class="h-full flex items-center p-4 sm:p-2.5">
     <div class="flex items-center justify-between gap-3 w-full">
       <div class="flex-1 min-w-0">
-        <p class="text-xs font-medium text-muted-foreground mb-0.5">
+        <p class="text-sm font-medium text-muted-foreground mb-1">
           {title}
         </p>
-        <div class="text-2xl font-bold {variantClasses[variant]} leading-none">
+        <div class="text-3xl font-bold {variantClasses[variant]} leading-none">
           {value}
         </div>
         {#if subtitle}
-          <p class="text-xs text-muted-foreground mt-0.5 leading-tight">
+          <p class="text-sm text-muted-foreground mt-1 leading-tight">
             {subtitle}
           </p>
         {/if}
         {#if trend}
           <p
-            class="text-xs mt-0.5 {trend.positive
+            class="text-sm mt-1 {trend.positive
               ? 'text-green-600 dark:text-green-400'
               : 'text-red-600 dark:text-red-400'}"
           >

@@ -37,7 +37,7 @@
 
 <Card>
   <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-    <CardTitle class="text-sm font-semibold">Recent Activity</CardTitle>
+    <CardTitle class="text-base font-semibold">Recent Activity</CardTitle>
     <Button size="sm" onclick={onAddClick}>
       <Plus class="h-3 w-3 mr-1" />
       Add
@@ -60,24 +60,24 @@
             <div class="flex items-center gap-2 flex-1 min-w-0">
               {#if category}
                 <div
-                  class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                  class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                   style="background-color: {category.color}20;"
                 >
                   {#if Icon}
-                    <Icon class="w-3.5 h-3.5" style="color: {category.color}" />
+                    <Icon class="w-4 h-4" style="color: {category.color}" />
                   {/if}
                 </div>
               {/if}
               <div class="flex-1 min-w-0">
-                <div class="font-medium text-xs truncate">
+                <div class="font-medium text-sm truncate">
                   {expense.note || category?.name || "No description"}
                 </div>
-                <div class="text-xs text-muted-foreground">
+                <div class="text-sm text-muted-foreground">
                   {formatDate(expense.date, dateFormat)}
                 </div>
               </div>
             </div>
-            <div class="font-semibold text-xs flex-shrink-0 ml-2">
+            <div class="font-semibold text-sm flex-shrink-0 ml-2">
               {formatCurrency(expense.amount, currency)}
             </div>
           </div>

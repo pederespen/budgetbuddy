@@ -15,6 +15,9 @@
 
   let hoveredIndex = $state<number | null>(null);
 
+  // Generate a unique ID for this instance
+  const uniqueId = `gradient-${Math.random().toString(36).substr(2, 9)}`;
+
   const chartData = $derived(() => {
     // Group expenses by day
     const dailyTotals = new Map<string, number>();
@@ -164,10 +167,11 @@
                   viewBox="0 0 {svgWidth} {svgHeight}"
                   class="absolute inset-0 w-full h-full overflow-visible"
                   preserveAspectRatio="none"
+                  vector-effect="non-scaling-stroke"
                 >
                   <defs>
                     <linearGradient
-                      id="areaGradient"
+                      id={uniqueId}
                       x1="0%"
                       y1="0%"
                       x2="0%"
@@ -187,7 +191,7 @@
                   <!-- Area fill -->
                   <path
                     d="{smoothPath} L {svgWidth} {svgHeight} L 0 {svgHeight} Z"
-                    fill="url(#areaGradient)"
+                    fill="url(#{uniqueId})"
                     class="transition-all"
                   />
 
@@ -197,6 +201,7 @@
                     fill="none"
                     stroke="#10b981"
                     stroke-width="3"
+                    vector-effect="non-scaling-stroke"
                     class="transition-all"
                   />
 
@@ -212,19 +217,11 @@
                       width={columnWidth}
                       height={svgHeight}
                       fill="transparent"
-                      class="cursor-pointer"
-                      role="button"
-                      tabindex="0"
+                      class="cursor-pointer outline-none"
                       onmouseenter={() => (hoveredIndex = i)}
                       onmouseleave={() => (hoveredIndex = null)}
                       onclick={() =>
                         (hoveredIndex = hoveredIndex === i ? null : i)}
-                      onkeydown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          hoveredIndex = hoveredIndex === i ? null : i;
-                        }
-                      }}
                     />
                   {/each}
                 </svg>

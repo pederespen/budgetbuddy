@@ -60,15 +60,46 @@
                   .slice(0, i)
                   .reduce((sum, c) => sum + c.percentage * 3.6, 0)}
                 {@const endAngle = startAngle + category.percentage * 3.6}
+                {@const midAngle = (startAngle + endAngle) / 2}
                 {@const largeArc = category.percentage > 50 ? 1 : 0}
-                {@const x1 = 100 + 80 * Math.cos((Math.PI * startAngle) / 180)}
-                {@const y1 = 100 + 80 * Math.sin((Math.PI * startAngle) / 180)}
-                {@const x2 = 100 + 80 * Math.cos((Math.PI * endAngle) / 180)}
-                {@const y2 = 100 + 80 * Math.sin((Math.PI * endAngle) / 180)}
-                {@const x3 = 100 + 50 * Math.cos((Math.PI * endAngle) / 180)}
-                {@const y3 = 100 + 50 * Math.sin((Math.PI * endAngle) / 180)}
-                {@const x4 = 100 + 50 * Math.cos((Math.PI * startAngle) / 180)}
-                {@const y4 = 100 + 50 * Math.sin((Math.PI * startAngle) / 180)}
+                {@const isHovered = hoveredCategory === category.name}
+                {@const offset = isHovered ? 5 : 0}
+                {@const centerOffsetX =
+                  offset * Math.cos((Math.PI * midAngle) / 180)}
+                {@const centerOffsetY =
+                  offset * Math.sin((Math.PI * midAngle) / 180)}
+                {@const x1 =
+                  100 +
+                  centerOffsetX +
+                  80 * Math.cos((Math.PI * startAngle) / 180)}
+                {@const y1 =
+                  100 +
+                  centerOffsetY +
+                  80 * Math.sin((Math.PI * startAngle) / 180)}
+                {@const x2 =
+                  100 +
+                  centerOffsetX +
+                  80 * Math.cos((Math.PI * endAngle) / 180)}
+                {@const y2 =
+                  100 +
+                  centerOffsetY +
+                  80 * Math.sin((Math.PI * endAngle) / 180)}
+                {@const x3 =
+                  100 +
+                  centerOffsetX +
+                  50 * Math.cos((Math.PI * endAngle) / 180)}
+                {@const y3 =
+                  100 +
+                  centerOffsetY +
+                  50 * Math.sin((Math.PI * endAngle) / 180)}
+                {@const x4 =
+                  100 +
+                  centerOffsetX +
+                  50 * Math.cos((Math.PI * startAngle) / 180)}
+                {@const y4 =
+                  100 +
+                  centerOffsetY +
+                  50 * Math.sin((Math.PI * startAngle) / 180)}
 
                 <path
                   d="M {x1} {y1} A 80 80 0 {largeArc} 1 {x2} {y2} L {x3} {y3} A 50 50 0 {largeArc} 0 {x4} {y4} Z"
@@ -76,7 +107,6 @@
                   class="transition-all duration-200 cursor-pointer"
                   class:opacity-40={hoveredCategory &&
                     hoveredCategory !== category.name}
-                  class:scale-105={hoveredCategory === category.name}
                   stroke="hsl(var(--background))"
                   stroke-width="2"
                   onmouseenter={() => (hoveredCategory = category.name)}

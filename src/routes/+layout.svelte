@@ -12,7 +12,7 @@
   let { children } = $props();
 
   let activeTab = $state($activeTabStore);
-  
+
   $effect(() => {
     activeTab = $activeTabStore;
   });
@@ -20,7 +20,7 @@
   $effect(() => {
     activeTabStore.set(activeTab);
   });
-  
+
   let activeBudget: Budget | undefined = $derived(
     $budgetStore.budgets.find(
       (b: Budget) => b.id === $budgetStore.activeBudgetId
