@@ -379,8 +379,46 @@
             </h3>
             <div class="space-y-4">
               <div class="space-y-2">
-                <div class="text-sm font-medium">Budget Name</div>
-                <p class="text-sm text-muted-foreground">{budget.name}</p>
+                <Label for="budget-name-mobile">Budget Name</Label>
+                {#if isEditingName}
+                  <div class="flex gap-2">
+                    <Input
+                      id="budget-name-mobile"
+                      type="text"
+                      bind:value={editedName}
+                      class="flex-1"
+                      placeholder="Budget name"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onclick={handleSaveName}
+                      aria-label="Save name"
+                    >
+                      <Check class="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onclick={handleCancelEditName}
+                      aria-label="Cancel"
+                    >
+                      <X class="h-4 w-4" />
+                    </Button>
+                  </div>
+                {:else}
+                  <div class="flex items-center gap-2">
+                    <p class="text-sm flex-1">{budget.name}</p>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onclick={handleStartEditName}
+                      aria-label="Edit name"
+                    >
+                      <Pencil class="h-4 w-4" />
+                    </Button>
+                  </div>
+                {/if}
               </div>
             </div>
           </div>
