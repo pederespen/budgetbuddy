@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { base } from "$app/paths";
   import { budgetStore } from "$lib/stores/budget";
   import { activeTabStore } from "$lib/stores/navigation";
   import { getDefaultCategories } from "$lib/defaults";
@@ -52,7 +53,7 @@
 
   async function handleLoadDemo() {
     try {
-      const response = await fetch("/demo-budget.json");
+      const response = await fetch(`${base}/demo-budget.json`);
       if (!response.ok) throw new Error("Failed to load demo data");
       const demoData = await response.json();
       budgetStore.set(demoData);
