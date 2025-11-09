@@ -19,6 +19,7 @@
   import { Button } from "$lib/components/ui/button";
   import ExpenseList from "../expense/ExpenseList.svelte";
   import StatCard from "./StatCard.svelte";
+  import DualStatCard from "./DualStatCard.svelte";
   import RecentActivity from "./RecentActivity.svelte";
   import CategoryStats from "./CategoryStats.svelte";
   import SpendingByCategory from "../insights/SpendingByCategory.svelte";
@@ -249,71 +250,67 @@
       <!-- Overview Content -->
       <div class="space-y-3 p-3">
         <!-- Key Metrics Grid -->
-        <div class="grid grid-cols-2 gap-2">
-          <StatCard
-            title="Total Spent"
-            value={formatCurrency(totalSpent, budget.currency)}
-            variant={isOverBudget ? "danger" : "default"}
-          >
-            {#snippet icon()}
-              <Wallet class="h-4 w-4 text-muted-foreground" />
-            {/snippet}
-          </StatCard>
-
-          {#if budget.startingBalance}
-            <StatCard
-              title="Remaining"
-              value={formatCurrency(
-                Math.max(0, budget.startingBalance - totalSpent),
-                budget.currency
-              )}
-              subtitle={isOverBudget
+        <div class="grid grid-cols-1 gap-2">
+          <!-- Spending Overview Card -->
+          <DualStatCard
+            title1="Total Spent"
+            value1={formatCurrency(totalSpent, budget.currency)}
+            variant1={isOverBudget ? "danger" : "default"}
+            title2={budget.startingBalance ? "Remaining" : "Transactions"}
+            value2={budget.startingBalance
+              ? formatCurrency(
+                  Math.max(0, budget.startingBalance - totalSpent),
+                  budget.currency
+                )
+              : budget.entries.length.toString()}
+            subtitle2={budget.startingBalance
+              ? isOverBudget
                 ? `${formatCurrency(totalSpent - budget.startingBalance, budget.currency)} over`
-                : `of ${formatCurrency(budget.startingBalance, budget.currency)}`}
-              variant={isOverBudget
+                : undefined
+              : budget.entries.length === 1
+                ? "expense"
+                : "expenses"}
+            variant2={budget.startingBalance
+              ? isOverBudget
                 ? "danger"
                 : remainingBalance &&
                     remainingBalance < budget.startingBalance * 0.2
                   ? "warning"
-                  : "success"}
-            >
-              {#snippet icon()}
+                  : "success"
+              : "default"}
+          >
+            {#snippet icon1()}
+              <Wallet class="h-4 w-4 text-muted-foreground" />
+            {/snippet}
+            {#snippet icon2()}
+              {#if budget.startingBalance}
                 <CreditCard class="h-4 w-4 text-muted-foreground" />
-              {/snippet}
-            </StatCard>
-          {:else}
-            <StatCard
-              title="Transactions"
-              value={budget.entries.length.toString()}
-              subtitle={budget.entries.length === 1 ? "expense" : "expenses"}
-            >
-              {#snippet icon()}
+              {:else}
                 <Receipt class="h-4 w-4 text-muted-foreground" />
-              {/snippet}
-            </StatCard>
-          {/if}
+              {/if}
+            {/snippet}
+          </DualStatCard>
 
-          <StatCard
-            title="Largest Expense"
-            value={formatCurrency(largestExpense, budget.currency)}
-            subtitle={budget.entries.length > 0
+          <!-- Transaction Stats Card -->
+          <DualStatCard
+            title1="Largest Expense"
+            value1={formatCurrency(largestExpense, budget.currency)}
+            subtitle1={budget.entries.length > 0
               ? "single transaction"
               : "no expenses yet"}
+            title2="Avg. Expense"
+            value2={formatCurrency(averageExpense, budget.currency)}
+            subtitle2={budget.entries.length > 0
+              ? "per transaction"
+              : "no data"}
           >
-            {#snippet icon()}
+            {#snippet icon1()}
               <TrendingUp class="h-4 w-4 text-muted-foreground" />
             {/snippet}
-          </StatCard>
-
-          <StatCard
-            title="Avg. Expense"
-            value={formatCurrency(averageExpense, budget.currency)}
-            subtitle={budget.entries.length > 0 ? "per transaction" : "no data"}
-          >
-            {#snippet icon()}
+            {#snippet icon2()}
               <ListOrdered class="h-4 w-4 text-muted-foreground" />
             {/snippet}
-          </StatCard>
+          </DualStatCard>
         </div>
 
         <!-- Recent Activity -->
@@ -372,11 +369,6 @@
         <div class="space-y-8">
           <!-- Budget Information Section -->
           <div class="space-y-3">
-            <h3
-              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
-            >
-              Budget Information
-            </h3>
             <div class="space-y-4">
               <div class="space-y-2">
                 <Label for="budget-name-mobile">Budget Name</Label>
@@ -560,71 +552,67 @@
     {#if activeTab === "overview"}
       <div class="space-y-4 max-w-6xl mx-auto">
         <!-- Key Metrics Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-          <StatCard
-            title="Total Spent"
-            value={formatCurrency(totalSpent, budget.currency)}
-            variant={isOverBudget ? "danger" : "default"}
-          >
-            {#snippet icon()}
-              <Wallet class="h-4 w-4 text-muted-foreground" />
-            {/snippet}
-          </StatCard>
-
-          {#if budget.startingBalance}
-            <StatCard
-              title="Remaining"
-              value={formatCurrency(
-                Math.max(0, budget.startingBalance - totalSpent),
-                budget.currency
-              )}
-              subtitle={isOverBudget
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Spending Overview Card -->
+          <DualStatCard
+            title1="Total Spent"
+            value1={formatCurrency(totalSpent, budget.currency)}
+            variant1={isOverBudget ? "danger" : "default"}
+            title2={budget.startingBalance ? "Remaining" : "Transactions"}
+            value2={budget.startingBalance
+              ? formatCurrency(
+                  Math.max(0, budget.startingBalance - totalSpent),
+                  budget.currency
+                )
+              : budget.entries.length.toString()}
+            subtitle2={budget.startingBalance
+              ? isOverBudget
                 ? `${formatCurrency(totalSpent - budget.startingBalance, budget.currency)} over`
-                : `of ${formatCurrency(budget.startingBalance, budget.currency)}`}
-              variant={isOverBudget
+                : undefined
+              : budget.entries.length === 1
+                ? "expense"
+                : "expenses"}
+            variant2={budget.startingBalance
+              ? isOverBudget
                 ? "danger"
                 : remainingBalance &&
                     remainingBalance < budget.startingBalance * 0.2
                   ? "warning"
-                  : "success"}
-            >
-              {#snippet icon()}
+                  : "success"
+              : "default"}
+          >
+            {#snippet icon1()}
+              <Wallet class="h-4 w-4 text-muted-foreground" />
+            {/snippet}
+            {#snippet icon2()}
+              {#if budget.startingBalance}
                 <CreditCard class="h-4 w-4 text-muted-foreground" />
-              {/snippet}
-            </StatCard>
-          {:else}
-            <StatCard
-              title="Transactions"
-              value={budget.entries.length.toString()}
-              subtitle={budget.entries.length === 1 ? "expense" : "expenses"}
-            >
-              {#snippet icon()}
+              {:else}
                 <Receipt class="h-4 w-4 text-muted-foreground" />
-              {/snippet}
-            </StatCard>
-          {/if}
+              {/if}
+            {/snippet}
+          </DualStatCard>
 
-          <StatCard
-            title="Largest Expense"
-            value={formatCurrency(largestExpense, budget.currency)}
-            subtitle={budget.entries.length > 0
+          <!-- Transaction Stats Card -->
+          <DualStatCard
+            title1="Largest Expense"
+            value1={formatCurrency(largestExpense, budget.currency)}
+            subtitle1={budget.entries.length > 0
               ? "single transaction"
               : "no expenses yet"}
+            title2="Avg. Expense"
+            value2={formatCurrency(averageExpense, budget.currency)}
+            subtitle2={budget.entries.length > 0
+              ? "per transaction"
+              : "no data"}
           >
-            {#snippet icon()}
+            {#snippet icon1()}
               <TrendingUp class="h-4 w-4 text-muted-foreground" />
             {/snippet}
-          </StatCard>
-
-          <StatCard
-            title="Avg. Expense"
-            value={formatCurrency(averageExpense, budget.currency)}
-            subtitle={budget.entries.length > 0 ? "per transaction" : "no data"}
-          >
-            {#snippet icon()}
+            {#snippet icon2()}
               <ListOrdered class="h-4 w-4 text-muted-foreground" />
             {/snippet}
-          </StatCard>
+          </DualStatCard>
         </div>
 
         <!-- Two Column Layout -->
@@ -693,11 +681,6 @@
         <div class="max-w-2xl mx-auto space-y-8">
           <!-- Budget Information Section -->
           <div class="space-y-4">
-            <h3
-              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
-            >
-              Budget Information
-            </h3>
             <div class="space-y-4">
               <div class="space-y-2">
                 <Label for="budget-name">Budget Name</Label>
