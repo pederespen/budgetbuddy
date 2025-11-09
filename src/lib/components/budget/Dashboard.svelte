@@ -13,7 +13,6 @@
     dateFormatLabels,
   } from "$lib/utils/format";
   import { getCategoryById } from "$lib/utils/categories";
-  import * as Tabs from "$lib/components/ui/tabs";
   import * as Select from "$lib/components/ui/select";
   import { Label } from "$lib/components/ui/label";
   import { Input } from "$lib/components/ui/input";
@@ -39,10 +38,19 @@
     CreditCard,
     ListOrdered,
   } from "lucide-svelte";
+  import { activeTabStore } from "$lib/stores/navigation";
 
   let { budget }: { budget: Budget } = $props();
 
-  let activeTab = $state("overview");
+  let activeTab = $state($activeTabStore);
+
+  $effect(() => {
+    activeTab = $activeTabStore;
+  });
+
+  $effect(() => {
+    activeTabStore.set(activeTab);
+  });
 
   // Local state for settings
   let selectedCurrency = $state<Currency>(budget.currency);
@@ -533,29 +541,10 @@
 
 <!-- Desktop View -->
 <div class="hidden sm:flex h-full flex-col overflow-hidden">
-  <!-- Tabs Navigation -->
-  <Tabs.Root
-    bind:value={activeTab}
-    class="flex flex-col flex-1 overflow-hidden"
-  >
-    <Tabs.List class="grid w-full grid-cols-4 max-w-2xl flex-shrink-0 mx-auto">
-      <Tabs.Trigger value="overview" class="cursor-pointer"
-        >Overview</Tabs.Trigger
-      >
-      <Tabs.Trigger value="expenses" class="cursor-pointer"
-        >Expenses</Tabs.Trigger
-      >
-      <Tabs.Trigger value="insights" class="cursor-pointer"
-        >Insights</Tabs.Trigger
-      >
-      <Tabs.Trigger value="settings" class="cursor-pointer"
-        >Settings</Tabs.Trigger
-      >
-    </Tabs.List>
-
-    <!-- Overview Tab -->
-    <Tabs.Content value="overview" class="mt-4 flex-1 overflow-auto">
-      <div class="space-y-4 max-w-6xl mx-auto px-4 pb-4">
+  <!-- Content based on active tab -->
+  <div class="flex-1 overflow-auto">
+    {#if activeTab === "overview"}
+      <div class="space-y-4 max-w-6xl mx-auto">
         <!-- Key Metrics Grid -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
           <StatCard
@@ -642,231 +631,237 @@
           />
         </div>
       </div>
-    </Tabs.Content>
-
-    <!-- Expenses Tab -->
-    <Tabs.Content
-      value="expenses"
-      class="mt-6 flex-1 overflow-hidden flex flex-col"
-    >
-      <ExpenseList
-        {budget}
-        expenses={budget.entries}
-        categories={budget.categories}
-        currency={budget.currency}
-        onAdd={handleAddExpense}
-        onEdit={handleEditExpense}
-        onDelete={handleDeleteExpense}
-        onAddCategory={handleAddCategory}
-        onUpdateCategory={handleUpdateCategory}
-        onDeleteCategory={handleDeleteCategory}
-      />
-    </Tabs.Content>
-
-    <!-- Insights Tab -->
-    <Tabs.Content value="insights" class="mt-6 flex-1 overflow-auto">
-      {#if budget.entries.length === 0}
-        <div class="text-center py-12 text-muted-foreground">
-          <TrendingUp class="h-16 w-16 mx-auto mb-4 opacity-50" />
-          <p class="text-lg">No expenses yet</p>
-          <p class="text-sm mt-2">
-            Add some expenses to see insights and analytics
-          </p>
-        </div>
-      {:else}
-        <div class="space-y-6 pb-6">
-          <!-- Overview Cards -->
-          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <StatCard
-              title="Total Spending"
-              value={formatCurrency(totalSpent, budget.currency)}
-              subtitle="{budget.entries.length} transactions"
-            >
-              {#snippet icon()}
-                <Receipt class="h-4 w-4 text-muted-foreground" />
-              {/snippet}
-            </StatCard>
-            <StatCard
-              title="Active Categories"
-              value={new Set(
-                budget.entries.map((e) => e.categoryId)
-              ).size.toString()}
-              subtitle="Out of {budget.categories.length} total"
-            >
-              {#snippet icon()}
-                <ListOrdered class="h-4 w-4 text-muted-foreground" />
-              {/snippet}
-            </StatCard>
-            <StatCard
-              title="Largest Expense"
-              value={formatCurrency(largestExpense, budget.currency)}
-              subtitle="Single transaction"
-            >
-              {#snippet icon()}
-                <TrendingUp class="h-4 w-4 text-muted-foreground" />
-              {/snippet}
-            </StatCard>
-            <StatCard
-              title="Avg. Transaction"
-              value={formatCurrency(averageExpense, budget.currency)}
-              subtitle="Per expense"
-            >
-              {#snippet icon()}
-                <Wallet class="h-4 w-4 text-muted-foreground" />
-              {/snippet}
-            </StatCard>
+    {:else if activeTab === "expenses"}
+      <!-- Expenses Tab -->
+      <div class="mt-4 flex-1 overflow-hidden flex flex-col">
+        <ExpenseList
+          {budget}
+          expenses={budget.entries}
+          categories={budget.categories}
+          currency={budget.currency}
+          onAdd={handleAddExpense}
+          onEdit={handleEditExpense}
+          onDelete={handleDeleteExpense}
+          onAddCategory={handleAddCategory}
+          onUpdateCategory={handleUpdateCategory}
+          onDeleteCategory={handleDeleteCategory}
+        />
+      </div>
+    {:else if activeTab === "insights"}
+      <!-- Insights Tab -->
+      <div class="mt-4 flex-1 overflow-auto">
+        {#if budget.entries.length === 0}
+          <div class="text-center py-12 text-muted-foreground">
+            <TrendingUp class="h-16 w-16 mx-auto mb-4 opacity-50" />
+            <p class="text-lg">No expenses yet</p>
+            <p class="text-sm mt-2">
+              Add some expenses to see insights and analytics
+            </p>
           </div>
+        {:else}
+          <div class="space-y-6 pb-6">
+            <!-- Overview Cards -->
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <StatCard
+                title="Total Spending"
+                value={formatCurrency(totalSpent, budget.currency)}
+                subtitle="{budget.entries.length} transactions"
+              >
+                {#snippet icon()}
+                  <Receipt class="h-4 w-4 text-muted-foreground" />
+                {/snippet}
+              </StatCard>
+              <StatCard
+                title="Active Categories"
+                value={new Set(
+                  budget.entries.map((e) => e.categoryId)
+                ).size.toString()}
+                subtitle="Out of {budget.categories.length} total"
+              >
+                {#snippet icon()}
+                  <ListOrdered class="h-4 w-4 text-muted-foreground" />
+                {/snippet}
+              </StatCard>
+              <StatCard
+                title="Largest Expense"
+                value={formatCurrency(largestExpense, budget.currency)}
+                subtitle="Single transaction"
+              >
+                {#snippet icon()}
+                  <TrendingUp class="h-4 w-4 text-muted-foreground" />
+                {/snippet}
+              </StatCard>
+              <StatCard
+                title="Avg. Transaction"
+                value={formatCurrency(averageExpense, budget.currency)}
+                subtitle="Per expense"
+              >
+                {#snippet icon()}
+                  <Wallet class="h-4 w-4 text-muted-foreground" />
+                {/snippet}
+              </StatCard>
+            </div>
 
-          <!-- Charts Grid -->
-          <div class="grid gap-4 md:grid-cols-2">
-            <SpendingTrend {budget} />
-            <SpendingByCategory {budget} />
-          </div>
+            <!-- Charts Grid -->
+            <div class="grid gap-4 md:grid-cols-2">
+              <SpendingTrend {budget} />
+              <SpendingByCategory {budget} />
+            </div>
 
-          <div class="grid gap-4 md:grid-cols-2">
-            <SpendingByDayOfWeek {budget} />
-            <TopCategories {budget} />
-          </div>
-        </div>
-      {/if}
-    </Tabs.Content>
-
-    <!-- Settings Tab -->
-    <Tabs.Content value="settings" class="mt-6 flex-1 overflow-auto">
-      <div class="max-w-2xl mx-auto space-y-8">
-        <!-- Budget Information Section -->
-        <div class="space-y-4">
-          <h3
-            class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
-          >
-            Budget Information
-          </h3>
-          <div class="space-y-4">
-            <div class="space-y-2">
-              <Label for="budget-name">Budget Name</Label>
-              {#if isEditingName}
-                <div class="flex gap-2 max-w-xs">
-                  <Input
-                    id="budget-name"
-                    type="text"
-                    bind:value={editedName}
-                    class="flex-1"
-                    placeholder="Budget name"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onclick={handleSaveName}
-                    title="Save"
-                  >
-                    <Check class="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onclick={handleCancelEditName}
-                    title="Cancel"
-                  >
-                    <X class="h-4 w-4" />
-                  </Button>
-                </div>
-              {:else}
-                <div class="flex items-center gap-2 max-w-xs">
-                  <p class="text-sm flex-1">{budget.name}</p>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onclick={handleStartEditName}
-                    title="Edit name"
-                  >
-                    <Pencil class="h-4 w-4" />
-                  </Button>
-                </div>
-              {/if}
+            <div class="grid gap-4 md:grid-cols-2">
+              <SpendingByDayOfWeek {budget} />
+              <TopCategories {budget} />
             </div>
           </div>
-        </div>
-
-        <!-- Divider -->
-        <div class="border-t"></div>
-
-        <!-- Display Settings Section -->
-        <div class="space-y-4">
-          <h3
-            class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
-          >
-            Display Settings
-          </h3>
+        {/if}
+      </div>
+    {:else if activeTab === "settings"}
+      <!-- Settings Tab -->
+      <div class="mt-4 flex-1 overflow-auto">
+        <div class="max-w-2xl mx-auto space-y-8">
+          <!-- Budget Information Section -->
           <div class="space-y-4">
-            <div class="space-y-2">
-              <Label for="currency-desktop">Currency</Label>
-              <Select.Root
-                type="single"
-                bind:value={selectedCurrency}
-                onValueChange={handleCurrencyChange}
-                disabled={isConvertingCurrency}
-              >
-                <Select.Trigger
-                  id="currency-desktop"
-                  class="w-full max-w-xs"
+            <h3
+              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+            >
+              Budget Information
+            </h3>
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <Label for="budget-name">Budget Name</Label>
+                {#if isEditingName}
+                  <div class="flex gap-2 max-w-xs">
+                    <Input
+                      id="budget-name"
+                      type="text"
+                      bind:value={editedName}
+                      class="flex-1"
+                      placeholder="Budget name"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onclick={handleSaveName}
+                      title="Save"
+                    >
+                      <Check class="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onclick={handleCancelEditName}
+                      title="Cancel"
+                    >
+                      <X class="h-4 w-4" />
+                    </Button>
+                  </div>
+                {:else}
+                  <div class="flex items-center gap-2 max-w-xs">
+                    <p class="text-sm flex-1">{budget.name}</p>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onclick={handleStartEditName}
+                      title="Edit name"
+                    >
+                      <Pencil class="h-4 w-4" />
+                    </Button>
+                  </div>
+                {/if}
+              </div>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="border-t"></div>
+
+          <!-- Display Settings Section -->
+          <div class="space-y-4">
+            <h3
+              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+            >
+              Display Settings
+            </h3>
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <Label for="currency-desktop">Currency</Label>
+                <Select.Root
+                  type="single"
+                  bind:value={selectedCurrency}
+                  onValueChange={handleCurrencyChange}
                   disabled={isConvertingCurrency}
                 >
-                  <span>{currencyShortLabels[selectedCurrency]}</span>
-                </Select.Trigger>
-                <Select.Content>
-                  <Select.Item value="NOK" label="NOK (kr)"
-                    >NOK (kr)</Select.Item
+                  <Select.Trigger
+                    id="currency-desktop"
+                    class="w-full max-w-xs"
+                    disabled={isConvertingCurrency}
                   >
-                  <Select.Item value="USD" label="USD ($)">USD ($)</Select.Item>
-                  <Select.Item value="EUR" label="EUR (€)">EUR (€)</Select.Item>
-                  <Select.Item value="GBP" label="GBP (£)">GBP (£)</Select.Item>
-                  <Select.Item value="SEK" label="SEK (kr)"
-                    >SEK (kr)</Select.Item
-                  >
-                  <Select.Item value="DKK" label="DKK (kr)"
-                    >DKK (kr)</Select.Item
-                  >
-                </Select.Content>
-              </Select.Root>
-              <p class="text-xs text-muted-foreground">
-                {#if isConvertingCurrency}
-                  Converting all amounts using live exchange rates...
-                {:else}
-                  Changing currency will convert all amounts using live exchange
-                  rates
-                {/if}
-              </p>
-            </div>
+                    <span>{currencyShortLabels[selectedCurrency]}</span>
+                  </Select.Trigger>
+                  <Select.Content>
+                    <Select.Item value="NOK" label="NOK (kr)"
+                      >NOK (kr)</Select.Item
+                    >
+                    <Select.Item value="USD" label="USD ($)"
+                      >USD ($)</Select.Item
+                    >
+                    <Select.Item value="EUR" label="EUR (€)"
+                      >EUR (€)</Select.Item
+                    >
+                    <Select.Item value="GBP" label="GBP (£)"
+                      >GBP (£)</Select.Item
+                    >
+                    <Select.Item value="SEK" label="SEK (kr)"
+                      >SEK (kr)</Select.Item
+                    >
+                    <Select.Item value="DKK" label="DKK (kr)"
+                      >DKK (kr)</Select.Item
+                    >
+                  </Select.Content>
+                </Select.Root>
+                <p class="text-xs text-muted-foreground">
+                  {#if isConvertingCurrency}
+                    Converting all amounts using live exchange rates...
+                  {:else}
+                    Changing currency will convert all amounts using live
+                    exchange rates
+                  {/if}
+                </p>
+              </div>
 
-            <div class="space-y-2">
-              <Label for="dateformat-desktop">Date Format</Label>
-              <Select.Root
-                type="single"
-                bind:value={selectedDateFormat}
-                onValueChange={handleDateFormatChange}
-              >
-                <Select.Trigger id="dateformat-desktop" class="w-full max-w-xs">
-                  <span>{dateFormatLabels[selectedDateFormat]}</span>
-                </Select.Trigger>
-                <Select.Content>
-                  <Select.Item value="DD/MM/YYYY" label="DD/MM/YYYY"
-                    >DD/MM/YYYY</Select.Item
+              <div class="space-y-2">
+                <Label for="dateformat-desktop">Date Format</Label>
+                <Select.Root
+                  type="single"
+                  bind:value={selectedDateFormat}
+                  onValueChange={handleDateFormatChange}
+                >
+                  <Select.Trigger
+                    id="dateformat-desktop"
+                    class="w-full max-w-xs"
                   >
-                  <Select.Item value="MM/DD/YYYY" label="MM/DD/YYYY"
-                    >MM/DD/YYYY</Select.Item
-                  >
-                  <Select.Item value="YYYY-MM-DD" label="YYYY-MM-DD"
-                    >YYYY-MM-DD</Select.Item
-                  >
-                  <Select.Item value="DD.MM.YYYY" label="DD.MM.YYYY"
-                    >DD.MM.YYYY</Select.Item
-                  >
-                </Select.Content>
-              </Select.Root>
+                    <span>{dateFormatLabels[selectedDateFormat]}</span>
+                  </Select.Trigger>
+                  <Select.Content>
+                    <Select.Item value="DD/MM/YYYY" label="DD/MM/YYYY"
+                      >DD/MM/YYYY</Select.Item
+                    >
+                    <Select.Item value="MM/DD/YYYY" label="MM/DD/YYYY"
+                      >MM/DD/YYYY</Select.Item
+                    >
+                    <Select.Item value="YYYY-MM-DD" label="YYYY-MM-DD"
+                      >YYYY-MM-DD</Select.Item
+                    >
+                    <Select.Item value="DD.MM.YYYY" label="DD.MM.YYYY"
+                      >DD.MM.YYYY</Select.Item
+                    >
+                  </Select.Content>
+                </Select.Root>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </Tabs.Content>
-  </Tabs.Root>
+    {/if}
+  </div>
 </div>
