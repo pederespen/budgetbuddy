@@ -309,7 +309,7 @@
   <div class="flex-1 overflow-auto pb-20">
     {#if activeTab === "overview"}
       <!-- Overview Content -->
-      <div class="space-y-3 p-3">
+      <div class="space-y-3 py-3">
         <!-- Key Metrics Grid -->
         <div class="grid grid-cols-1 gap-2">
           <!-- Spending Overview Card -->
@@ -406,7 +406,7 @@
       </div>
     {:else if activeTab === "insights"}
       <!-- Insights Content -->
-      <div class="p-3">
+      <div class="py-3">
         {#if filteredEntries.length === 0}
           <div class="text-center py-12 text-muted-foreground">
             <TrendingUp class="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -610,7 +610,7 @@
   <!-- Content based on active tab -->
   <div class="flex-1 overflow-auto">
     {#if activeTab === "overview"}
-      <div class="space-y-4 max-w-6xl mx-auto">
+      <div class="space-y-4 py-4">
         <!-- Key Metrics Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <!-- Spending Overview Card -->
@@ -694,7 +694,9 @@
       </div>
     {:else if activeTab === "expenses"}
       <!-- Expenses Tab -->
-      <div class="mt-4 flex-1 overflow-hidden flex flex-col">
+    {:else if activeTab === "expenses"}
+      <!-- Expenses Tab -->
+      <div class="px-4 py-4 flex-1 overflow-hidden flex flex-col">
         <ExpenseList
           {budget}
           expenses={filteredEntries}
@@ -710,7 +712,7 @@
       </div>
     {:else if activeTab === "insights"}
       <!-- Insights Tab -->
-      <div class="mt-4 flex-1 overflow-auto">
+      <div class="py-4 flex-1 overflow-auto">
         {#if filteredEntries.length === 0}
           <div class="text-center py-12 text-muted-foreground">
             <TrendingUp class="h-16 w-16 mx-auto mb-4 opacity-50" />
@@ -736,7 +738,7 @@
       </div>
     {:else if activeTab === "settings"}
       <!-- Settings Tab -->
-      <div class="mt-4 flex-1 overflow-auto">
+      <div class="py-4 flex-1 overflow-auto">
         <div class="max-w-2xl mx-auto space-y-8">
           <!-- Budget Information Section -->
           <div class="space-y-4">

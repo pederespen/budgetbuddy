@@ -52,41 +52,42 @@
 <header
   class="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
 >
-  <div class="container mx-auto flex h-14 items-center px-4 mt-2">
-    <div class="flex items-center">
-      {#if browser}
-        <img
-          src={theme === "dark" ? logoDark : logo}
-          alt="BudgetBuddy"
-          class="h-10"
-        />
-      {:else}
-        <img src={logo} alt="BudgetBuddy" class="h-10" />
-      {/if}
-    </div>
-
-    {#if showTabs}
-      <div class="hidden sm:flex justify-center flex-1">
-        <Tabs.Root bind:value={activeTab}>
-          <Tabs.List class="grid w-full grid-cols-4 max-w-2xl">
-            <Tabs.Trigger value="overview" class="cursor-pointer px-6">
-              Overview
-            </Tabs.Trigger>
-            <Tabs.Trigger value="expenses" class="cursor-pointer px-6">
-              Expenses
-            </Tabs.Trigger>
-            <Tabs.Trigger value="insights" class="cursor-pointer px-6">
-              Insights
-            </Tabs.Trigger>
-            <Tabs.Trigger value="settings" class="cursor-pointer px-6">
-              Settings
-            </Tabs.Trigger>
-          </Tabs.List>
-        </Tabs.Root>
+  <div class="max-w-6xl mx-auto mt-2 relative">
+    <div class="flex h-14 items-center px-4 relative">
+      <div class="flex items-center">
+        {#if browser}
+          <img
+            src={theme === "dark" ? logoDark : logo}
+            alt="BudgetBuddy"
+            class="h-10"
+          />
+        {:else}
+          <img src={logo} alt="BudgetBuddy" class="h-10" />
+        {/if}
       </div>
-    {/if}
 
-    <div class="ml-auto flex items-center gap-2">
+      {#if showTabs}
+        <div class="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Tabs.Root bind:value={activeTab}>
+            <Tabs.List class="grid w-full grid-cols-4 max-w-2xl">
+              <Tabs.Trigger value="overview" class="cursor-pointer px-6">
+                Overview
+              </Tabs.Trigger>
+              <Tabs.Trigger value="expenses" class="cursor-pointer px-6">
+                Expenses
+              </Tabs.Trigger>
+              <Tabs.Trigger value="insights" class="cursor-pointer px-6">
+                Insights
+              </Tabs.Trigger>
+              <Tabs.Trigger value="settings" class="cursor-pointer px-6">
+                Settings
+              </Tabs.Trigger>
+            </Tabs.List>
+          </Tabs.Root>
+        </div>
+      {/if}
+
+      <div class="ml-auto flex items-center gap-2 z-10">
       {#if showTabs}
         <Select.Root
           type="single"

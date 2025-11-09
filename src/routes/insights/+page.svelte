@@ -54,7 +54,7 @@
   });
 </script>
 
-<div class="container mx-auto p-6 space-y-6">
+<div class="max-w-6xl mx-auto px-4 py-6 space-y-6">
   <div class="flex flex-col gap-2">
     <h1 class="text-3xl font-bold tracking-tight">Insights</h1>
     <p class="text-muted-foreground">

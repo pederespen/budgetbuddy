@@ -61,26 +61,23 @@
   function roundToNice(value: number): number {
     if (value === 0) return 0;
 
-    // Add just a small padding (5%) to the max value
-    const paddedValue = value * 1.05;
+    // Add 10% padding to the max value
+    const paddedValue = value * 1.1;
 
-    // Find the appropriate step size
+    // Find the order of magnitude
     const magnitude = Math.pow(10, Math.floor(Math.log10(paddedValue)));
 
-    // Try different nice intervals: 1000, 2000, 2500, 5000
-    const steps = [1, 2, 2.5, 5, 10];
+    // Try nice step sizes relative to magnitude
+    const steps = [1, 2, 2.5, 5];
 
     for (const step of steps) {
       const stepValue = step * magnitude;
       const rounded = Math.ceil(paddedValue / stepValue) * stepValue;
-      // Use this if it's not too much overhead (less than 20% extra space)
-      if (rounded <= value * 1.2) {
-        return rounded;
-      }
+      return rounded; // Return the first one that works
     }
 
-    // Fallback
-    return Math.ceil(paddedValue / (magnitude * 10)) * (magnitude * 10);
+    // Fallback (shouldn't reach here)
+    return Math.ceil(paddedValue);
   }
 
   const maxValueRounded = $derived(roundToNice(maxValue));
