@@ -38,7 +38,6 @@
     Check,
     X,
     Wallet,
-    CreditCard,
     ListOrdered,
   } from "lucide-svelte";
   import { activeTabStore } from "$lib/stores/navigation";
@@ -85,57 +84,9 @@
     )
   );
 
-  // Calculate prorated starting balance based on the date range and budget period
-  let proratedStartingBalance = $derived.by(() => {
-    if (!budget.startingBalance || dateRange.preset === "all") {
-      return budget.startingBalance;
-    }
-
-    // If we have a date range, calculate how many days are in the filter
-    if (dateRange.startDate && dateRange.endDate) {
-      const start = new Date(dateRange.startDate);
-      const end = new Date(dateRange.endDate);
-      const daysInRange =
-        Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) +
-        1;
-
-      // Determine days in budget period
-      let daysInPeriod: number;
-      switch (budget.period) {
-        case "weekly":
-          daysInPeriod = 7;
-          break;
-        case "biweekly":
-          daysInPeriod = 14;
-          break;
-        case "monthly":
-          daysInPeriod = 30; // Use average month
-          break;
-        default:
-          daysInPeriod = 30;
-      }
-
-      // Prorate the balance based on the ratio
-      const ratio = Math.min(daysInRange / daysInPeriod, 1);
-      return budget.startingBalance * ratio;
-    }
-
-    return budget.startingBalance;
-  });
-
   // Calculate total spending (using filtered entries)
   let totalSpent = $derived(
     filteredEntries.reduce((sum, entry) => sum + entry.amount, 0)
-  );
-
-  // Calculate remaining balance using prorated starting balance
-  let remainingBalance = $derived(
-    proratedStartingBalance ? proratedStartingBalance - totalSpent : null
-  );
-
-  // Determine if over budget (spent more than prorated starting balance)
-  let isOverBudget = $derived(
-    proratedStartingBalance ? totalSpent > proratedStartingBalance : false
   );
 
   // Calculate largest single expense
@@ -154,7 +105,6 @@
   let filteredBudget = $derived({
     ...budget,
     entries: filteredEntries,
-    startingBalance: proratedStartingBalance,
   });
 
   async function getExchangeRate(
@@ -193,11 +143,6 @@
         amount: entry.amount * rate,
       }));
 
-      // Convert starting balance if it exists
-      const convertedStartingBalance = budget.startingBalance
-        ? budget.startingBalance * rate
-        : undefined;
-
       // Convert budget limits
       const convertedBudgetLimits: { [key: string]: number } = {};
       for (const [categoryId, limit] of Object.entries(budget.budgetLimits)) {
@@ -208,7 +153,6 @@
       budgetStore.updateBudget(budget.id, {
         currency: toCurrency,
         entries: convertedEntries,
-        startingBalance: convertedStartingBalance,
         budgetLimits: convertedBudgetLimits,
       });
 
@@ -316,37 +260,17 @@
           <DualStatCard
             title1="Total Spent"
             value1={formatCurrency(totalSpent, budget.currency)}
-            variant1={isOverBudget ? "danger" : "default"}
-            title2={budget.startingBalance ? "Remaining" : "Transactions"}
-            value2={budget.startingBalance
-              ? formatCurrency(
-                  Math.max(0, (proratedStartingBalance ?? 0) - totalSpent),
-                  budget.currency
-                )
-              : filteredEntries.length.toString()}
-            subtitle2={budget.startingBalance
-              ? undefined
-              : filteredEntries.length === 1
-                ? "expense"
-                : "expenses"}
-            variant2={budget.startingBalance
-              ? isOverBudget
-                ? "danger"
-                : remainingBalance &&
-                    remainingBalance < (proratedStartingBalance ?? 0) * 0.2
-                  ? "warning"
-                  : "success"
-              : "default"}
+            variant1="default"
+            title2="Transactions"
+            value2={filteredEntries.length.toString()}
+            subtitle2={filteredEntries.length === 1 ? "expense" : "expenses"}
+            variant2="default"
           >
             {#snippet icon1()}
               <Wallet class="h-4 w-4 text-muted-foreground" />
             {/snippet}
             {#snippet icon2()}
-              {#if budget.startingBalance}
-                <CreditCard class="h-4 w-4 text-muted-foreground" />
-              {:else}
-                <Receipt class="h-4 w-4 text-muted-foreground" />
-              {/if}
+              <Receipt class="h-4 w-4 text-muted-foreground" />
             {/snippet}
           </DualStatCard>
 
@@ -617,37 +541,17 @@
           <DualStatCard
             title1="Total Spent"
             value1={formatCurrency(totalSpent, budget.currency)}
-            variant1={isOverBudget ? "danger" : "default"}
-            title2={budget.startingBalance ? "Remaining" : "Transactions"}
-            value2={budget.startingBalance
-              ? formatCurrency(
-                  Math.max(0, (proratedStartingBalance ?? 0) - totalSpent),
-                  budget.currency
-                )
-              : filteredEntries.length.toString()}
-            subtitle2={budget.startingBalance
-              ? undefined
-              : filteredEntries.length === 1
-                ? "expense"
-                : "expenses"}
-            variant2={budget.startingBalance
-              ? isOverBudget
-                ? "danger"
-                : remainingBalance &&
-                    remainingBalance < (proratedStartingBalance ?? 0) * 0.2
-                  ? "warning"
-                  : "success"
-              : "default"}
+            variant1="default"
+            title2="Transactions"
+            value2={filteredEntries.length.toString()}
+            subtitle2={filteredEntries.length === 1 ? "expense" : "expenses"}
+            variant2="default"
           >
             {#snippet icon1()}
               <Wallet class="h-4 w-4 text-muted-foreground" />
             {/snippet}
             {#snippet icon2()}
-              {#if budget.startingBalance}
-                <CreditCard class="h-4 w-4 text-muted-foreground" />
-              {:else}
-                <Receipt class="h-4 w-4 text-muted-foreground" />
-              {/if}
+              <Receipt class="h-4 w-4 text-muted-foreground" />
             {/snippet}
           </DualStatCard>
 

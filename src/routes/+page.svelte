@@ -28,7 +28,6 @@
     name: string;
     currency: Currency;
     period: BudgetPeriod;
-    startingBalance?: number;
   }) {
     const now = new Date().toISOString();
     const newBudget = {
@@ -37,7 +36,6 @@
       currency: data.currency,
       dateFormat: "DD/MM/YYYY" as const,
       period: data.period,
-      startingBalance: data.startingBalance,
       categories: getDefaultCategories(),
       entries: [],
       budgetLimits: {},
@@ -141,36 +139,19 @@
                 >
                   Create New Budget
                 </Button>
-                <div class="relative">
-                  <div class="absolute inset-0 flex items-center">
-                    <span class="w-full border-t"></span>
-                  </div>
-                  <div class="relative flex justify-center text-xs uppercase">
-                    <span class="bg-background px-2 text-muted-foreground"
-                      >Or</span
-                    >
-                  </div>
-                </div>
                 <Button
                   variant="outline"
                   class="w-full"
-                  onclick={handleLoadDemo}>Load Demo Data</Button
+                  onclick={handleImportFile}>Import from File (JSON)</Button
                 >
-                <div class="relative">
-                  <div class="absolute inset-0 flex items-center">
-                    <span class="w-full border-t"></span>
-                  </div>
-                  <div class="relative flex justify-center text-xs uppercase">
-                    <span class="bg-background px-2 text-muted-foreground"
-                      >Or</span
-                    >
-                  </div>
+                <div class="pt-2">
+                  <div class="w-full border-t mb-4"></div>
+                  <Button
+                    variant="outline"
+                    class="w-full"
+                    onclick={handleLoadDemo}>Load Demo Data</Button
+                  >
                 </div>
-                <Button
-                  variant="outline"
-                  class="w-full"
-                  onclick={handleImportFile}>Import from File</Button
-                >
               </CardContent>
             </Card>
           </div>
