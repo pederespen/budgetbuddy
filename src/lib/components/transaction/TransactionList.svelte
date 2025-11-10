@@ -359,14 +359,14 @@
               type="text"
               placeholder="Search..."
               bind:value={searchQuery}
-              class="pl-8 h-8 text-sm bg-background placeholder:text-foreground/40"
+              class="pl-8 h-8 text-sm bg-card placeholder:text-foreground/40"
             />
           </div>
 
           <!-- Transaction Type Filter -->
           <div class="w-[110px]">
             <Select.Root type="single" bind:value={filterTransactionType}>
-              <Select.Trigger class="w-full !h-8 text-sm !py-1 bg-background">
+              <Select.Trigger class="w-full !h-8 text-sm !py-1 bg-card">
                 <span class="truncate">
                   {filterTransactionType === "all"
                     ? "All Types"
@@ -390,7 +390,7 @@
           <!-- Category Filter -->
           <div class="w-[160px]">
             <Select.Root type="single" bind:value={filterCategory}>
-              <Select.Trigger class="w-full !h-8 text-sm !py-1 bg-background">
+              <Select.Trigger class="w-full !h-8 text-sm !py-1 bg-card">
                 <span class="truncate">
                   {filterCategory === "all"
                     ? "All Categories"
