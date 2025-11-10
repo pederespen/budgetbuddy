@@ -3,15 +3,11 @@
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import * as Select from "$lib/components/ui/select";
-  import type { Currency, BudgetPeriod } from "$lib/types";
-  import { currencyLabels, periodLabels } from "$lib/utils/format";
+  import type { Currency } from "$lib/types";
+  import { currencyLabels } from "$lib/utils/format";
 
   interface Props {
-    onsubmit: (data: {
-      name: string;
-      currency: Currency;
-      period: BudgetPeriod;
-    }) => void;
+    onsubmit: (data: { name: string; currency: Currency }) => void;
     oncancel?: () => void;
   }
 
@@ -19,11 +15,10 @@
 
   let name = $state("My Budget");
   let currency = $state<Currency>("NOK");
-  let period = $state<BudgetPeriod>("monthly");
 
   function handleSubmit(e: Event) {
     e.preventDefault();
-    onsubmit({ name, currency, period });
+    onsubmit({ name, currency });
   }
 </script>
 
@@ -63,20 +58,6 @@
         <Select.Item value="DKK" label="DKK - Danish Krone">
           DKK - Danish Krone
         </Select.Item>
-      </Select.Content>
-    </Select.Root>
-  </div>
-
-  <div class="space-y-2">
-    <Label for="period">Budget Period</Label>
-    <Select.Root type="single" bind:value={period}>
-      <Select.Trigger id="period" class="w-full bg-background">
-        <span>{periodLabels[period]}</span>
-      </Select.Trigger>
-      <Select.Content>
-        <Select.Item value="weekly" label="Weekly">Weekly</Select.Item>
-        <Select.Item value="biweekly" label="Biweekly">Biweekly</Select.Item>
-        <Select.Item value="monthly" label="Monthly">Monthly</Select.Item>
       </Select.Content>
     </Select.Root>
   </div>

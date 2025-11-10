@@ -1,4 +1,4 @@
-import type { Currency, DateFormat, BudgetPeriod } from "../types";
+import type { Currency, DateFormat } from "../types";
 
 // Currency symbols for display
 export const currencySymbols: Record<Currency, string> = {
@@ -36,13 +36,6 @@ export const dateFormatLabels: Record<DateFormat, string> = {
   "MM/DD/YYYY": "MM/DD/YYYY",
   "YYYY-MM-DD": "YYYY-MM-DD",
   "DD.MM.YYYY": "DD.MM.YYYY",
-};
-
-// Budget period labels
-export const periodLabels: Record<BudgetPeriod, string> = {
-  weekly: "Weekly",
-  biweekly: "Biweekly",
-  monthly: "Monthly",
 };
 
 export function formatCurrency(amount: number, currency: Currency): string {

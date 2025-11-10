@@ -14,7 +14,7 @@
   import { toast } from "svelte-sonner";
   import Dashboard from "$lib/components/budget/Dashboard.svelte";
   import BudgetSetupForm from "$lib/components/forms/BudgetSetupForm.svelte";
-  import type { Currency, BudgetPeriod, Budget } from "$lib/types";
+  import type { Currency, Budget } from "$lib/types";
 
   let showCreateForm = $state(false);
 
@@ -24,18 +24,13 @@
     )
   );
 
-  function handleCreateBudget(data: {
-    name: string;
-    currency: Currency;
-    period: BudgetPeriod;
-  }) {
+  function handleCreateBudget(data: { name: string; currency: Currency }) {
     const now = new Date().toISOString();
     const newBudget = {
       id: crypto.randomUUID(),
       name: data.name,
       currency: data.currency,
       dateFormat: "DD/MM/YYYY" as const,
-      period: data.period,
       categories: getDefaultCategories(),
       entries: [],
       budgetLimits: {},
@@ -45,7 +40,7 @@
     budgetStore.addBudget(newBudget);
     showCreateForm = false;
     toast.success("Budget created successfully!", {
-      description: `${data.name} is ready to track your ${data.period} expenses.`,
+      description: `${data.name} is ready to track your expenses.`,
     });
   }
 

@@ -1,7 +1,5 @@
 export type Currency = "NOK" | "USD" | "EUR" | "GBP" | "SEK" | "DKK";
 
-export type BudgetPeriod = "weekly" | "biweekly" | "monthly";
-
 export type DateFormat =
   | "MM/DD/YYYY"
   | "DD/MM/YYYY"
@@ -32,7 +30,6 @@ export interface Budget {
   name: string;
   currency: Currency;
   dateFormat: DateFormat;
-  period: BudgetPeriod;
   categories: Category[];
   entries: Expense[];
   budgetLimits: BudgetLimit;
