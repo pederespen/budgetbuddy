@@ -37,8 +37,14 @@
     X,
     Wallet,
     ListOrdered,
+    Download,
+    FileJson,
+    FileText,
+    FileSpreadsheet,
   } from "lucide-svelte";
   import { activeTabStore } from "$lib/stores/navigation";
+  import { exportAsJSON, exportAsCSV, exportAsXLSX } from "$lib/utils/export";
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 
   let { budget }: { budget: Budget } = $props();
 
@@ -469,6 +475,46 @@
               </div>
             </div>
           </div>
+
+          <!-- Export Section -->
+          <div class="space-y-3">
+            <h3
+              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+            >
+              Export Data
+            </h3>
+            <div class="space-y-2">
+              <p class="text-sm text-muted-foreground">
+                Download your budget data in different formats
+              </p>
+              <div class="flex gap-2">
+                <Button
+                  variant="outline"
+                  onclick={() => exportAsJSON(budget)}
+                  class="flex-1 justify-start"
+                >
+                  <FileJson class="mr-2 h-4 w-4" />
+                  JSON
+                </Button>
+                <Button
+                  variant="outline"
+                  onclick={() => exportAsCSV(budget)}
+                  class="flex-1 justify-start"
+                >
+                  <FileText class="mr-2 h-4 w-4" />
+                  CSV
+                </Button>
+                <Button
+                  variant="outline"
+                  onclick={() => exportAsXLSX(budget)}
+                  class="flex-1 justify-start"
+                >
+                  <FileSpreadsheet class="mr-2 h-4 w-4" />
+                  Excel
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     {/if}
@@ -792,6 +838,46 @@
                     >
                   </Select.Content>
                 </Select.Root>
+              </div>
+            </div>
+          </div>
+
+          <!-- Export Section -->
+          <div class="space-y-3">
+            <h3
+              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+            >
+              Export Data
+            </h3>
+            <div class="space-y-2">
+              <p class="text-sm text-muted-foreground">
+                Download your budget data in different formats
+              </p>
+              <div class="flex gap-2 max-w-xs">
+                <Button
+                  variant="outline"
+                  onclick={() => exportAsJSON(budget)}
+                  class="flex-1 justify-start"
+                >
+                  <FileJson class="mr-2 h-4 w-4" />
+                  JSON
+                </Button>
+                <Button
+                  variant="outline"
+                  onclick={() => exportAsCSV(budget)}
+                  class="flex-1 justify-start"
+                >
+                  <FileText class="mr-2 h-4 w-4" />
+                  CSV
+                </Button>
+                <Button
+                  variant="outline"
+                  onclick={() => exportAsXLSX(budget)}
+                  class="flex-1 justify-start"
+                >
+                  <FileSpreadsheet class="mr-2 h-4 w-4" />
+                  Excel
+                </Button>
               </div>
             </div>
           </div>

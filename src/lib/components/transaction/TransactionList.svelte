@@ -33,6 +33,7 @@
     Search,
     Filter,
     X,
+    Tags,
   } from "lucide-svelte";
   import { parseDate } from "@internationalized/date";
   import type { DateValue } from "@internationalized/date";
@@ -350,7 +351,7 @@
       {#if showFilters}
         <div class="hidden sm:flex items-center gap-2">
           <!-- Search -->
-          <div class="w-[160px] relative">
+          <div class="w-[140px] relative">
             <Search
               class="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"
             />
@@ -360,6 +361,30 @@
               bind:value={searchQuery}
               class="pl-8 h-8 text-sm bg-background placeholder:text-foreground/40"
             />
+          </div>
+
+          <!-- Transaction Type Filter -->
+          <div class="w-[110px]">
+            <Select.Root type="single" bind:value={filterTransactionType}>
+              <Select.Trigger class="w-full !h-8 text-sm !py-1 bg-background">
+                <span class="truncate">
+                  {filterTransactionType === "all"
+                    ? "All Types"
+                    : filterTransactionType === "income"
+                      ? "Income"
+                      : "Expenses"}
+                </span>
+              </Select.Trigger>
+              <Select.Content>
+                <Select.Item value="all" label="All Types">
+                  All Types
+                </Select.Item>
+                <Select.Item value="income" label="Income">Income</Select.Item>
+                <Select.Item value="expense" label="Expenses">
+                  Expenses
+                </Select.Item>
+              </Select.Content>
+            </Select.Root>
           </div>
 
           <!-- Category Filter -->
@@ -412,43 +437,12 @@
         </Button>
       {/if}
 
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          <Button variant="outline" size="sm">
-            <Download class="h-4 w-4 sm:mr-2" />
-            <span class="hidden sm:inline">Export</span>
-          </Button>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content align="end">
-          <DropdownMenu.Item
-            onclick={() => exportAsJSON(budget)}
-            class="cursor-pointer"
-          >
-            <FileJson class="mr-2 h-4 w-4" />
-            Export as JSON
-          </DropdownMenu.Item>
-          <DropdownMenu.Item
-            onclick={() => exportAsCSV(budget)}
-            class="cursor-pointer"
-          >
-            <FileText class="mr-2 h-4 w-4" />
-            Export as CSV
-          </DropdownMenu.Item>
-          <DropdownMenu.Item
-            onclick={() => exportAsXLSX(budget)}
-            class="cursor-pointer"
-          >
-            <FileSpreadsheet class="mr-2 h-4 w-4" />
-            Export as Excel
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
       <Button
         variant="outline"
         size="sm"
         onclick={() => (showCategoryManager = true)}
       >
-        <Settings class="h-4 w-4 sm:mr-2" />
+        <Tags class="h-4 w-4 sm:mr-2" />
         <span class="hidden sm:inline">Edit Categories</span>
       </Button>
       <Button size="sm" onclick={handleAddNew} disabled={showNewTransactionRow}>
@@ -473,6 +467,24 @@
           class="pl-9"
         />
       </div>
+
+      <!-- Transaction Type Filter -->
+      <Select.Root type="single" bind:value={filterTransactionType}>
+        <Select.Trigger class="w-full">
+          <span>
+            {filterTransactionType === "all"
+              ? "All Types"
+              : filterTransactionType === "income"
+                ? "Income"
+                : "Expenses"}
+          </span>
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Item value="all" label="All Types">All Types</Select.Item>
+          <Select.Item value="income" label="Income">Income</Select.Item>
+          <Select.Item value="expense" label="Expenses">Expenses</Select.Item>
+        </Select.Content>
+      </Select.Root>
 
       <!-- Category Filter -->
       <Select.Root type="single" bind:value={filterCategory}>
@@ -555,6 +567,7 @@
             {@const CategoryIcon = getSortIcon("category")}
             {@const DateIcon = getSortIcon("date")}
             {@const AmountIcon = getSortIcon("amount")}
+            <TableHead class="w-[100px]">Type</TableHead>
             <TableHead>
               <button
                 onclick={() => handleSort("category")}

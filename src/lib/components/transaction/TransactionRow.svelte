@@ -33,7 +33,12 @@
 </script>
 
 {#if variant === "table"}
-  <!-- Desktop Table Row: Category | Date | Note | Amount | Actions -->
+  <!-- Desktop Table Row: Type | Category | Date | Note | Amount | Actions -->
+  <td class="w-[100px]">
+    <span class="text-sm">
+      {isIncome ? "Income" : "Expense"}
+    </span>
+  </td>
   <td class="w-[200px]">
     <div class="flex items-center gap-2">
       {#if category && Icon}
@@ -54,8 +59,8 @@
     {transaction.note || ""}
   </td>
   <td class="text-right font-semibold w-[120px]">
-    <span class={isIncome ? "text-green-600" : ""}>
-      {isIncome ? "+" : ""}{formatCurrency(transaction.amount, currency)}
+    <span>
+      {isIncome ? "+" : "-"}{formatCurrency(transaction.amount, currency)}
     </span>
   </td>
   <td class="text-right w-[80px]">
@@ -107,8 +112,8 @@
 
     <!-- Amount -->
     <div class="text-right flex-shrink-0">
-      <div class="font-semibold" class:text-green-600={isIncome}>
-        {isIncome ? "+" : ""}{formatCurrency(transaction.amount, currency)}
+      <div class="font-semibold">
+        {isIncome ? "+" : "-"}{formatCurrency(transaction.amount, currency)}
       </div>
     </div>
 

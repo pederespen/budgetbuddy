@@ -93,7 +93,22 @@
 </script>
 
 {#if variant === "table"}
-  <!-- Table Row Variant: Category | Date | Note | Amount | Actions -->
+  <!-- Table Row Variant: Type | Category | Date | Note | Amount | Actions -->
+  <td class="w-[100px]">
+    <Select.Root type="single" bind:value={transactionType}>
+      <Select.Trigger
+        class="h-8 text-xs bg-card border-input w-full cursor-pointer"
+      >
+        <span>
+          {transactionType === "income" ? "Income" : "Expense"}
+        </span>
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Item value="income" label="Income">Income</Select.Item>
+        <Select.Item value="expense" label="Expense">Expense</Select.Item>
+      </Select.Content>
+    </Select.Root>
+  </td>
   <td class="w-[200px]">
     <Select.Root type="single" bind:value={categoryId}>
       <Select.Trigger
@@ -184,6 +199,22 @@
   <!-- Card Variant for Mobile -->
   <div class="space-y-4">
     <div class="space-y-3">
+      <!-- Transaction Type -->
+      <div>
+        <Label class="text-sm font-medium mb-1.5 block">Type</Label>
+        <Select.Root type="single" bind:value={transactionType}>
+          <Select.Trigger class="h-10 bg-card cursor-pointer w-full">
+            <span>
+              {transactionType === "income" ? "Income" : "Expense"}
+            </span>
+          </Select.Trigger>
+          <Select.Content>
+            <Select.Item value="income" label="Income">Income</Select.Item>
+            <Select.Item value="expense" label="Expense">Expense</Select.Item>
+          </Select.Content>
+        </Select.Root>
+      </div>
+
       <!-- Category -->
       <div>
         <Label class="text-sm font-medium mb-1.5 block">Category</Label>
