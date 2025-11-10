@@ -226,7 +226,6 @@
             variant1="default"
             title2="Transactions"
             value2={filteredEntries.length.toString()}
-            subtitle2={filteredEntries.length === 1 ? "expense" : "expenses"}
             variant2="default"
           >
             {#snippet icon1()}
@@ -241,14 +240,8 @@
           <DualStatCard
             title1="Largest Expense"
             value1={formatCurrency(largestExpense, budget.currency)}
-            subtitle1={filteredEntries.length > 0
-              ? "single transaction"
-              : "no expenses yet"}
             title2="Avg. Expense"
             value2={formatCurrency(averageExpense, budget.currency)}
-            subtitle2={filteredEntries.length > 0
-              ? "per transaction"
-              : "no data"}
           >
             {#snippet icon1()}
               <TrendingUp class="h-4 w-4 text-muted-foreground" />
@@ -284,7 +277,7 @@
           categories={budget.categories}
           currency={budget.currency}
           onAdd={handleAddExpense}
-          onEdit={handleEditExpense}
+          onEdit={handleUpdateExpense}
           onDelete={handleDeleteExpense}
           onAddCategory={handleAddCategory}
           onUpdateCategory={handleUpdateCategory}
@@ -507,7 +500,6 @@
             variant1="default"
             title2="Transactions"
             value2={filteredEntries.length.toString()}
-            subtitle2={filteredEntries.length === 1 ? "expense" : "expenses"}
             variant2="default"
           >
             {#snippet icon1()}
@@ -522,14 +514,8 @@
           <DualStatCard
             title1="Largest Expense"
             value1={formatCurrency(largestExpense, budget.currency)}
-            subtitle1={filteredEntries.length > 0
-              ? "single transaction"
-              : "no expenses yet"}
             title2="Avg. Expense"
             value2={formatCurrency(averageExpense, budget.currency)}
-            subtitle2={filteredEntries.length > 0
-              ? "per transaction"
-              : "no data"}
           >
             {#snippet icon1()}
               <TrendingUp class="h-4 w-4 text-muted-foreground" />
@@ -568,7 +554,7 @@
           categories={budget.categories}
           currency={budget.currency}
           onAdd={handleAddExpense}
-          onEdit={handleEditExpense}
+          onEdit={handleUpdateExpense}
           onDelete={handleDeleteExpense}
           onAddCategory={handleAddCategory}
           onUpdateCategory={handleUpdateCategory}
