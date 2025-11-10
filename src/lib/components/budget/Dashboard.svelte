@@ -491,7 +491,7 @@
                 <Button
                   variant="outline"
                   onclick={() => exportAsJSON(budget)}
-                  class="flex-1 justify-start"
+                  class="flex-1 justify-start bg-card"
                 >
                   <FileJson class="mr-2 h-4 w-4" />
                   JSON
@@ -499,7 +499,7 @@
                 <Button
                   variant="outline"
                   onclick={() => exportAsCSV(budget)}
-                  class="flex-1 justify-start"
+                  class="flex-1 justify-start bg-card"
                 >
                   <FileText class="mr-2 h-4 w-4" />
                   CSV
@@ -507,7 +507,7 @@
                 <Button
                   variant="outline"
                   onclick={() => exportAsXLSX(budget)}
-                  class="flex-1 justify-start"
+                  class="flex-1 justify-start bg-card"
                 >
                   <FileSpreadsheet class="mr-2 h-4 w-4" />
                   Excel
@@ -857,7 +857,7 @@
                 <Button
                   variant="outline"
                   onclick={() => exportAsJSON(budget)}
-                  class="flex-1 justify-start"
+                  class="flex-1 justify-start bg-card"
                 >
                   <FileJson class="mr-2 h-4 w-4" />
                   JSON
@@ -865,7 +865,7 @@
                 <Button
                   variant="outline"
                   onclick={() => exportAsCSV(budget)}
-                  class="flex-1 justify-start"
+                  class="flex-1 justify-start bg-card"
                 >
                   <FileText class="mr-2 h-4 w-4" />
                   CSV
@@ -873,7 +873,7 @@
                 <Button
                   variant="outline"
                   onclick={() => exportAsXLSX(budget)}
-                  class="flex-1 justify-start"
+                  class="flex-1 justify-start bg-card"
                 >
                   <FileSpreadsheet class="mr-2 h-4 w-4" />
                   Excel

@@ -422,6 +422,7 @@
             clearFilters();
             showFilters = false;
           }}
+          class="bg-card"
         >
           <X class="h-4 w-4 sm:mr-2" />
           <span class="hidden sm:inline">Clear</span>
@@ -431,6 +432,7 @@
           variant="outline"
           size="sm"
           onclick={() => (showFilters = !showFilters)}
+          class="bg-card"
         >
           <Filter class="h-4 w-4 sm:mr-2" />
           <span class="hidden sm:inline">Filters</span>
@@ -441,6 +443,7 @@
         variant="outline"
         size="sm"
         onclick={() => (showCategoryManager = true)}
+        class="bg-card"
       >
         <Tags class="h-4 w-4 sm:mr-2" />
         <span class="hidden sm:inline">Edit Categories</span>
