@@ -1,6 +1,4 @@
 <script lang="ts">
-  console.log("🚀🚀🚀 INSIGHTS PAGE LOADED - NEW VERSION! 🚀🚀🚀");
-
   import { budgetStore } from "$lib/stores/budget";
   import { dateRangeStore } from "$lib/stores/dateRange";
   import { filterExpensesByDateRange } from "$lib/utils/format";
@@ -45,13 +43,6 @@
   );
 
   const hasData = $derived(filteredEntries.length > 0);
-
-  // Debug
-  $effect(() => {
-    console.log("Active Budget:", activeBudget);
-    console.log("Filtered Entries:", filteredEntries.length);
-    console.log("Has Data:", hasData);
-  });
 </script>
 
 <div class="max-w-6xl mx-auto px-4 py-6 space-y-6">

@@ -20,7 +20,6 @@
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
   import ExpenseList from "../expense/ExpenseList.svelte";
-  import StatCard from "./StatCard.svelte";
   import DualStatCard from "./DualStatCard.svelte";
   import RecentActivity from "./RecentActivity.svelte";
   import CategoryStats from "./CategoryStats.svelte";

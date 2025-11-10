@@ -81,24 +81,6 @@ export function formatDate(
   }
 }
 
-export function getMonthName(date: Date): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    month: "long",
-    year: "numeric",
-  }).format(date);
-}
-
-export function getCurrentMonth(): { start: string; end: string } {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-  return {
-    start: start.toISOString().split("T")[0],
-    end: end.toISOString().split("T")[0],
-  };
-}
-
 // Filter expenses by date range
 export function filterExpensesByDateRange<T extends { date: string }>(
   expenses: T[],

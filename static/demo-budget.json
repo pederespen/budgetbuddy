@@ -6,7 +6,6 @@
       "currency": "NOK",
       "dateFormat": "DD/MM/YYYY",
       "period": "monthly",
-      "startingBalance": 40000,
       "categories": [
         {
           "id": "cat-1",

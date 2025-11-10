@@ -46,19 +46,3 @@ export function getDefaultCategories(): Category[] {
     },
   ];
 }
-
-export function createDefaultBudget(): Budget {
-  const now = new Date().toISOString();
-  return {
-    id: crypto.randomUUID(),
-    name: "My Budget",
-    currency: "NOK",
-    dateFormat: "DD/MM/YYYY",
-    period: "monthly",
-    categories: getDefaultCategories(),
-    entries: [],
-    budgetLimits: {},
-    createdAt: now,
-    updatedAt: now,
-  };
-}
