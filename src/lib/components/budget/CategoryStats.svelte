@@ -21,11 +21,19 @@
   } = $props();
 
   // Use filtered transactions if provided, otherwise use all entries
-  let transactions = $derived(filteredTransactions ?? budget.entries);
+  // Filter to only show expense transactions (not income)
+  let transactions = $derived(
+    (filteredTransactions ?? budget.entries).filter((t) => t.type === "expense")
+  );
 
-  // Calculate spending per category
+  // Filter to only expense categories
+  let expenseCategories = $derived(
+    budget.categories.filter((c) => c.type === "expense")
+  );
+
+  // Calculate spending per category (expenses only)
   let categoryStats = $derived(
-    budget.categories
+    expenseCategories
       .map((category) => {
         const categoryTransactions = transactions.filter(
           (t) => t.categoryId === category.id
@@ -49,9 +57,9 @@
       .slice(0, 5) // Show only top 5 categories
   );
 
-  // Count total categories with spending
+  // Count total expense categories with spending
   let totalCategoriesWithSpending = $derived(
-    budget.categories.filter((category) => {
+    expenseCategories.filter((category) => {
       const spent = transactions
         .filter((e) => e.categoryId === category.id)
         .reduce((sum, e) => sum + e.amount, 0);

@@ -21,13 +21,15 @@
   const uniqueId = `gradient-${Math.random().toString(36).substr(2, 9)}`;
 
   const chartData = $derived(() => {
-    // Group transactions by day
+    // Group expense transactions by day (filter out income)
     const dailyTotals = new Map<string, number>();
 
     budget.entries.forEach((transaction) => {
-      const date = transaction.date.split("T")[0]; // Get just the date part
-      const current = dailyTotals.get(date) || 0;
-      dailyTotals.set(date, current + transaction.amount);
+      if (transaction.type === "expense") {
+        const date = transaction.date.split("T")[0]; // Get just the date part
+        const current = dailyTotals.get(date) || 0;
+        dailyTotals.set(date, current + transaction.amount);
+      }
     });
 
     // Convert to array and sort by date

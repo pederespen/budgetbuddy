@@ -20,11 +20,14 @@
     const dayTotals = new Array(7).fill(0);
     const dayCounts = new Array(7).fill(0);
 
-    budget.entries.forEach((expense) => {
-      const date = new Date(expense.date);
-      const dayOfWeek = date.getDay();
-      dayTotals[dayOfWeek] += expense.amount;
-      dayCounts[dayOfWeek]++;
+    // Only count expense transactions
+    budget.entries.forEach((transaction) => {
+      if (transaction.type === "expense") {
+        const date = new Date(transaction.date);
+        const dayOfWeek = date.getDay();
+        dayTotals[dayOfWeek] += transaction.amount;
+        dayCounts[dayOfWeek]++;
+      }
     });
 
     const maxAmount = Math.max(...dayTotals, 1);
@@ -48,7 +51,7 @@
 
 <Card>
   <CardHeader>
-    <CardTitle>Spending by Day</CardTitle>
+    <CardTitle>Expenses by Day of Week</CardTitle>
   </CardHeader>
   <CardContent class="overflow-visible">
     <div class="h-[240px]">

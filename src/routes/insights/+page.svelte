@@ -32,12 +32,27 @@
       : []
   );
 
-  // Create filtered budget for child components
+  // Separate expenses and income
+  const expenses = $derived(
+    filteredEntries.filter((e) => e.type === "expense")
+  );
+
+  const incomes = $derived(filteredEntries.filter((e) => e.type === "income"));
+
+  const totalExpenses = $derived(
+    expenses.reduce((sum, e) => sum + e.amount, 0)
+  );
+
+  const totalIncome = $derived(incomes.reduce((sum, e) => sum + e.amount, 0));
+
+  const netAmount = $derived(totalIncome - totalExpenses);
+
+  // Create filtered budget for child components (with expenses only for charts)
   const filteredBudget = $derived(
     activeBudget
       ? {
           ...activeBudget,
-          entries: filteredEntries,
+          entries: expenses,
         }
       : undefined
   );
@@ -89,17 +104,54 @@
         <CardHeader
           class="flex flex-row items-center justify-between space-y-0 pb-2"
         >
-          <CardTitle class="text-sm font-medium">Total Spending</CardTitle>
+          <CardTitle class="text-sm font-medium">Total Expenses</CardTitle>
           <TrendingUp class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">
             {activeBudget.currency}
-            {filteredEntries.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}
+            {totalExpenses.toFixed(2)}
           </div>
           <p class="text-xs text-muted-foreground">
-            Across {filteredEntries.length} transactions
+            Across {expenses.length} expense transactions
           </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader
+          class="flex flex-row items-center justify-between space-y-0 pb-2"
+        >
+          <CardTitle class="text-sm font-medium">Total Income</CardTitle>
+          <TrendingUp class="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div class="text-2xl font-bold">
+            {activeBudget.currency}
+            {totalIncome.toFixed(2)}
+          </div>
+          <p class="text-xs text-muted-foreground">
+            Across {incomes.length} income transactions
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader
+          class="flex flex-row items-center justify-between space-y-0 pb-2"
+        >
+          <CardTitle class="text-sm font-medium">Net</CardTitle>
+          <TrendingUp class="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div
+            class="text-2xl font-bold"
+            class:text-destructive={netAmount < 0}
+          >
+            {activeBudget.currency}
+            {netAmount.toFixed(2)}
+          </div>
+          <p class="text-xs text-muted-foreground">Income - Expenses</p>
         </CardContent>
       </Card>
 
@@ -156,14 +208,11 @@
         <CardContent>
           <div class="text-2xl font-bold">
             {activeBudget.currency}
-            {filteredEntries.length > 0
-              ? (
-                  filteredEntries.reduce((sum, e) => sum + e.amount, 0) /
-                  filteredEntries.length
-                ).toFixed(2)
+            {expenses.length > 0
+              ? (totalExpenses / expenses.length).toFixed(2)
               : "0.00"}
           </div>
-          <p class="text-xs text-muted-foreground">Per transaction</p>
+          <p class="text-xs text-muted-foreground">Per expense</p>
         </CardContent>
       </Card>
     </div>

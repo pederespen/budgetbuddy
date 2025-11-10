@@ -17,9 +17,15 @@
   const topCategories = $derived(() => {
     const categoryTotals = new Map<string, number>();
 
-    budget.entries.forEach((expense) => {
-      const current = categoryTotals.get(expense.categoryId) || 0;
-      categoryTotals.set(expense.categoryId, current + expense.amount);
+    // Only count expense transactions
+    budget.entries.forEach((transaction) => {
+      if (transaction.type === "expense") {
+        const current = categoryTotals.get(transaction.categoryId) || 0;
+        categoryTotals.set(
+          transaction.categoryId,
+          current + transaction.amount
+        );
+      }
     });
 
     const total = Array.from(categoryTotals.values()).reduce(
@@ -45,7 +51,7 @@
 
 <Card>
   <CardHeader>
-    <CardTitle>Top Categories</CardTitle>
+    <CardTitle>Top Expense Categories</CardTitle>
   </CardHeader>
   <CardContent>
     <div class="space-y-4">

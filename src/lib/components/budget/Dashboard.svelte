@@ -82,27 +82,40 @@
     )
   );
 
-  // Calculate total spending (using filtered entries)
-  let totalSpent = $derived(
-    filteredEntries.reduce((sum, entry) => sum + entry.amount, 0)
+  // Separate income and expenses
+  let expenses = $derived(
+    filteredEntries.filter((entry) => entry.type === "expense")
   );
 
-  // Calculate largest single transaction
-  let largestTransaction = $derived(
-    filteredEntries.length > 0
-      ? Math.max(...filteredEntries.map((e) => e.amount))
-      : 0
+  let incomes = $derived(
+    filteredEntries.filter((entry) => entry.type === "income")
   );
 
-  // Calculate average transaction
-  let averageTransaction = $derived(
-    filteredEntries.length > 0 ? totalSpent / filteredEntries.length : 0
+  // Calculate totals
+  let totalExpenses = $derived(
+    expenses.reduce((sum, entry) => sum + entry.amount, 0)
   );
 
-  // Create a budget object with filtered entries for child components
+  let totalIncome = $derived(
+    incomes.reduce((sum, entry) => sum + entry.amount, 0)
+  );
+
+  let netAmount = $derived(totalIncome - totalExpenses);
+
+  // Calculate largest single expense
+  let largestExpense = $derived(
+    expenses.length > 0 ? Math.max(...expenses.map((e) => e.amount)) : 0
+  );
+
+  // Calculate average expense
+  let averageExpense = $derived(
+    expenses.length > 0 ? totalExpenses / expenses.length : 0
+  );
+
+  // Create a budget object with filtered expenses for child components (insights should show expenses only)
   let filteredBudget = $derived({
     ...budget,
-    entries: filteredEntries,
+    entries: expenses,
   });
 
   async function getExchangeRate(
@@ -217,39 +230,58 @@
     {#if activeTab === "overview"}
       <!-- Overview Content -->
       <div class="space-y-3 py-3">
-        <!-- Key Metrics Grid -->
-        <div class="grid grid-cols-1 gap-2">
-          <!-- Spending Overview Card -->
-          <DualStatCard
-            title1="Total Spent"
-            value1={formatCurrency(totalSpent, budget.currency)}
-            variant1="default"
-            title2="Transactions"
-            value2={filteredEntries.length.toString()}
-            variant2="default"
-          >
-            {#snippet icon1()}
-              <Wallet class="h-4 w-4 text-muted-foreground" />
-            {/snippet}
-            {#snippet icon2()}
-              <Receipt class="h-4 w-4 text-muted-foreground" />
-            {/snippet}
-          </DualStatCard>
+        <!-- Key Metrics - Single Row Layout -->
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Income Card -->
+          <div class="bg-card rounded-lg border p-3">
+            <div class="flex items-center gap-2 mb-2">
+              <Wallet class="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
+              <span class="text-xs font-medium text-muted-foreground"
+                >Income</span
+              >
+            </div>
+            <div class="text-xl font-bold">
+              {formatCurrency(totalIncome, budget.currency)}
+            </div>
+            <div class="text-xs text-muted-foreground mt-1">
+              {incomes.length} transaction{incomes.length === 1 ? "" : "s"}
+            </div>
+          </div>
 
-          <!-- Transaction Stats Card -->
-          <DualStatCard
-            title1="Largest Transaction"
-            value1={formatCurrency(largestTransaction, budget.currency)}
-            title2="Avg. Transaction"
-            value2={formatCurrency(averageTransaction, budget.currency)}
-          >
-            {#snippet icon1()}
-              <TrendingUp class="h-4 w-4 text-muted-foreground" />
-            {/snippet}
-            {#snippet icon2()}
-              <ListOrdered class="h-4 w-4 text-muted-foreground" />
-            {/snippet}
-          </DualStatCard>
+          <!-- Expenses Card -->
+          <div class="bg-card rounded-lg border p-3">
+            <div class="flex items-center gap-2 mb-2">
+              <Receipt class="h-4 w-4 text-rose-600 dark:text-rose-500" />
+              <span class="text-xs font-medium text-muted-foreground"
+                >Expenses</span
+              >
+            </div>
+            <div class="text-xl font-bold">
+              {formatCurrency(totalExpenses, budget.currency)}
+            </div>
+            <div class="text-xs text-muted-foreground mt-1">
+              {expenses.length} transaction{expenses.length === 1 ? "" : "s"}
+            </div>
+          </div>
+        </div>
+
+        <!-- Net Balance - Prominent Card -->
+        <div class="bg-card rounded-lg border p-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <TrendingUp
+                class={`h-5 w-5 ${netAmount >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
+              />
+              <span class="text-sm font-medium text-muted-foreground"
+                >Net Balance</span
+              >
+            </div>
+            <div
+              class={`text-2xl font-bold ${netAmount >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
+            >
+              {formatCurrency(netAmount, budget.currency)}
+            </div>
+          </div>
         </div>
 
         <!-- Recent Activity -->
@@ -264,7 +296,7 @@
         <!-- Category Stats -->
         <CategoryStats
           {budget}
-          filteredTransactions={filteredEntries}
+          filteredTransactions={expenses}
           onViewInsights={() => (activeTab = "insights")}
         />
       </div>
@@ -491,39 +523,75 @@
   <div class="flex-1 overflow-auto">
     {#if activeTab === "overview"}
       <div class="space-y-4 py-4">
-        <!-- Key Metrics Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <!-- Spending Overview Card -->
-          <DualStatCard
-            title1="Total Spent"
-            value1={formatCurrency(totalSpent, budget.currency)}
-            variant1="default"
-            title2="Transactions"
-            value2={filteredEntries.length.toString()}
-            variant2="default"
+        <!-- Key Metrics - Clean Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
+          <!-- Income Card -->
+          <div
+            class="bg-card rounded-lg border p-4 hover:shadow-md transition-shadow"
           >
-            {#snippet icon1()}
-              <Wallet class="h-4 w-4 text-muted-foreground" />
-            {/snippet}
-            {#snippet icon2()}
-              <Receipt class="h-4 w-4 text-muted-foreground" />
-            {/snippet}
-          </DualStatCard>
+            <div class="flex items-center gap-2 mb-3">
+              <div class="p-2 rounded-lg bg-emerald-500/10">
+                <Wallet
+                  class="h-5 w-5 text-emerald-600 dark:text-emerald-500"
+                />
+              </div>
+              <span class="text-sm font-medium text-muted-foreground"
+                >Income</span
+              >
+            </div>
+            <div class="text-2xl font-bold mb-1">
+              {formatCurrency(totalIncome, budget.currency)}
+            </div>
+            <div class="text-sm text-muted-foreground">
+              {incomes.length} transaction{incomes.length === 1 ? "" : "s"}
+            </div>
+          </div>
 
-          <!-- Transaction Stats Card -->
-          <DualStatCard
-            title1="Largest Transaction"
-            value1={formatCurrency(largestTransaction, budget.currency)}
-            title2="Avg. Transaction"
-            value2={formatCurrency(averageTransaction, budget.currency)}
+          <!-- Expenses Card -->
+          <div
+            class="bg-card rounded-lg border p-4 hover:shadow-md transition-shadow"
           >
-            {#snippet icon1()}
-              <TrendingUp class="h-4 w-4 text-muted-foreground" />
-            {/snippet}
-            {#snippet icon2()}
-              <ListOrdered class="h-4 w-4 text-muted-foreground" />
-            {/snippet}
-          </DualStatCard>
+            <div class="flex items-center gap-2 mb-3">
+              <div class="p-2 rounded-lg bg-rose-500/10">
+                <Receipt class="h-5 w-5 text-rose-600 dark:text-rose-500" />
+              </div>
+              <span class="text-sm font-medium text-muted-foreground"
+                >Expenses</span
+              >
+            </div>
+            <div class="text-2xl font-bold mb-1">
+              {formatCurrency(totalExpenses, budget.currency)}
+            </div>
+            <div class="text-sm text-muted-foreground">
+              {expenses.length} transaction{expenses.length === 1 ? "" : "s"}
+            </div>
+          </div>
+
+          <!-- Net Balance Card -->
+          <div
+            class="bg-card rounded-lg border p-4 hover:shadow-md transition-shadow"
+          >
+            <div class="flex items-center gap-2 mb-3">
+              <div
+                class={`p-2 rounded-lg ${netAmount >= 0 ? "bg-emerald-500/10" : "bg-rose-500/10"}`}
+              >
+                <TrendingUp
+                  class={`h-5 w-5 ${netAmount >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
+                />
+              </div>
+              <span class="text-sm font-medium text-muted-foreground"
+                >Net Balance</span
+              >
+            </div>
+            <div
+              class={`text-2xl font-bold mb-1 ${netAmount >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
+            >
+              {formatCurrency(netAmount, budget.currency)}
+            </div>
+            <div class="text-sm text-muted-foreground">
+              {netAmount >= 0 ? "Positive" : "Negative"} balance
+            </div>
+          </div>
         </div>
 
         <!-- Two Column Layout -->
@@ -537,10 +605,10 @@
             onAddClick={() => (activeTab = "transactions")}
           />
 
-          <!-- Category Stats -->
+          <!-- Category Stats (expenses only) -->
           <CategoryStats
             {budget}
-            filteredTransactions={filteredEntries}
+            filteredTransactions={expenses}
             onViewInsights={() => (activeTab = "insights")}
           />
         </div>

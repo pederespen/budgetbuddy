@@ -17,12 +17,20 @@
   const categoryProgress = $derived(() => {
     const categoryTotals = new Map<string, number>();
 
+    // Only count expense transactions (budget limits apply to expenses)
     budget.entries.forEach((transaction) => {
-      const current = categoryTotals.get(transaction.categoryId) || 0;
-      categoryTotals.set(transaction.categoryId, current + transaction.amount);
+      if (transaction.type === "expense") {
+        const current = categoryTotals.get(transaction.categoryId) || 0;
+        categoryTotals.set(
+          transaction.categoryId,
+          current + transaction.amount
+        );
+      }
     });
 
+    // Only show expense categories (budget limits are for expenses)
     return budget.categories
+      .filter((category) => category.type === "expense")
       .map((category) => {
         const spent = categoryTotals.get(category.id) || 0;
         const limit = budget.budgetLimits[category.id] || 0;

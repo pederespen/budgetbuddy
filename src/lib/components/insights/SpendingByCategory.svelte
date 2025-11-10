@@ -13,12 +13,19 @@
 
   let { budget }: Props = $props();
 
+  // Note: budget.entries should already be filtered to expenses only by parent component
   const chartData = $derived(() => {
     const categoryTotals = new Map<string, number>();
 
+    // Only process expense transactions
     budget.entries.forEach((transaction) => {
-      const current = categoryTotals.get(transaction.categoryId) || 0;
-      categoryTotals.set(transaction.categoryId, current + transaction.amount);
+      if (transaction.type === "expense") {
+        const current = categoryTotals.get(transaction.categoryId) || 0;
+        categoryTotals.set(
+          transaction.categoryId,
+          current + transaction.amount
+        );
+      }
     });
 
     const total = Array.from(categoryTotals.values()).reduce(
@@ -46,7 +53,7 @@
 
 <Card>
   <CardHeader>
-    <CardTitle>Spending by Category</CardTitle>
+    <CardTitle>Expenses by Category</CardTitle>
   </CardHeader>
   <CardContent>
     <div class="space-y-4">
