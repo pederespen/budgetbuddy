@@ -167,8 +167,8 @@
               <Tabs.Trigger value="overview" class="cursor-pointer px-6">
                 Overview
               </Tabs.Trigger>
-              <Tabs.Trigger value="expenses" class="cursor-pointer px-6">
-                Expenses
+              <Tabs.Trigger value="transactions" class="cursor-pointer px-6">
+                Transactions
               </Tabs.Trigger>
               <Tabs.Trigger value="insights" class="cursor-pointer px-6">
                 Insights

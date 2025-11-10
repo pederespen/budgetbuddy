@@ -29,7 +29,7 @@
       id="budget-name"
       type="text"
       bind:value={name}
-      placeholder="e.g., Monthly Expenses"
+      placeholder="e.g., Monthly Budget"
       required
       class="bg-background"
     />

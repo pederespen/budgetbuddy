@@ -1,7 +1,7 @@
 <script lang="ts">
   import type {
     Budget,
-    Expense,
+    Transaction,
     Category,
     Currency,
     DateFormat,
@@ -12,7 +12,7 @@
     formatCurrency,
     currencyShortLabels,
     dateFormatLabels,
-    filterExpensesByDateRange,
+    filterTransactionsByDateRange,
   } from "$lib/utils/format";
   import { getCategoryById } from "$lib/utils/categories";
   import * as Select from "$lib/components/ui/select";
@@ -73,9 +73,9 @@
     editedName = budget.name;
   });
 
-  // Filter expenses based on date range
+  // Filter transactions based on date range
   let filteredEntries = $derived(
-    filterExpensesByDateRange(
+    filterTransactionsByDateRange(
       budget.entries,
       dateRange.startDate,
       dateRange.endDate
@@ -87,15 +87,15 @@
     filteredEntries.reduce((sum, entry) => sum + entry.amount, 0)
   );
 
-  // Calculate largest single expense
-  let largestExpense = $derived(
+  // Calculate largest single transaction
+  let largestTransaction = $derived(
     filteredEntries.length > 0
       ? Math.max(...filteredEntries.map((e) => e.amount))
       : 0
   );
 
-  // Calculate average expense
-  let averageExpense = $derived(
+  // Calculate average transaction
+  let averageTransaction = $derived(
     filteredEntries.length > 0 ? totalSpent / filteredEntries.length : 0
   );
 
@@ -132,7 +132,7 @@
       // Get exchange rate
       const rate = await getExchangeRate(fromCurrency, toCurrency);
 
-      // Convert all expense amounts
+      // Convert all transaction amounts
       const convertedEntries = budget.entries.map((entry) => ({
         ...entry,
         amount: entry.amount * rate,
@@ -182,16 +182,16 @@
     editedName = budget.name;
   }
 
-  function handleAddExpense(expense: Expense) {
-    budgetStore.addTransaction(budget.id, expense);
+  function handleAddTransaction(transaction: Transaction) {
+    budgetStore.addTransaction(budget.id, transaction);
   }
 
-  function handleUpdateExpense(expense: Expense) {
-    budgetStore.updateTransaction(budget.id, expense.id, expense);
+  function handleUpdateTransaction(transaction: Transaction) {
+    budgetStore.updateTransaction(budget.id, transaction.id, transaction);
   }
 
-  function handleDeleteExpense(expenseId: string) {
-    budgetStore.deleteTransaction(budget.id, expenseId);
+  function handleDeleteTransaction(transactionId: string) {
+    budgetStore.deleteTransaction(budget.id, transactionId);
   }
 
   function handleAddCategory(category: Category) {
@@ -238,10 +238,10 @@
 
           <!-- Transaction Stats Card -->
           <DualStatCard
-            title1="Largest Expense"
-            value1={formatCurrency(largestExpense, budget.currency)}
-            title2="Avg. Expense"
-            value2={formatCurrency(averageExpense, budget.currency)}
+            title1="Largest Transaction"
+            value1={formatCurrency(largestTransaction, budget.currency)}
+            title2="Avg. Transaction"
+            value2={formatCurrency(averageTransaction, budget.currency)}
           >
             {#snippet icon1()}
               <TrendingUp class="h-4 w-4 text-muted-foreground" />
@@ -258,7 +258,7 @@
           categories={budget.categories}
           currency={budget.currency}
           dateFormat={budget.dateFormat}
-          onAddClick={() => (activeTab = "expenses")}
+          onAddClick={() => (activeTab = "transactions")}
         />
 
         <!-- Category Stats -->
@@ -268,17 +268,17 @@
           onViewInsights={() => (activeTab = "insights")}
         />
       </div>
-    {:else if activeTab === "expenses"}
-      <!-- Expenses Content -->
+    {:else if activeTab === "transactions"}
+      <!-- Transactions Content -->
       <div class="h-full flex flex-col p-1">
         <TransactionList
           {budget}
           transactions={filteredEntries}
           categories={budget.categories}
           currency={budget.currency}
-          onAdd={handleAddExpense}
-          onEdit={handleUpdateExpense}
-          onDelete={handleDeleteExpense}
+          onAdd={handleAddTransaction}
+          onEdit={handleUpdateTransaction}
+          onDelete={handleDeleteTransaction}
           onAddCategory={handleAddCategory}
           onUpdateCategory={handleUpdateCategory}
           onDeleteCategory={handleDeleteCategory}
@@ -290,8 +290,8 @@
         {#if filteredEntries.length === 0}
           <div class="text-center py-12 text-muted-foreground">
             <TrendingUp class="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p class="text-sm">No expenses yet</p>
-            <p class="text-xs mt-2">Add expenses to see insights</p>
+            <p class="text-sm">No transactions yet</p>
+            <p class="text-xs mt-2">Add transactions to see insights</p>
           </div>
         {:else}
           <div class="space-y-4">
@@ -456,13 +456,13 @@
       <span class="text-xs">Overview</span>
     </button>
     <button
-      onclick={() => (activeTab = "expenses")}
+      onclick={() => (activeTab = "transactions")}
       class="flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors"
-      class:text-primary={activeTab === "expenses"}
-      class:text-muted-foreground={activeTab !== "expenses"}
+      class:text-primary={activeTab === "transactions"}
+      class:text-muted-foreground={activeTab !== "transactions"}
     >
       <Receipt class="h-5 w-5" />
-      <span class="text-xs">Expenses</span>
+      <span class="text-xs">Transactions</span>
     </button>
     <button
       onclick={() => (activeTab = "insights")}
@@ -512,10 +512,10 @@
 
           <!-- Transaction Stats Card -->
           <DualStatCard
-            title1="Largest Expense"
-            value1={formatCurrency(largestExpense, budget.currency)}
-            title2="Avg. Expense"
-            value2={formatCurrency(averageExpense, budget.currency)}
+            title1="Largest Transaction"
+            value1={formatCurrency(largestTransaction, budget.currency)}
+            title2="Avg. Transaction"
+            value2={formatCurrency(averageTransaction, budget.currency)}
           >
             {#snippet icon1()}
               <TrendingUp class="h-4 w-4 text-muted-foreground" />
@@ -534,7 +534,7 @@
             categories={budget.categories}
             currency={budget.currency}
             dateFormat={budget.dateFormat}
-            onAddClick={() => (activeTab = "expenses")}
+            onAddClick={() => (activeTab = "transactions")}
           />
 
           <!-- Category Stats -->
@@ -545,17 +545,17 @@
           />
         </div>
       </div>
-    {:else if activeTab === "expenses"}
-      <!-- Expenses Tab -->
-      <div class="py-4 flex-1 overflow-hidden flex flex-col">
+    {:else if activeTab === "transactions"}
+      <!-- Transactions Tab -->
+      <div class="h-full flex flex-col p-4">
         <TransactionList
           {budget}
           transactions={filteredEntries}
           categories={budget.categories}
           currency={budget.currency}
-          onAdd={handleAddExpense}
-          onEdit={handleUpdateExpense}
-          onDelete={handleDeleteExpense}
+          onAdd={handleAddTransaction}
+          onEdit={handleUpdateTransaction}
+          onDelete={handleDeleteTransaction}
           onAddCategory={handleAddCategory}
           onUpdateCategory={handleUpdateCategory}
           onDeleteCategory={handleDeleteCategory}
@@ -567,9 +567,9 @@
         {#if filteredEntries.length === 0}
           <div class="text-center py-12 text-muted-foreground">
             <TrendingUp class="h-16 w-16 mx-auto mb-4 opacity-50" />
-            <p class="text-lg">No expenses yet</p>
+            <p class="text-lg">No transactions yet</p>
             <p class="text-sm mt-2">
-              Add some expenses to see insights and analytics
+              Add some transactions to see insights and analytics
             </p>
           </div>
         {:else}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { budgetStore } from "$lib/stores/budget";
   import { dateRangeStore } from "$lib/stores/dateRange";
-  import { filterExpensesByDateRange } from "$lib/utils/format";
+  import { filterTransactionsByDateRange } from "$lib/utils/format";
   import {
     Card,
     CardContent,
@@ -21,10 +21,10 @@
     state.budgets.find((b) => b.id === state.activeBudgetId)
   );
 
-  // Filter expenses based on date range
+  // Filter transactions based on date range
   const filteredEntries = $derived(
     activeBudget
-      ? filterExpensesByDateRange(
+      ? filterTransactionsByDateRange(
           activeBudget.entries,
           dateRange.startDate,
           dateRange.endDate
@@ -62,7 +62,8 @@
           <PieChart class="h-12 w-12 text-muted-foreground mb-4" />
           <h3 class="text-lg font-semibold mb-2">No Active Budget</h3>
           <p class="text-muted-foreground max-w-sm">
-            Create a budget to start tracking your expenses and see insights.
+            Create a budget to start tracking your transactions and see
+            insights.
           </p>
         </div>
       </CardContent>
@@ -74,9 +75,9 @@
           class="flex flex-col items-center justify-center py-12 text-center"
         >
           <BarChart3 class="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 class="text-lg font-semibold mb-2">No Expenses Yet</h3>
+          <h3 class="text-lg font-semibold mb-2">No Transactions Yet</h3>
           <p class="text-muted-foreground max-w-sm">
-            Add some expenses to see your spending insights and analytics.
+            Add some transactions to see your spending insights and analytics.
           </p>
         </div>
       </CardContent>
@@ -162,7 +163,7 @@
                 ).toFixed(2)
               : "0.00"}
           </div>
-          <p class="text-xs text-muted-foreground">Per expense</p>
+          <p class="text-xs text-muted-foreground">Per transaction</p>
         </CardContent>
       </Card>
     </div>

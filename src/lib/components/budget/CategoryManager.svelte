@@ -95,11 +95,11 @@
   }
 
   function handleDelete(category: Category) {
-    const expenseCount = getCategoryExpenseCount(category.id);
+    const transactionCount = getCategoryTransactionCount(category.id);
 
     let message = `Are you sure you want to delete "${category.name}"?`;
-    if (expenseCount > 0) {
-      message = `Are you sure you want to delete "${category.name}"?\n\nThis category has ${expenseCount} expense${expenseCount === 1 ? "" : "s"}. All expenses will be reassigned to "Other".`;
+    if (transactionCount > 0) {
+      message = `Are you sure you want to delete "${category.name}"?\n\nThis category has ${transactionCount} transaction${transactionCount === 1 ? "" : "s"}. All transactions will be reassigned to "Other".`;
     }
 
     if (confirm(message)) {
@@ -107,7 +107,7 @@
     }
   }
 
-  function getCategoryExpenseCount(categoryId: string): number {
+  function getCategoryTransactionCount(categoryId: string): number {
     return transactions.filter((e) => e.categoryId === categoryId).length;
   }
 </script>
@@ -264,7 +264,7 @@
           {:else}
             <!-- View Mode -->
             {@const IconComponent = getIconComponent(category.icon)}
-            {@const expenseCount = getCategoryExpenseCount(category.id)}
+            {@const transactionCount = getCategoryTransactionCount(category.id)}
             <div
               class="flex items-center justify-between p-3 border rounded-lg transition-colors"
             >
@@ -281,8 +281,8 @@
                 <div>
                   <div class="font-medium">{category.name}</div>
                   <div class="text-xs text-muted-foreground">
-                    {expenseCount}
-                    {expenseCount === 1 ? "expense" : "expenses"}
+                    {transactionCount}
+                    {transactionCount === 1 ? "transaction" : "transactions"}
                   </div>
                 </div>
               </div>

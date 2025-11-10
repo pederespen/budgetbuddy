@@ -16,9 +16,9 @@
   const chartData = $derived(() => {
     const categoryTotals = new Map<string, number>();
 
-    budget.entries.forEach((expense) => {
-      const current = categoryTotals.get(expense.categoryId) || 0;
-      categoryTotals.set(expense.categoryId, current + expense.amount);
+    budget.entries.forEach((transaction) => {
+      const current = categoryTotals.get(transaction.categoryId) || 0;
+      categoryTotals.set(transaction.categoryId, current + transaction.amount);
     });
 
     const total = Array.from(categoryTotals.values()).reduce(

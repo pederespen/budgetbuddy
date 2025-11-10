@@ -468,7 +468,7 @@
         />
         <Input
           type="text"
-          placeholder="Search expenses..."
+          placeholder="Search transactions..."
           bind:value={searchQuery}
           class="pl-9"
         />
@@ -513,18 +513,18 @@
   {#if filteredAndSortedTransactions().length === 0 && !showNewTransactionRow}
     <div class="py-8 text-center text-muted-foreground">
       {#if activeFiltersCount() > 0}
-        <p>No expenses match your filters.</p>
+        <p>No transactions match your filters.</p>
         <Button variant="link" onclick={clearFilters} class="mt-2">
           Clear filters
         </Button>
       {:else}
-        <p>No expenses yet. Click "Add New" to get started!</p>
+        <p>No transactions yet. Click "Add New" to get started!</p>
       {/if}
     </div>
   {:else}
     <!-- Mobile View -->
     <div class="block sm:hidden">
-      <!-- Expenses List (Mobile) - No inline forms anymore -->
+      <!-- Transactions List (Mobile) - No inline forms anymore -->
       <div class="divide-y">
         {#each filteredAndSortedTransactions() as transaction (transaction.id)}
           {@const category = getCategoryById(
@@ -587,7 +587,7 @@
           </TableRow>
         </TableHeader>
         <TableBody>
-          <!-- New Expense Row -->
+          <!-- New Transaction Row -->
           {#if showNewTransactionRow}
             <TableRow class="bg-muted/30">
               <TransactionForm
@@ -606,7 +606,7 @@
             </TableRow>
           {/if}
 
-          <!-- Existing Expenses -->
+          <!-- Existing Transactions -->
           {#each filteredAndSortedTransactions() as transaction (transaction.id)}
             {@const category = getCategoryById(
               categories,

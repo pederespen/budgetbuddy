@@ -27,18 +27,21 @@
   let categoryStats = $derived(
     budget.categories
       .map((category) => {
-        const categoryExpenses = transactions.filter(
-          (e) => e.categoryId === category.id
+        const categoryTransactions = transactions.filter(
+          (t) => t.categoryId === category.id
         );
-        const spent = categoryExpenses.reduce((sum, e) => sum + e.amount, 0);
-        const totalSpent = transactions.reduce((sum, e) => sum + e.amount, 0);
+        const spent = categoryTransactions.reduce(
+          (sum, t) => sum + t.amount,
+          0
+        );
+        const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
         const percentOfTotal = totalSpent > 0 ? (spent / totalSpent) * 100 : 0;
 
         return {
           category,
           spent,
           percentOfTotal,
-          transactionCount: categoryExpenses.length,
+          transactionCount: categoryTransactions.length,
         };
       })
       .filter((stat) => stat.spent > 0) // Only show categories with spending

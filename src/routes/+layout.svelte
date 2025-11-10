@@ -37,7 +37,7 @@
   <title>BudgetBuddy - Privacy-First Budget Tracker</title>
   <meta
     name="description"
-    content="Track your expenses privately. All data stays on your device."
+    content="Track your transactions privately. All data stays on your device."
   />
 </svelte:head>
 

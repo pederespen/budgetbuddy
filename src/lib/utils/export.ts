@@ -20,7 +20,7 @@ export function exportAsJSON(budget: Budget): void {
 }
 
 /**
- * Export budget expenses as CSV
+ * Export budget transactions as CSV
  */
 export function exportAsCSV(budget: Budget): void {
   const headers = ["Date", "Type", "Category", "Amount", "Note"];
@@ -50,7 +50,7 @@ export function exportAsCSV(budget: Budget): void {
 }
 
 /**
- * Export budget expenses as XLSX (Excel format)
+ * Export budget transactions as XLSX (Excel format)
  */
 export function exportAsXLSX(budget: Budget): void {
   // Prepare data for Excel
