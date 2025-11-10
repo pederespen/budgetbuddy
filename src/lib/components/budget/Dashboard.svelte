@@ -27,7 +27,6 @@
   import SpendingTrend from "../insights/SpendingTrend.svelte";
   import SpendingByDayOfWeek from "../insights/SpendingByDayOfWeek.svelte";
   import TopCategories from "../insights/TopCategories.svelte";
-  import { toast } from "svelte-sonner";
   import {
     Home,
     Receipt,
@@ -118,9 +117,6 @@
       return data.rates[to] || 1;
     } catch (error) {
       console.error("Failed to fetch exchange rate:", error);
-      toast.error("Currency conversion failed", {
-        description: "Using rate of 1.0. Please try again later.",
-      });
       return 1;
     }
   }
@@ -154,15 +150,8 @@
         entries: convertedEntries,
         budgetLimits: convertedBudgetLimits,
       });
-
-      toast.success("Currency converted", {
-        description: `All amounts converted from ${fromCurrency} to ${toCurrency}`,
-      });
     } catch (error) {
       console.error("Currency conversion error:", error);
-      toast.error("Conversion failed", {
-        description: "Please try again",
-      });
       // Reset to original currency
       selectedCurrency = budget.currency;
     } finally {
@@ -182,12 +171,10 @@
   function handleSaveName() {
     const trimmedName = editedName.trim();
     if (!trimmedName) {
-      toast.error("Budget name cannot be empty");
       return;
     }
     budgetStore.updateBudget(budget.id, { name: trimmedName });
     isEditingName = false;
-    toast.success("Budget name updated");
   }
 
   function handleCancelEditName() {
@@ -196,38 +183,15 @@
   }
 
   function handleAddExpense(expense: Expense) {
-    const category = getCategoryById(budget.categories, expense.categoryId);
-    const categoryName = category?.name || "Unknown";
-
     budgetStore.addExpense(budget.id, expense);
-    toast.success("Expense added", {
-      description: `${formatCurrency(expense.amount, budget.currency)} for ${categoryName}`,
-    });
   }
 
-  function handleEditExpense(expense: Expense) {
-    const category = getCategoryById(budget.categories, expense.categoryId);
-    const categoryName = category?.name || "Unknown";
-
+  function handleUpdateExpense(expense: Expense) {
     budgetStore.updateExpense(budget.id, expense.id, expense);
-    toast.success("Expense updated", {
-      description: `${formatCurrency(expense.amount, budget.currency)} for ${categoryName}`,
-    });
   }
 
   function handleDeleteExpense(expenseId: string) {
-    const expense = budget.entries.find((e) => e.id === expenseId);
-    const category = expense
-      ? getCategoryById(budget.categories, expense.categoryId)
-      : null;
-    const categoryName = category?.name || "Unknown";
-
     budgetStore.deleteExpense(budget.id, expenseId);
-    if (expense) {
-      toast.success("Expense deleted", {
-        description: `${formatCurrency(expense.amount, budget.currency)} for ${categoryName}`,
-      });
-    }
   }
 
   function handleAddCategory(category: Category) {

@@ -10,7 +10,6 @@
     getIconComponent,
   } from "$lib/utils/categories";
   import { Trash2, Plus, Check, Pencil } from "lucide-svelte";
-  import { toast } from "svelte-sonner";
 
   let {
     categories,
@@ -55,7 +54,6 @@
 
   function handleSaveAdd() {
     if (!newName.trim()) {
-      toast.error("Please enter a category name");
       return;
     }
 
@@ -68,7 +66,6 @@
 
     onAdd(category);
     showAddForm = false;
-    toast.success("Category added", { description: category.name });
   }
 
   function handleStartEdit(category: Category) {
@@ -85,7 +82,6 @@
 
   function handleSaveEdit(categoryId: string) {
     if (!editName.trim()) {
-      toast.error("Please enter a category name");
       return;
     }
 
@@ -95,7 +91,6 @@
       color: editColor,
     });
     editingId = null;
-    toast.success("Category updated");
   }
 
   function handleDelete(category: Category) {
@@ -108,7 +103,6 @@
 
     if (confirm(message)) {
       onDelete(category.id);
-      toast.success("Category deleted", { description: category.name });
     }
   }
 

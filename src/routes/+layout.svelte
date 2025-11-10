@@ -1,7 +1,6 @@
 <script lang="ts">
   import "../app.css";
   import favicon from "$lib/assets/favicon.ico";
-  import { Toaster } from "$lib/components/ui/sonner";
   import Header from "$lib/components/Header.svelte";
   import { onMount } from "svelte";
   import { themeStore } from "$lib/stores/theme";
@@ -48,4 +47,3 @@
     {@render children()}
   </div>
 </div>
-<Toaster position="top-right" />

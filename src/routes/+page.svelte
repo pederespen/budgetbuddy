@@ -11,7 +11,6 @@
     CardHeader,
     CardTitle,
   } from "$lib/components/ui/card";
-  import { toast } from "svelte-sonner";
   import Dashboard from "$lib/components/budget/Dashboard.svelte";
   import BudgetSetupForm from "$lib/components/forms/BudgetSetupForm.svelte";
   import type { Currency, Budget } from "$lib/types";
@@ -39,9 +38,6 @@
     };
     budgetStore.addBudget(newBudget);
     showCreateForm = false;
-    toast.success("Budget created successfully!", {
-      description: `${data.name} is ready to track your expenses.`,
-    });
   }
 
   async function handleLoadDemo() {
@@ -50,13 +46,8 @@
       if (!response.ok) throw new Error("Failed to load demo data");
       const demoData = await response.json();
       budgetStore.set(demoData);
-      toast.success("Demo budget loaded!", {
-        description: "Explore the app with sample data.",
-      });
     } catch (error) {
-      toast.error("Failed to load demo data", {
-        description: "Please try again or create a new budget.",
-      });
+      console.error("Failed to load demo data:", error);
     }
   }
 
@@ -78,14 +69,8 @@
         }
 
         budgetStore.set(data);
-        toast.success("Budget imported!", {
-          description: `Successfully loaded ${data.budgets.length} budget(s).`,
-        });
       } catch (error) {
-        toast.error("Import failed", {
-          description:
-            error instanceof Error ? error.message : "Invalid file format",
-        });
+        console.error("Import failed:", error);
       }
     };
     input.click();
