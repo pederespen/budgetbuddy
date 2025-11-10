@@ -74,58 +74,59 @@ export function formatDate(
   }
 }
 
-// Filter expenses by date range
-export function filterExpensesByDateRange<T extends { date: string }>(
-  expenses: T[],
-  startDate: Date | null,
-  endDate: Date | null
+// Filter transactions by date range
+export function filterTransactionsByDateRange<T extends { date: string }>(
+  transactions: T[],
+  startDate: string | null,
+  endDate: string | null
 ): T[] {
   if (!startDate && !endDate) {
-    return expenses;
+    return transactions;
   }
 
-  return expenses.filter((expense) => {
-    const expenseDate = new Date(expense.date);
+  return transactions.filter((transaction) => {
+    const transactionDate = new Date(transaction.date);
 
-    // Set time to start of day for comparison
-    const expenseDay = new Date(
-      expenseDate.getFullYear(),
-      expenseDate.getMonth(),
-      expenseDate.getDate()
+    // Create date objects at midnight in local timezone
+    const transactionDay = new Date(
+      transactionDate.getFullYear(),
+      transactionDate.getMonth(),
+      transactionDate.getDate()
     );
 
     if (startDate && endDate) {
-      const start = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate()
-      );
-      const end = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth(),
-        endDate.getDate()
-      );
-      return expenseDay >= start && expenseDay <= end;
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+
+      const end = new Date(endDate);
+      end.setHours(0, 0, 0, 0);
+
+      return transactionDay >= start && transactionDay <= end;
     }
 
     if (startDate) {
-      const start = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate()
-      );
-      return expenseDay >= start;
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+
+      return transactionDay >= start;
     }
 
     if (endDate) {
-      const end = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth(),
-        endDate.getDate()
-      );
-      return expenseDay <= end;
+      const end = new Date(endDate);
+      end.setHours(0, 0, 0, 0);
+
+      return transactionDay <= end;
     }
 
     return true;
   });
+}
+
+// Legacy function name for backwards compatibility
+export function filterExpensesByDateRange<T extends { date: string }>(
+  expenses: T[],
+  startDate: string | null,
+  endDate: string | null
+): T[] {
+  return filterTransactionsByDateRange(expenses, startDate, endDate);
 }

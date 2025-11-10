@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import type { AppState, Budget, Expense, Category } from "../types";
+import type { AppState, Budget, Transaction, Category } from "../types";
 
 function createBudgetStore() {
   const initialState: AppState = { budgets: [], activeBudgetId: null };
@@ -48,15 +48,15 @@ function createBudgetStore() {
       }));
     },
 
-    // Expense operations
-    addExpense: (budgetId: string, expense: Expense) => {
+    // Transaction operations
+    addTransaction: (budgetId: string, transaction: Transaction) => {
       update((state) => ({
         ...state,
         budgets: state.budgets.map((b) =>
           b.id === budgetId
             ? {
                 ...b,
-                entries: [...b.entries, expense],
+                entries: [...b.entries, transaction],
                 updatedAt: new Date().toISOString(),
               }
             : b
@@ -64,10 +64,10 @@ function createBudgetStore() {
       }));
     },
 
-    updateExpense: (
+    updateTransaction: (
       budgetId: string,
-      expenseId: string,
-      updates: Partial<Expense>
+      transactionId: string,
+      updates: Partial<Transaction>
     ) => {
       update((state) => ({
         ...state,
@@ -76,7 +76,7 @@ function createBudgetStore() {
             ? {
                 ...b,
                 entries: b.entries.map((e) =>
-                  e.id === expenseId ? { ...e, ...updates } : e
+                  e.id === transactionId ? { ...e, ...updates } : e
                 ),
                 updatedAt: new Date().toISOString(),
               }
@@ -85,14 +85,14 @@ function createBudgetStore() {
       }));
     },
 
-    deleteExpense: (budgetId: string, expenseId: string) => {
+    deleteTransaction: (budgetId: string, transactionId: string) => {
       update((state) => ({
         ...state,
         budgets: state.budgets.map((b) =>
           b.id === budgetId
             ? {
                 ...b,
-                entries: b.entries.filter((e) => e.id !== expenseId),
+                entries: b.entries.filter((e) => e.id !== transactionId),
                 updatedAt: new Date().toISOString(),
               }
             : b

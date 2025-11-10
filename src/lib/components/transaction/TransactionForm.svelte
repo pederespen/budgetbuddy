@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Category, Currency } from "$lib/types";
+  import type { Category, Currency, TransactionType } from "$lib/types";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
@@ -24,6 +24,7 @@
     categoryId = $bindable(),
     amount = $bindable(),
     note = $bindable(),
+    transactionType = $bindable(),
     onSave,
     onCancel,
     variant = "table",
@@ -35,6 +36,7 @@
     categoryId: string;
     amount: string;
     note: string;
+    transactionType: TransactionType;
     onSave: () => void;
     onCancel: () => void;
     variant?: "table" | "card";
@@ -49,6 +51,21 @@
   const currencySymbol = currencySymbols[currency];
 
   let calendarOpen = $state(false);
+
+  // Filter categories based on transaction type
+  let filteredCategories = $derived(
+    categories.filter((c) => c.type === transactionType)
+  );
+
+  // Reset categoryId if it doesn't match the transaction type
+  $effect(() => {
+    if (categoryId) {
+      const selectedCategory = categories.find((c) => c.id === categoryId);
+      if (selectedCategory && selectedCategory.type !== transactionType) {
+        categoryId = "";
+      }
+    }
+  });
 
   // Close calendar when date is selected
   $effect(() => {
@@ -98,7 +115,7 @@
         {/if}
       </Select.Trigger>
       <Select.Content class="max-h-[200px]">
-        {#each categories as category}
+        {#each filteredCategories as category}
           {@const Icon = (LucideIcons as any)[category.icon]}
           <Select.Item value={category.id} label={category.name}>
             <div class="flex items-center gap-2">
@@ -188,7 +205,7 @@
             {/if}
           </Select.Trigger>
           <Select.Content class="max-h-[200px]">
-            {#each categories as category}
+            {#each filteredCategories as category}
               {@const Icon = (LucideIcons as any)[category.icon]}
               <Select.Item value={category.id} label={category.name}>
                 <div class="flex items-center gap-2">

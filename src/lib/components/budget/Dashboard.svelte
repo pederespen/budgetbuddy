@@ -19,7 +19,7 @@
   import { Label } from "$lib/components/ui/label";
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
-  import ExpenseList from "../expense/ExpenseList.svelte";
+  import TransactionList from "../transaction/TransactionList.svelte";
   import DualStatCard from "./DualStatCard.svelte";
   import RecentActivity from "./RecentActivity.svelte";
   import CategoryStats from "./CategoryStats.svelte";
@@ -183,15 +183,15 @@
   }
 
   function handleAddExpense(expense: Expense) {
-    budgetStore.addExpense(budget.id, expense);
+    budgetStore.addTransaction(budget.id, expense);
   }
 
   function handleUpdateExpense(expense: Expense) {
-    budgetStore.updateExpense(budget.id, expense.id, expense);
+    budgetStore.updateTransaction(budget.id, expense.id, expense);
   }
 
   function handleDeleteExpense(expenseId: string) {
-    budgetStore.deleteExpense(budget.id, expenseId);
+    budgetStore.deleteTransaction(budget.id, expenseId);
   }
 
   function handleAddCategory(category: Category) {
@@ -254,7 +254,7 @@
 
         <!-- Recent Activity -->
         <RecentActivity
-          expenses={filteredEntries}
+          transactions={filteredEntries}
           categories={budget.categories}
           currency={budget.currency}
           dateFormat={budget.dateFormat}
@@ -264,16 +264,16 @@
         <!-- Category Stats -->
         <CategoryStats
           {budget}
-          filteredExpenses={filteredEntries}
+          filteredTransactions={filteredEntries}
           onViewInsights={() => (activeTab = "insights")}
         />
       </div>
     {:else if activeTab === "expenses"}
       <!-- Expenses Content -->
       <div class="h-full flex flex-col p-1">
-        <ExpenseList
+        <TransactionList
           {budget}
-          expenses={filteredEntries}
+          transactions={filteredEntries}
           categories={budget.categories}
           currency={budget.currency}
           onAdd={handleAddExpense}
@@ -530,7 +530,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <!-- Recent Activity -->
           <RecentActivity
-            expenses={filteredEntries}
+            transactions={filteredEntries}
             categories={budget.categories}
             currency={budget.currency}
             dateFormat={budget.dateFormat}
@@ -540,7 +540,7 @@
           <!-- Category Stats -->
           <CategoryStats
             {budget}
-            filteredExpenses={filteredEntries}
+            filteredTransactions={filteredEntries}
             onViewInsights={() => (activeTab = "insights")}
           />
         </div>
@@ -548,9 +548,9 @@
     {:else if activeTab === "expenses"}
       <!-- Expenses Tab -->
       <div class="py-4 flex-1 overflow-hidden flex flex-col">
-        <ExpenseList
+        <TransactionList
           {budget}
-          expenses={filteredEntries}
+          transactions={filteredEntries}
           categories={budget.categories}
           currency={budget.currency}
           onAdd={handleAddExpense}

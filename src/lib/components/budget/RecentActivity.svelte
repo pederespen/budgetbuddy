@@ -11,25 +11,25 @@
   import { formatCurrency } from "$lib/utils/format";
   import { formatDate } from "$lib/utils/format";
   import { getCategoryById } from "$lib/utils/categories";
-  import type { Expense, Category, Currency, DateFormat } from "$lib/types";
+  import type { Transaction, Category, Currency, DateFormat } from "$lib/types";
 
   let {
-    expenses,
+    transactions,
     categories,
     currency,
     dateFormat,
     onAddClick,
   }: {
-    expenses: Expense[];
+    transactions: Transaction[];
     categories: Category[];
     currency: Currency;
     dateFormat: DateFormat;
     onAddClick: () => void;
   } = $props();
 
-  // Get the 5 most recent expenses
-  let recentExpenses = $derived(
-    [...expenses]
+  // Get the 5 most recent transactions
+  let recentTransactions = $derived(
+    [...transactions]
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 5)
   );
@@ -44,15 +44,18 @@
     </Button>
   </CardHeader>
   <CardContent class="pb-3">
-    {#if recentExpenses.length === 0}
+    {#if recentTransactions.length === 0}
       <div class="text-center py-6 text-muted-foreground text-sm">
-        <p>No expenses yet</p>
-        <p class="text-xs mt-1">Add your first expense to get started</p>
+        <p>No transactions yet</p>
+        <p class="text-xs mt-1">Add your first transaction to get started</p>
       </div>
     {:else}
       <div class="space-y-2">
-        {#each recentExpenses as expense (expense.id)}
-          {@const category = getCategoryById(categories, expense.categoryId)}
+        {#each recentTransactions as transaction (transaction.id)}
+          {@const category = getCategoryById(
+            categories,
+            transaction.categoryId
+          )}
           {@const Icon = category ? (LucideIcons as any)[category.icon] : null}
           <div
             class="flex items-center justify-between py-1.5 border-b last:border-0"
@@ -70,20 +73,20 @@
               {/if}
               <div class="flex-1 min-w-0">
                 <div class="font-medium text-sm truncate">
-                  {expense.note || category?.name || "No description"}
+                  {transaction.note || category?.name || "No description"}
                 </div>
                 <div class="text-sm text-muted-foreground">
-                  {formatDate(expense.date, dateFormat)}
+                  {formatDate(transaction.date, dateFormat)}
                 </div>
               </div>
             </div>
             <div class="font-semibold text-sm flex-shrink-0 ml-2">
-              {formatCurrency(expense.amount, currency)}
+              {formatCurrency(transaction.amount, currency)}
             </div>
           </div>
         {/each}
       </div>
-      {#if expenses.length > 5}
+      {#if transactions.length > 5}
         <div class="text-center mt-3">
           <Button
             variant="ghost"
@@ -91,7 +94,7 @@
             class="text-xs h-7"
             onclick={onAddClick}
           >
-            View all {expenses.length} expenses
+            View all {transactions.length} transactions
           </Button>
         </div>
       {/if}

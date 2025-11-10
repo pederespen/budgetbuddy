@@ -1,5 +1,10 @@
 <script lang="ts">
-  import type { Expense, Currency, Category } from "$lib/types";
+  import type {
+    Transaction,
+    Currency,
+    Category,
+    TransactionType,
+  } from "$lib/types";
   import { getCategoryById } from "$lib/utils/categories";
   import { exportAsJSON, exportAsCSV, exportAsXLSX } from "$lib/utils/export";
   import { Button } from "$lib/components/ui/button";
@@ -7,6 +12,7 @@
   import * as Dialog from "$lib/components/ui/dialog";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
   import * as Select from "$lib/components/ui/select";
+  import * as Tabs from "$lib/components/ui/tabs";
   import {
     Table,
     TableBody,
@@ -30,14 +36,14 @@
   } from "lucide-svelte";
   import { parseDate } from "@internationalized/date";
   import type { DateValue } from "@internationalized/date";
-  import ExpenseInlineForm from "./ExpenseInlineForm.svelte";
-  import ExpenseRow from "./ExpenseRow.svelte";
+  import TransactionForm from "./TransactionForm.svelte";
+  import TransactionRow from "./TransactionRow.svelte";
   import CategoryManager from "../budget/CategoryManager.svelte";
   import type { Budget } from "$lib/types";
 
   let {
     budget,
-    expenses,
+    transactions,
     categories,
     currency,
     onAdd,
@@ -48,23 +54,23 @@
     onDeleteCategory,
   }: {
     budget: Budget;
-    expenses: Expense[];
+    transactions: Transaction[];
     categories: Category[];
     currency: Currency;
-    onAdd: (expense: Expense) => void;
-    onEdit: (expense: Expense) => void;
+    onAdd: (transaction: Transaction) => void;
+    onEdit: (transaction: Transaction) => void;
     onDelete: (id: string) => void;
     onAddCategory: (category: Category) => void;
     onUpdateCategory: (categoryId: string, updates: Partial<Category>) => void;
     onDeleteCategory: (categoryId: string) => void;
   } = $props();
 
-  let showNewExpenseRow = $state(false);
-  let editingExpenseId = $state<string | null>(null);
+  let showNewTransactionRow = $state(false);
+  let editingTransactionId = $state<string | null>(null);
   let showCategoryManager = $state(false);
   let showMobileDialog = $state(false);
   let mobileDialogMode = $state<"new" | "edit">("new");
-  let editingExpenseIdForMobile = $state<string>("");
+  let editingTransactionIdForMobile = $state<string>("");
 
   // Sorting state
   type SortColumn = "category" | "date" | "amount";
@@ -75,33 +81,41 @@
   // Filter and search state
   let searchQuery = $state("");
   let filterCategory = $state<string>("all");
+  let filterTransactionType = $state<"all" | TransactionType>("all");
   let showFilters = $state(false);
 
-  // Form state for new expense
-  let newExpenseDate = $state<DateValue | undefined>(
+  // Form state for new transaction
+  let newTransactionDate = $state<DateValue | undefined>(
     parseDate(new Date().toISOString().split("T")[0])
   );
-  let newExpenseCategoryId = $state<string>("");
-  let newExpenseAmount = $state<string>("");
-  let newExpenseNote = $state<string>("");
+  let newTransactionCategoryId = $state<string>("");
+  let newTransactionAmount = $state<string>("");
+  let newTransactionNote = $state<string>("");
+  let newTransactionType = $state<TransactionType>("expense");
 
-  // Form state for editing expense
-  let editExpenseDate = $state<DateValue | undefined>(undefined);
-  let editExpenseCategoryId = $state<string>("");
-  let editExpenseAmount = $state<string>("");
-  let editExpenseNote = $state<string>("");
+  // Form state for editing transaction
+  let editTransactionDate = $state<DateValue | undefined>(undefined);
+  let editTransactionCategoryId = $state<string>("");
+  let editTransactionAmount = $state<string>("");
+  let editTransactionNote = $state<string>("");
+  let editTransactionType = $state<TransactionType>("expense");
 
-  // Filter and sort expenses
-  let filteredAndSortedExpenses = $derived(() => {
-    let filtered = expenses;
+  // Filter and sort transactions
+  let filteredAndSortedTransactions = $derived(() => {
+    let filtered = transactions;
+
+    // Apply transaction type filter
+    if (filterTransactionType !== "all") {
+      filtered = filtered.filter((t) => t.type === filterTransactionType);
+    }
 
     // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((expense) => {
-        const category = getCategoryById(categories, expense.categoryId);
+      filtered = filtered.filter((transaction) => {
+        const category = getCategoryById(categories, transaction.categoryId);
         const categoryName = category?.name.toLowerCase() || "";
-        const note = expense.note.toLowerCase();
+        const note = transaction.note.toLowerCase();
         return categoryName.includes(query) || note.includes(query);
       });
     }
@@ -161,113 +175,125 @@
     filterCategory = "all";
   }
 
-  function handleDuplicate(expense: Expense) {
-    const duplicatedExpense: Expense = {
+  function handleDuplicate(transaction: Transaction) {
+    const duplicatedTransaction: Transaction = {
       id: crypto.randomUUID(),
       date: new Date().toISOString().split("T")[0], // Today's date
-      categoryId: expense.categoryId,
-      amount: expense.amount,
-      note: expense.note,
+      categoryId: transaction.categoryId,
+      amount: transaction.amount,
+      note: transaction.note,
+      type: transaction.type,
     };
 
-    onAdd(duplicatedExpense);
+    onAdd(duplicatedTransaction);
   }
 
   function handleAddNew() {
-    showNewExpenseRow = true;
-    editingExpenseId = null;
+    showNewTransactionRow = true;
+    editingTransactionId = null;
     // Reset form
-    newExpenseDate = parseDate(new Date().toISOString().split("T")[0]);
-    newExpenseCategoryId = "";
-    newExpenseAmount = "";
-    newExpenseNote = "";
+    newTransactionDate = parseDate(new Date().toISOString().split("T")[0]);
+    newTransactionCategoryId = "";
+    newTransactionAmount = "";
+    newTransactionNote = "";
 
     // For mobile, open dialog
     if (window.innerWidth < 640) {
       mobileDialogMode = "new";
       showMobileDialog = true;
-      showNewExpenseRow = false;
+      showNewTransactionRow = false;
     }
   }
 
   function handleCancelNew() {
-    showNewExpenseRow = false;
+    showNewTransactionRow = false;
     showMobileDialog = false;
   }
 
   function handleSaveNew() {
-    if (!newExpenseCategoryId || !newExpenseAmount || !newExpenseDate) {
+    if (
+      !newTransactionCategoryId ||
+      !newTransactionAmount ||
+      !newTransactionDate
+    ) {
       alert("Please fill in date, category and amount");
       return;
     }
 
-    const amount = parseFloat(newExpenseAmount);
+    const amount = parseFloat(newTransactionAmount);
     if (isNaN(amount) || amount <= 0) {
       alert("Please enter a valid amount");
       return;
     }
 
-    const expense: Expense = {
+    const transaction: Transaction = {
       id: crypto.randomUUID(),
-      date: newExpenseDate.toString(),
-      categoryId: newExpenseCategoryId,
+      date: newTransactionDate.toString(),
+      categoryId: newTransactionCategoryId,
       amount,
-      note: newExpenseNote.trim(),
+      note: newTransactionNote.trim(),
+      type: newTransactionType,
     };
 
-    onAdd(expense);
-    showNewExpenseRow = false;
+    onAdd(transaction);
+    showNewTransactionRow = false;
     showMobileDialog = false;
   }
 
-  function handleStartEdit(expense: Expense) {
-    editingExpenseId = expense.id;
-    showNewExpenseRow = false;
+  function handleStartEdit(transaction: Transaction) {
+    editingTransactionId = transaction.id;
+    showNewTransactionRow = false;
     // Handle both date-only strings (YYYY-MM-DD) and ISO timestamps
-    const dateString = expense.date.includes("T")
-      ? expense.date.split("T")[0]
-      : expense.date;
-    editExpenseDate = parseDate(dateString);
-    editExpenseCategoryId = expense.categoryId;
-    editExpenseAmount = expense.amount.toString();
-    editExpenseNote = expense.note;
+    const dateString = transaction.date.includes("T")
+      ? transaction.date.split("T")[0]
+      : transaction.date;
+    editTransactionDate = parseDate(dateString);
+    editTransactionCategoryId = transaction.categoryId;
+    editTransactionAmount = transaction.amount.toString();
+    editTransactionNote = transaction.note;
+    editTransactionType = transaction.type;
 
     // For mobile, open dialog
     if (window.innerWidth < 640) {
       mobileDialogMode = "edit";
       showMobileDialog = true;
-      editingExpenseIdForMobile = expense.id;
-      editingExpenseId = null; // Don't show inline on mobile
+      editingTransactionIdForMobile = transaction.id;
+      editingTransactionId = null; // Don't show inline on mobile
     }
   }
 
   function handleCancelEdit() {
-    editingExpenseId = null;
+    editingTransactionId = null;
     showMobileDialog = false;
   }
 
-  function handleSaveEdit(expenseId: string) {
-    if (!editExpenseCategoryId || !editExpenseAmount || !editExpenseDate) {
+  function handleSaveEdit(transactionId: string) {
+    if (
+      !editTransactionCategoryId ||
+      !editTransactionAmount ||
+      !editTransactionDate
+    ) {
       alert("Please fill in date, category and amount");
       return;
     }
 
-    const amount = parseFloat(editExpenseAmount);
+    const amount = parseFloat(editTransactionAmount);
     if (isNaN(amount) || amount <= 0) {
       alert("Please enter a valid amount");
       return;
     }
 
-    const expense: Expense = {
-      id: expenseId,
-      date: editExpenseDate.toString(),
-      categoryId: editExpenseCategoryId,
+    const transaction: Transaction = {
+      id: transactionId,
+      date: editTransactionDate.toString(),
+      categoryId: editTransactionCategoryId,
       amount,
-      note: editExpenseNote.trim(),
+      note: editTransactionNote.trim(),
+      type: editTransactionType,
     };
 
-    onEdit(expense);
-    editingExpenseId = null;
+    onEdit(transaction);
+    editingTransactionId = null;
     showMobileDialog = false;
   }
 </script>
@@ -277,33 +303,35 @@
   <Dialog.Content class="max-w-lg">
     <Dialog.Header>
       <Dialog.Title>
-        {mobileDialogMode === "new" ? "Add Expense" : "Edit Expense"}
+        {mobileDialogMode === "new" ? "Add Transaction" : "Edit Transaction"}
       </Dialog.Title>
     </Dialog.Header>
     <div class="py-4">
       {#if mobileDialogMode === "new"}
-        <ExpenseInlineForm
+        <TransactionForm
           mode="new"
           {categories}
           {currency}
-          bind:date={newExpenseDate}
-          bind:categoryId={newExpenseCategoryId}
-          bind:amount={newExpenseAmount}
-          bind:note={newExpenseNote}
+          bind:date={newTransactionDate}
+          bind:categoryId={newTransactionCategoryId}
+          bind:amount={newTransactionAmount}
+          bind:note={newTransactionNote}
+          bind:transactionType={newTransactionType}
           onSave={handleSaveNew}
           onCancel={handleCancelNew}
           variant="card"
         />
       {:else}
-        <ExpenseInlineForm
+        <TransactionForm
           mode="edit"
           {categories}
           {currency}
-          bind:date={editExpenseDate}
-          bind:categoryId={editExpenseCategoryId}
-          bind:amount={editExpenseAmount}
-          bind:note={editExpenseNote}
-          onSave={() => handleSaveEdit(editingExpenseIdForMobile)}
+          bind:date={editTransactionDate}
+          bind:categoryId={editTransactionCategoryId}
+          bind:amount={editTransactionAmount}
+          bind:note={editTransactionNote}
+          bind:transactionType={editTransactionType}
+          onSave={() => handleSaveEdit(editingTransactionIdForMobile)}
           onCancel={handleCancelEdit}
           variant="card"
         />
@@ -315,7 +343,7 @@
 <!-- Header (Fixed) -->
 <div class="mb-4">
   <div class="flex items-center justify-between gap-3">
-    <h2 class="text-2xl font-bold">Expenses</h2>
+    <h2 class="text-2xl font-bold">Transactions</h2>
 
     <div class="flex items-center gap-2">
       <!-- Desktop: Inline Filters -->
@@ -423,7 +451,7 @@
         <Settings class="h-4 w-4 sm:mr-2" />
         <span class="hidden sm:inline">Edit Categories</span>
       </Button>
-      <Button size="sm" onclick={handleAddNew} disabled={showNewExpenseRow}>
+      <Button size="sm" onclick={handleAddNew} disabled={showNewTransactionRow}>
         <Plus class="h-4 w-4 sm:mr-2" />
         <span class="hidden sm:inline">Add New</span>
       </Button>
@@ -473,7 +501,7 @@
 <!-- Category Manager Dialog -->
 <CategoryManager
   {categories}
-  {expenses}
+  {transactions}
   bind:open={showCategoryManager}
   onAdd={onAddCategory}
   onUpdate={onUpdateCategory}
@@ -482,7 +510,7 @@
 
 <!-- Scrollable Content -->
 <div class="flex-1 overflow-auto">
-  {#if filteredAndSortedExpenses().length === 0 && !showNewExpenseRow}
+  {#if filteredAndSortedTransactions().length === 0 && !showNewTransactionRow}
     <div class="py-8 text-center text-muted-foreground">
       {#if activeFiltersCount() > 0}
         <p>No expenses match your filters.</p>
@@ -498,17 +526,20 @@
     <div class="block sm:hidden">
       <!-- Expenses List (Mobile) - No inline forms anymore -->
       <div class="divide-y">
-        {#each filteredAndSortedExpenses() as expense (expense.id)}
-          {@const category = getCategoryById(categories, expense.categoryId)}
+        {#each filteredAndSortedTransactions() as transaction (transaction.id)}
+          {@const category = getCategoryById(
+            categories,
+            transaction.categoryId
+          )}
           <!-- View Mode (Mobile) -->
-          <ExpenseRow
-            {expense}
+          <TransactionRow
+            {transaction}
             {category}
             {currency}
             dateFormat={budget.dateFormat}
-            onEdit={() => handleStartEdit(expense)}
-            onDelete={() => onDelete(expense.id)}
-            onDuplicate={() => handleDuplicate(expense)}
+            onEdit={() => handleStartEdit(transaction)}
+            onDelete={() => onDelete(transaction.id)}
+            onDuplicate={() => handleDuplicate(transaction)}
             disabled={false}
             variant="card"
           />
@@ -557,16 +588,17 @@
         </TableHeader>
         <TableBody>
           <!-- New Expense Row -->
-          {#if showNewExpenseRow}
+          {#if showNewTransactionRow}
             <TableRow class="bg-muted/30">
-              <ExpenseInlineForm
+              <TransactionForm
                 mode="new"
                 {categories}
                 {currency}
-                bind:date={newExpenseDate}
-                bind:categoryId={newExpenseCategoryId}
-                bind:amount={newExpenseAmount}
-                bind:note={newExpenseNote}
+                bind:date={newTransactionDate}
+                bind:categoryId={newTransactionCategoryId}
+                bind:amount={newTransactionAmount}
+                bind:note={newTransactionNote}
+                bind:transactionType={newTransactionType}
                 onSave={handleSaveNew}
                 onCancel={handleCancelNew}
                 variant="table"
@@ -575,21 +607,25 @@
           {/if}
 
           <!-- Existing Expenses -->
-          {#each filteredAndSortedExpenses() as expense (expense.id)}
-            {@const category = getCategoryById(categories, expense.categoryId)}
+          {#each filteredAndSortedTransactions() as transaction (transaction.id)}
+            {@const category = getCategoryById(
+              categories,
+              transaction.categoryId
+            )}
 
-            {#if editingExpenseId === expense.id}
+            {#if editingTransactionId === transaction.id}
               <!-- Edit Mode -->
               <TableRow class="bg-muted/30">
-                <ExpenseInlineForm
+                <TransactionForm
                   mode="edit"
                   {categories}
                   {currency}
-                  bind:date={editExpenseDate}
-                  bind:categoryId={editExpenseCategoryId}
-                  bind:amount={editExpenseAmount}
-                  bind:note={editExpenseNote}
-                  onSave={() => handleSaveEdit(expense.id)}
+                  bind:date={editTransactionDate}
+                  bind:categoryId={editTransactionCategoryId}
+                  bind:amount={editTransactionAmount}
+                  bind:note={editTransactionNote}
+                  bind:transactionType={editTransactionType}
+                  onSave={() => handleSaveEdit(transaction.id)}
                   onCancel={handleCancelEdit}
                   variant="table"
                 />
@@ -597,15 +633,15 @@
             {:else}
               <!-- View Mode -->
               <TableRow class="h-12">
-                <ExpenseRow
-                  {expense}
+                <TransactionRow
+                  {transaction}
                   {category}
                   {currency}
                   dateFormat={budget.dateFormat}
-                  onEdit={() => handleStartEdit(expense)}
-                  onDelete={() => onDelete(expense.id)}
-                  onDuplicate={() => handleDuplicate(expense)}
-                  disabled={showNewExpenseRow}
+                  onEdit={() => handleStartEdit(transaction)}
+                  onDelete={() => onDelete(transaction.id)}
+                  onDuplicate={() => handleDuplicate(transaction)}
+                  disabled={showNewTransactionRow}
                   variant="table"
                 />
               </TableRow>

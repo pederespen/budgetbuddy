@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Category, Expense } from "$lib/types";
+  import type { Category, Transaction } from "$lib/types";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
@@ -13,14 +13,14 @@
 
   let {
     categories,
-    expenses,
+    transactions,
     open = $bindable(false),
     onAdd,
     onUpdate,
     onDelete,
   }: {
     categories: Category[];
-    expenses: Expense[];
+    transactions: Transaction[];
     open?: boolean;
     onAdd: (category: Category) => void;
     onUpdate: (categoryId: string, updates: Partial<Category>) => void;
@@ -62,6 +62,7 @@
       name: newName.trim(),
       icon: newIcon,
       color: newColor,
+      type: "expense", // Default to expense for now
     };
 
     onAdd(category);
@@ -107,7 +108,7 @@
   }
 
   function getCategoryExpenseCount(categoryId: string): number {
-    return expenses.filter((e) => e.categoryId === categoryId).length;
+    return transactions.filter((e) => e.categoryId === categoryId).length;
   }
 </script>
 

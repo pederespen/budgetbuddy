@@ -6,20 +6,27 @@ export type DateFormat =
   | "YYYY-MM-DD"
   | "DD.MM.YYYY";
 
+export type TransactionType = "income" | "expense";
+
 export interface Category {
   id: string;
   name: string;
   icon: string; // lucide icon name
   color: string; // hex color
+  type: TransactionType; // income or expense category
 }
 
-export interface Expense {
+export interface Transaction {
   id: string;
   date: string; // ISO date string
   categoryId: string; // Reference to category id
   amount: number;
   note: string;
+  type: TransactionType; // income or expense
 }
+
+// Legacy type alias for backwards compatibility during migration
+export type Expense = Transaction;
 
 export interface BudgetLimit {
   [categoryId: string]: number;
@@ -31,7 +38,7 @@ export interface Budget {
   currency: Currency;
   dateFormat: DateFormat;
   categories: Category[];
-  entries: Expense[];
+  entries: Transaction[];
   budgetLimits: BudgetLimit;
   createdAt: string;
   updatedAt: string;

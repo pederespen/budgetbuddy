@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Expense, Category, Currency, DateFormat } from "$lib/types";
+  import type { Transaction, Category, Currency, DateFormat } from "$lib/types";
   import { formatCurrency, formatDate } from "$lib/utils/format";
   import { Button } from "$lib/components/ui/button";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
@@ -7,7 +7,7 @@
   import * as LucideIcons from "lucide-svelte";
 
   let {
-    expense,
+    transaction,
     category,
     currency,
     dateFormat = "DD/MM/YYYY",
@@ -17,7 +17,7 @@
     disabled = false,
     variant = "table",
   }: {
-    expense: Expense;
+    transaction: Transaction;
     category: Category | undefined;
     currency: Currency;
     dateFormat?: DateFormat;
@@ -29,6 +29,7 @@
   } = $props();
 
   const Icon = category ? (LucideIcons as any)[category.icon] : null;
+  const isIncome = transaction.type === "income";
 </script>
 
 {#if variant === "table"}
@@ -46,12 +47,16 @@
       <span>{category?.name || "Unknown"}</span>
     </div>
   </td>
-  <td class="w-[140px] font-medium">{formatDate(expense.date, dateFormat)}</td>
+  <td class="w-[140px] font-medium"
+    >{formatDate(transaction.date, dateFormat)}</td
+  >
   <td class="truncate">
-    {expense.note || ""}
+    {transaction.note || ""}
   </td>
   <td class="text-right font-semibold w-[120px]">
-    {formatCurrency(expense.amount, currency)}
+    <span class={isIncome ? "text-green-600" : ""}>
+      {isIncome ? "+" : ""}{formatCurrency(transaction.amount, currency)}
+    </span>
   </td>
   <td class="text-right w-[80px]">
     <DropdownMenu.Root>
@@ -90,19 +95,20 @@
     {/if}
 
     <!-- Content -->
+    <!-- Content -->
     <div class="flex-1 min-w-0">
       <div class="font-medium truncate">
-        {expense.note || category?.name || "Unknown"}
+        {transaction.note || category?.name || "Unknown"}
       </div>
       <div class="text-sm text-muted-foreground">
-        {formatDate(expense.date, dateFormat)}
+        {formatDate(transaction.date, dateFormat)}
       </div>
     </div>
 
     <!-- Amount -->
     <div class="text-right flex-shrink-0">
-      <div class="font-semibold">
-        {formatCurrency(expense.amount, currency)}
+      <div class="font-semibold" class:text-green-600={isIncome}>
+        {isIncome ? "+" : ""}{formatCurrency(transaction.amount, currency)}
       </div>
     </div>
 

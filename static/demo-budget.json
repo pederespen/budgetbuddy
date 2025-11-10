@@ -10,360 +10,488 @@
           "id": "cat-1",
           "name": "Food & Groceries",
           "icon": "ShoppingCart",
-          "color": "#ff6b6b"
+          "color": "#ff6b6b",
+          "type": "expense"
         },
         {
           "id": "cat-2",
           "name": "Transportation",
           "icon": "Car",
-          "color": "#4ecdc4"
+          "color": "#4ecdc4",
+          "type": "expense"
         },
         {
           "id": "cat-3",
           "name": "Entertainment",
           "icon": "Tv",
-          "color": "#a29bfe"
+          "color": "#a29bfe",
+          "type": "expense"
         },
         {
           "id": "cat-4",
           "name": "Shopping",
           "icon": "ShoppingBag",
-          "color": "#fd79a8"
+          "color": "#fd79a8",
+          "type": "expense"
         },
         {
           "id": "cat-5",
           "name": "Bills & Utilities",
           "icon": "Receipt",
-          "color": "#fdcb6e"
+          "color": "#fdcb6e",
+          "type": "expense"
         },
         {
           "id": "cat-6",
           "name": "Health & Fitness",
           "icon": "Heart",
-          "color": "#00b894"
+          "color": "#00b894",
+          "type": "expense"
         },
         {
           "id": "cat-7",
-          "name": "Other",
+          "name": "Other Expenses",
           "icon": "Package",
-          "color": "#636e72"
+          "color": "#636e72",
+          "type": "expense"
+        },
+        {
+          "id": "cat-income-1",
+          "name": "Salary",
+          "icon": "Briefcase",
+          "color": "#10b981",
+          "type": "income"
+        },
+        {
+          "id": "cat-income-2",
+          "name": "Freelance",
+          "icon": "Laptop",
+          "color": "#34d399",
+          "type": "income"
+        },
+        {
+          "id": "cat-income-3",
+          "name": "Investments",
+          "icon": "TrendingUp",
+          "color": "#6ee7b7",
+          "type": "income"
+        },
+        {
+          "id": "cat-income-4",
+          "name": "Other Income",
+          "icon": "DollarSign",
+          "color": "#4ade80",
+          "type": "income"
         }
       ],
       "entries": [
+        {
+          "id": "income-1",
+          "date": "2025-11-01",
+          "categoryId": "cat-income-1",
+          "amount": 45000,
+          "note": "Monthly salary",
+          "type": "income"
+        },
+        {
+          "id": "income-2",
+          "date": "2025-10-01",
+          "categoryId": "cat-income-1",
+          "amount": 45000,
+          "note": "Monthly salary",
+          "type": "income"
+        },
+        {
+          "id": "income-3",
+          "date": "2025-11-05",
+          "categoryId": "cat-income-2",
+          "amount": 8500,
+          "note": "Freelance web development project",
+          "type": "income"
+        },
+        {
+          "id": "income-4",
+          "date": "2025-10-15",
+          "categoryId": "cat-income-2",
+          "amount": 6200,
+          "note": "Consulting work",
+          "type": "income"
+        },
+        {
+          "id": "income-5",
+          "date": "2025-09-01",
+          "categoryId": "cat-income-1",
+          "amount": 45000,
+          "note": "Monthly salary",
+          "type": "income"
+        },
+        {
+          "id": "income-6",
+          "date": "2025-10-20",
+          "categoryId": "cat-income-3",
+          "amount": 1250,
+          "note": "Stock dividends",
+          "type": "income"
+        },
         {
           "id": "exp-1",
           "date": "2025-11-01",
           "categoryId": "cat-1",
           "amount": 1250.5,
-          "note": "Weekly groceries at Rema 1000"
+          "note": "Weekly groceries at Rema 1000",
+          "type": "expense"
         },
         {
           "id": "exp-2",
           "date": "2025-11-02",
           "categoryId": "cat-2",
           "amount": 450,
-          "note": "Fuel for car"
+          "note": "Fuel for car",
+          "type": "expense"
         },
         {
           "id": "exp-3",
           "date": "2025-11-03",
           "categoryId": "cat-3",
           "amount": 189,
-          "note": "Netflix subscription"
+          "note": "Netflix subscription",
+          "type": "expense"
         },
         {
           "id": "exp-4",
           "date": "2025-11-04",
           "categoryId": "cat-1",
           "amount": 85.75,
-          "note": "Coffee and pastries"
+          "note": "Coffee and pastries",
+          "type": "expense"
         },
         {
           "id": "exp-5",
           "date": "2025-11-05",
           "categoryId": "cat-4",
           "amount": 699,
-          "note": "New shoes"
+          "note": "New shoes",
+          "type": "expense"
         },
         {
           "id": "exp-6",
           "date": "2025-11-05",
           "categoryId": "cat-1",
           "amount": 320,
-          "note": "Dinner at restaurant"
+          "note": "Dinner at restaurant",
+          "type": "expense"
         },
         {
           "id": "exp-7",
           "date": "2025-11-06",
           "categoryId": "cat-5",
           "amount": 2500,
-          "note": "Monthly rent payment"
+          "note": "Monthly rent payment",
+          "type": "expense"
         },
         {
           "id": "exp-8",
           "date": "2025-11-06",
           "categoryId": "cat-6",
           "amount": 450,
-          "note": "Gym membership"
+          "note": "Gym membership",
+          "type": "expense"
         },
         {
           "id": "exp-9",
           "date": "2025-11-07",
           "categoryId": "cat-1",
           "amount": 950,
-          "note": "Grocery shopping"
+          "note": "Grocery shopping",
+          "type": "expense"
         },
         {
           "id": "exp-10",
           "date": "2025-11-07",
           "categoryId": "cat-2",
           "amount": 125,
-          "note": "Public transport monthly pass"
+          "note": "Public transport monthly pass",
+          "type": "expense"
         },
         {
           "id": "exp-11",
           "date": "2025-11-07",
           "categoryId": "cat-3",
           "amount": 249,
-          "note": "Movie tickets"
+          "note": "Movie tickets",
+          "type": "expense"
         },
         {
           "id": "exp-12",
           "date": "2025-11-07",
           "categoryId": "cat-7",
           "amount": 150,
-          "note": "Miscellaneous items"
+          "note": "Miscellaneous items",
+          "type": "expense"
         },
         {
           "id": "exp-13",
           "date": "2025-10-28",
           "categoryId": "cat-1",
           "amount": 1150,
-          "note": "Weekly groceries"
+          "note": "Weekly groceries",
+          "type": "expense"
         },
         {
           "id": "exp-14",
           "date": "2025-10-25",
           "categoryId": "cat-2",
           "amount": 480,
-          "note": "Gas station"
+          "note": "Gas station",
+          "type": "expense"
         },
         {
           "id": "exp-15",
           "date": "2025-10-22",
           "categoryId": "cat-4",
           "amount": 899,
-          "note": "Electronics store"
+          "note": "Electronics store",
+          "type": "expense"
         },
         {
           "id": "exp-16",
           "date": "2025-10-20",
           "categoryId": "cat-1",
           "amount": 245,
-          "note": "Lunch with colleagues"
+          "note": "Lunch with colleagues",
+          "type": "expense"
         },
         {
           "id": "exp-17",
           "date": "2025-10-18",
           "categoryId": "cat-3",
           "amount": 320,
-          "note": "Concert tickets"
+          "note": "Concert tickets",
+          "type": "expense"
         },
         {
           "id": "exp-18",
           "date": "2025-10-15",
           "categoryId": "cat-1",
           "amount": 1320,
-          "note": "Big grocery haul"
+          "note": "Big grocery haul",
+          "type": "expense"
         },
         {
           "id": "exp-19",
           "date": "2025-10-12",
           "categoryId": "cat-5",
           "amount": 890,
-          "note": "Electricity bill"
+          "note": "Electricity bill",
+          "type": "expense"
         },
         {
           "id": "exp-20",
           "date": "2025-10-10",
           "categoryId": "cat-6",
           "amount": 275,
-          "note": "Yoga classes"
+          "note": "Yoga classes",
+          "type": "expense"
         },
         {
           "id": "exp-21",
           "date": "2025-10-08",
           "categoryId": "cat-2",
           "amount": 95,
-          "note": "Taxi ride"
+          "note": "Taxi ride",
+          "type": "expense"
         },
         {
           "id": "exp-22",
           "date": "2025-10-05",
           "categoryId": "cat-1",
           "amount": 680,
-          "note": "Grocery shopping"
+          "note": "Grocery shopping",
+          "type": "expense"
         },
         {
           "id": "exp-23",
           "date": "2025-10-03",
           "categoryId": "cat-4",
           "amount": 1250,
-          "note": "New winter jacket"
+          "note": "New winter jacket",
+          "type": "expense"
         },
         {
           "id": "exp-24",
           "date": "2025-10-01",
           "categoryId": "cat-5",
           "amount": 2500,
-          "note": "Rent payment"
+          "note": "Rent payment",
+          "type": "expense"
         },
         {
           "id": "exp-25",
           "date": "2025-09-28",
           "categoryId": "cat-1",
           "amount": 890,
-          "note": "Weekly groceries"
+          "note": "Weekly groceries",
+          "type": "expense"
         },
         {
           "id": "exp-26",
           "date": "2025-09-25",
           "categoryId": "cat-3",
           "amount": 450,
-          "note": "Theater tickets"
+          "note": "Theater tickets",
+          "type": "expense"
         },
         {
           "id": "exp-27",
           "date": "2025-09-22",
           "categoryId": "cat-2",
           "amount": 520,
-          "note": "Car fuel"
+          "note": "Car fuel",
+          "type": "expense"
         },
         {
           "id": "exp-28",
           "date": "2025-09-20",
           "categoryId": "cat-1",
           "amount": 195,
-          "note": "Coffee shop"
+          "note": "Coffee shop",
+          "type": "expense"
         },
         {
           "id": "exp-29",
           "date": "2025-09-18",
           "categoryId": "cat-6",
           "amount": 320,
-          "note": "Pharmacy"
+          "note": "Pharmacy",
+          "type": "expense"
         },
         {
           "id": "exp-30",
           "date": "2025-09-15",
           "categoryId": "cat-1",
           "amount": 1450,
-          "note": "Big shop at Meny"
+          "note": "Big shop at Meny",
+          "type": "expense"
         },
         {
           "id": "exp-31",
           "date": "2025-09-12",
           "categoryId": "cat-4",
           "amount": 599,
-          "note": "Books and magazines"
+          "note": "Books and magazines",
+          "type": "expense"
         },
         {
           "id": "exp-32",
           "date": "2025-09-10",
           "categoryId": "cat-3",
           "amount": 189,
-          "note": "Spotify subscription"
+          "note": "Spotify subscription",
+          "type": "expense"
         },
         {
           "id": "exp-33",
           "date": "2025-09-08",
           "categoryId": "cat-2",
           "amount": 125,
-          "note": "Public transport pass"
+          "note": "Public transport pass",
+          "type": "expense"
         },
         {
           "id": "exp-34",
           "date": "2025-09-05",
           "categoryId": "cat-1",
           "amount": 780,
-          "note": "Grocery shopping"
+          "note": "Grocery shopping",
+          "type": "expense"
         },
         {
           "id": "exp-35",
           "date": "2025-09-03",
           "categoryId": "cat-5",
           "amount": 1200,
-          "note": "Internet and phone bill"
+          "note": "Internet and phone bill",
+          "type": "expense"
         },
         {
           "id": "exp-36",
           "date": "2025-09-01",
           "categoryId": "cat-5",
           "amount": 2500,
-          "note": "Monthly rent"
+          "note": "Monthly rent",
+          "type": "expense"
         },
         {
           "id": "exp-37",
           "date": "2025-08-28",
           "categoryId": "cat-1",
           "amount": 920,
-          "note": "Weekend groceries"
+          "note": "Weekend groceries",
+          "type": "expense"
         },
         {
           "id": "exp-38",
           "date": "2025-08-25",
           "categoryId": "cat-3",
           "amount": 680,
-          "note": "Gaming subscription"
+          "note": "Gaming subscription",
+          "type": "expense"
         },
         {
           "id": "exp-39",
           "date": "2025-08-20",
           "categoryId": "cat-2",
           "amount": 450,
-          "note": "Gas"
+          "note": "Gas",
+          "type": "expense"
         },
         {
           "id": "exp-40",
           "date": "2025-08-15",
           "categoryId": "cat-1",
           "amount": 1100,
-          "note": "Grocery shopping"
+          "note": "Grocery shopping",
+          "type": "expense"
         },
         {
           "id": "exp-41",
           "date": "2025-08-12",
           "categoryId": "cat-6",
           "amount": 450,
-          "note": "Gym membership"
+          "note": "Gym membership",
+          "type": "expense"
         },
         {
           "id": "exp-42",
           "date": "2025-08-10",
           "categoryId": "cat-4",
           "amount": 1899,
-          "note": "New phone accessories"
+          "note": "New phone accessories",
+          "type": "expense"
         },
         {
           "id": "exp-43",
           "date": "2025-08-05",
           "categoryId": "cat-1",
           "amount": 850,
-          "note": "Food shopping"
+          "note": "Food shopping",
+          "type": "expense"
         },
         {
           "id": "exp-44",
           "date": "2025-08-03",
           "categoryId": "cat-7",
           "amount": 420,
-          "note": "Various household items"
+          "note": "Various household items",
+          "type": "expense"
         },
         {
           "id": "exp-45",
           "date": "2025-08-01",
           "categoryId": "cat-5",
           "amount": 2500,
-          "note": "Rent"
+          "note": "Rent",
+          "type": "expense"
         }
       ],
       "budgetLimits": {
