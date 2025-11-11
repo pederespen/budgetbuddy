@@ -34,6 +34,7 @@
     Filter,
     X,
     Tags,
+    Loader2,
   } from "lucide-svelte";
   import { parseDate } from "@internationalized/date";
   import type { DateValue } from "@internationalized/date";
@@ -41,6 +42,7 @@
   import TransactionRow from "./TransactionRow.svelte";
   import CategoryManager from "../budget/CategoryManager.svelte";
   import type { Budget } from "$lib/types";
+  import { debounce } from "$lib/utils/performance";
 
   let {
     budget,
@@ -81,9 +83,20 @@
 
   // Filter and search state
   let searchQuery = $state("");
+  let debouncedSearchQuery = $state("");
   let filterCategory = $state<string>("all");
   let filterTransactionType = $state<"all" | TransactionType>("all");
   let showFilters = $state(false);
+
+  // Debounce search for better performance with large datasets
+  const updateDebouncedSearch = debounce((value: string) => {
+    debouncedSearchQuery = value;
+  }, 300);
+
+  // Update debounced search when searchQuery changes
+  $effect(() => {
+    updateDebouncedSearch(searchQuery);
+  });
 
   // Form state for new transaction
   let newTransactionDate = $state<DateValue | undefined>(
@@ -101,6 +114,12 @@
   let editTransactionNote = $state<string>("");
   let editTransactionType = $state<TransactionType>("expense");
 
+  // Infinite scroll state
+  let loadedItemsCount = $state(50); // Start with 50 transactions
+  const itemsPerLoad = 50; // Load 50 more each time
+  let isLoadingMore = $state(false);
+  let scrollContainer: HTMLDivElement;
+
   // Filter and sort transactions
   let filteredAndSortedTransactions = $derived(() => {
     let filtered = transactions;
@@ -111,8 +130,8 @@
     }
 
     // Apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
+    if (debouncedSearchQuery.trim()) {
+      const query = debouncedSearchQuery.toLowerCase();
       filtered = filtered.filter((transaction) => {
         const category = getCategoryById(categories, transaction.categoryId);
         const categoryName = category?.name.toLowerCase() || "";
@@ -147,10 +166,46 @@
     });
   });
 
+  // Infinite scroll: Display limited items
+  const displayedTransactions = $derived(() => {
+    const allTransactions = filteredAndSortedTransactions();
+    return allTransactions.slice(0, loadedItemsCount);
+  });
+
+  const hasMore = $derived(() => {
+    return filteredAndSortedTransactions().length > loadedItemsCount;
+  });
+
+  // Handle infinite scroll
+  function handleScroll(e: Event) {
+    if (isLoadingMore || !hasMore()) return;
+
+    const target = e.target as HTMLDivElement;
+    const scrollBottom =
+      target.scrollHeight - target.scrollTop - target.clientHeight;
+
+    // Load more when user is within 200px of bottom
+    if (scrollBottom < 200) {
+      loadMore();
+    }
+  }
+
+  function loadMore() {
+    if (isLoadingMore || !hasMore()) return;
+
+    isLoadingMore = true;
+
+    // Simulate a small delay for smooth UX (optional)
+    setTimeout(() => {
+      loadedItemsCount += itemsPerLoad;
+      isLoadingMore = false;
+    }, 100);
+  }
+
   // Get active filter count
   let activeFiltersCount = $derived(() => {
     let count = 0;
-    if (searchQuery.trim()) count++;
+    if (debouncedSearchQuery.trim()) count++;
     if (filterCategory !== "all") count++;
     return count;
   });
@@ -173,8 +228,19 @@
 
   function clearFilters() {
     searchQuery = "";
+    debouncedSearchQuery = "";
     filterCategory = "all";
+    loadedItemsCount = 50; // Reset loaded items when clearing filters
   }
+
+  // Reset to initial load when filters change
+  $effect(() => {
+    // Watch filter changes
+    searchQuery;
+    filterCategory;
+    filterTransactionType;
+    loadedItemsCount = 50;
+  });
 
   function handleDuplicate(transaction: Transaction) {
     const duplicatedTransaction: Transaction = {
@@ -524,7 +590,11 @@
 />
 
 <!-- Scrollable Content -->
-<div class="flex-1 overflow-auto">
+<div
+  class="flex-1 overflow-auto"
+  bind:this={scrollContainer}
+  onscroll={handleScroll}
+>
   {#if filteredAndSortedTransactions().length === 0 && !showNewTransactionRow}
     <div class="py-8 text-center text-muted-foreground">
       {#if activeFiltersCount() > 0}
@@ -537,11 +607,23 @@
       {/if}
     </div>
   {:else}
+    <!-- Transaction count info -->
+    {#if filteredAndSortedTransactions().length > 0}
+      <div
+        class="mb-3 flex items-center justify-between text-sm text-muted-foreground px-1"
+      >
+        <div>
+          Showing {displayedTransactions().length} of {filteredAndSortedTransactions()
+            .length} transactions
+        </div>
+      </div>
+    {/if}
+
     <!-- Mobile View -->
     <div class="block sm:hidden">
       <!-- Transactions List (Mobile) - No inline forms anymore -->
       <div class="divide-y">
-        {#each filteredAndSortedTransactions() as transaction (transaction.id)}
+        {#each displayedTransactions() as transaction (transaction.id)}
           {@const category = getCategoryById(
             categories,
             transaction.categoryId
@@ -560,6 +642,22 @@
           />
         {/each}
       </div>
+
+      <!-- Loading indicator (Mobile) -->
+      {#if isLoadingMore}
+        <div class="py-4 text-center">
+          <Loader2 class="h-5 w-5 animate-spin mx-auto text-muted-foreground" />
+        </div>
+      {/if}
+
+      <!-- Load more button (Mobile - fallback if scroll doesn't trigger) -->
+      {#if hasMore() && !isLoadingMore}
+        <div class="py-3 text-center">
+          <Button variant="outline" size="sm" onclick={loadMore}>
+            Load More
+          </Button>
+        </div>
+      {/if}
     </div>
 
     <!-- Desktop View -->
@@ -623,7 +721,7 @@
           {/if}
 
           <!-- Existing Transactions -->
-          {#each filteredAndSortedTransactions() as transaction (transaction.id)}
+          {#each displayedTransactions() as transaction (transaction.id)}
             {@const category = getCategoryById(
               categories,
               transaction.categoryId
@@ -665,6 +763,38 @@
           {/each}
         </TableBody>
       </Table>
+
+      <!-- Loading indicator (Desktop) -->
+      {#if isLoadingMore}
+        <div class="py-4 text-center">
+          <Loader2 class="h-5 w-5 animate-spin mx-auto text-muted-foreground" />
+        </div>
+      {/if}
+
+      <!-- Load more button (Desktop - fallback if scroll doesn't trigger) -->
+      {#if hasMore() && !isLoadingMore}
+        <div class="py-3 text-center">
+          <Button variant="outline" size="sm" onclick={loadMore}>
+            Load More ({filteredAndSortedTransactions().length -
+              loadedItemsCount} remaining)
+          </Button>
+        </div>
+      {/if}
     </div>
   {/if}
 </div>
+
+<style>
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  :global(.animate-spin) {
+    animation: spin 1s linear infinite;
+  }
+</style>

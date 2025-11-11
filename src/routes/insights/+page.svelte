@@ -21,43 +21,70 @@
     state.budgets.find((b) => b.id === state.activeBudgetId)
   );
 
-  // Filter transactions based on date range
-  const filteredEntries = $derived(
-    activeBudget
-      ? filterTransactionsByDateRange(
-          activeBudget.entries,
-          dateRange.startDate,
-          dateRange.endDate
-        )
-      : []
-  );
+  // Memoized: Filter transactions based on date range
+  const filteredEntries = $derived(() => {
+    if (!activeBudget) return [];
+    return filterTransactionsByDateRange(
+      activeBudget.entries,
+      dateRange.startDate?.toISOString() || null,
+      dateRange.endDate?.toISOString() || null
+    );
+  });
 
-  // Separate expenses and income
-  const expenses = $derived(
-    filteredEntries.filter((e) => e.type === "expense")
-  );
+  // Memoized: Separate expenses and income
+  const expenses = $derived(() => {
+    return filteredEntries().filter((e) => e.type === "expense");
+  });
 
-  const incomes = $derived(filteredEntries.filter((e) => e.type === "income"));
+  const incomes = $derived(() => {
+    return filteredEntries().filter((e) => e.type === "income");
+  });
 
-  const totalExpenses = $derived(
-    expenses.reduce((sum, e) => sum + e.amount, 0)
-  );
+  // Memoized: Calculate totals
+  const totalExpenses = $derived(() => {
+    return expenses().reduce((sum, e) => sum + e.amount, 0);
+  });
 
-  const totalIncome = $derived(incomes.reduce((sum, e) => sum + e.amount, 0));
+  const totalIncome = $derived(() => {
+    return incomes().reduce((sum, e) => sum + e.amount, 0);
+  });
 
-  const netAmount = $derived(totalIncome - totalExpenses);
+  const netAmount = $derived(() => totalIncome() - totalExpenses());
+
+  // Memoized: Active categories count
+  const activeCategoriesCount = $derived(() => {
+    return new Set(filteredEntries().map((e) => e.categoryId)).size;
+  });
+
+  // Memoized: Budget usage percentage
+  const budgetUsagePercentage = $derived(() => {
+    if (!activeBudget) return 0;
+    const totalBudget = Object.values(activeBudget.budgetLimits).reduce(
+      (sum, limit) => sum + limit,
+      0
+    );
+    const totalSpent = filteredEntries().reduce((sum, e) => sum + e.amount, 0);
+    return totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
+  });
+
+  // Memoized: Average transaction
+  const avgTransaction = $derived(() => {
+    const expenseList = expenses();
+    return expenseList.length > 0
+      ? (totalExpenses() / expenseList.length).toFixed(2)
+      : "0.00";
+  });
 
   // Create filtered budget for child components (with expenses only for charts)
-  const filteredBudget = $derived(
-    activeBudget
-      ? {
-          ...activeBudget,
-          entries: expenses,
-        }
-      : undefined
-  );
+  const filteredBudget = $derived(() => {
+    if (!activeBudget) return undefined;
+    return {
+      ...activeBudget,
+      entries: expenses(),
+    };
+  });
 
-  const hasData = $derived(filteredEntries.length > 0);
+  const hasData = $derived(() => filteredEntries().length > 0);
 </script>
 
 <div class="max-w-6xl mx-auto px-4 py-6 space-y-6">
@@ -83,7 +110,7 @@
         </div>
       </CardContent>
     </Card>
-  {:else if !hasData}
+  {:else if !hasData()}
     <Card>
       <CardContent class="pt-6">
         <div
@@ -110,10 +137,10 @@
         <CardContent>
           <div class="text-2xl font-bold">
             {activeBudget.currency}
-            {totalExpenses.toFixed(2)}
+            {totalExpenses().toFixed(2)}
           </div>
           <p class="text-xs text-muted-foreground">
-            Across {expenses.length} expense transactions
+            Across {expenses().length} expense transactions
           </p>
         </CardContent>
       </Card>
@@ -128,10 +155,10 @@
         <CardContent>
           <div class="text-2xl font-bold">
             {activeBudget.currency}
-            {totalIncome.toFixed(2)}
+            {totalIncome().toFixed(2)}
           </div>
           <p class="text-xs text-muted-foreground">
-            Across {incomes.length} income transactions
+            Across {incomes().length} income transactions
           </p>
         </CardContent>
       </Card>
@@ -146,10 +173,10 @@
         <CardContent>
           <div
             class="text-2xl font-bold"
-            class:text-destructive={netAmount < 0}
+            class:text-destructive={netAmount() < 0}
           >
             {activeBudget.currency}
-            {netAmount.toFixed(2)}
+            {netAmount().toFixed(2)}
           </div>
           <p class="text-xs text-muted-foreground">Income - Expenses</p>
         </CardContent>
@@ -164,7 +191,7 @@
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">
-            {new Set(filteredEntries.map((e) => e.categoryId)).size}
+            {activeCategoriesCount()}
           </div>
           <p class="text-xs text-muted-foreground">
             Out of {activeBudget.categories.length} total
@@ -181,18 +208,7 @@
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">
-            {(() => {
-              const totalBudget = Object.values(
-                activeBudget.budgetLimits
-              ).reduce((sum, limit) => sum + limit, 0);
-              const totalSpent = filteredEntries.reduce(
-                (sum, e) => sum + e.amount,
-                0
-              );
-              return totalBudget > 0
-                ? Math.round((totalSpent / totalBudget) * 100)
-                : 0;
-            })()}%
+            {budgetUsagePercentage()}%
           </div>
           <p class="text-xs text-muted-foreground">Of total budget</p>
         </CardContent>
@@ -208,9 +224,7 @@
         <CardContent>
           <div class="text-2xl font-bold">
             {activeBudget.currency}
-            {expenses.length > 0
-              ? (totalExpenses / expenses.length).toFixed(2)
-              : "0.00"}
+            {avgTransaction()}
           </div>
           <p class="text-xs text-muted-foreground">Per expense</p>
         </CardContent>
@@ -219,19 +233,21 @@
 
     <!-- Charts Grid -->
     <div class="grid gap-4 md:grid-cols-2">
-      {#if filteredBudget}
-        <SpendingByCategory budget={filteredBudget} />
-        <BudgetProgress budget={filteredBudget} />
+      {#if filteredBudget()}
+        {@const budget = filteredBudget()!}
+        <SpendingByCategory {budget} />
+        <BudgetProgress {budget} />
       {/if}
     </div>
 
     <div class="grid gap-4 md:grid-cols-3">
-      {#if filteredBudget}
+      {#if filteredBudget()}
+        {@const budget = filteredBudget()!}
         <div class="md:col-span-2">
-          <SpendingTrend budget={filteredBudget} />
+          <SpendingTrend {budget} />
         </div>
         <div class="md:col-span-1">
-          <TopCategories budget={filteredBudget} />
+          <TopCategories {budget} />
         </div>
       {/if}
     </div>

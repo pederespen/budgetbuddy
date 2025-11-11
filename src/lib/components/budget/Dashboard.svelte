@@ -83,8 +83,8 @@
   let filteredEntries = $derived(
     filterTransactionsByDateRange(
       budget.entries,
-      dateRange.startDate,
-      dateRange.endDate
+      dateRange.startDate?.toISOString() || null,
+      dateRange.endDate?.toISOString() || null
     )
   );
 
