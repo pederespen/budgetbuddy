@@ -36,6 +36,7 @@
     Tags,
     Loader2,
   } from "lucide-svelte";
+  import * as LucideIcons from "lucide-svelte";
   import { parseDate } from "@internationalized/date";
   import type { DateValue } from "@internationalized/date";
   import TransactionForm from "./TransactionForm.svelte";
@@ -457,20 +458,42 @@
           <div class="w-[160px]">
             <Select.Root type="single" bind:value={filterCategory}>
               <Select.Trigger class="w-full !h-8 text-sm !py-1 bg-card">
-                <span class="truncate">
-                  {filterCategory === "all"
-                    ? "All Categories"
-                    : getCategoryById(categories, filterCategory)?.name ||
-                      "All Categories"}
+                <span class="truncate flex items-center gap-1.5">
+                  {#if filterCategory === "all"}
+                    All Categories
+                  {:else}
+                    {@const selectedCat = getCategoryById(
+                      categories,
+                      filterCategory
+                    )}
+                    {#if selectedCat}
+                      {@const Icon = (LucideIcons as any)[selectedCat.icon]}
+                      {#if Icon}
+                        <Icon
+                          class="h-3.5 w-3.5"
+                          style="color: {selectedCat.color}"
+                        />
+                      {/if}
+                      {selectedCat.name}
+                    {:else}
+                      All Categories
+                    {/if}
+                  {/if}
                 </span>
               </Select.Trigger>
               <Select.Content>
                 <Select.Item value="all" label="All Categories">
                   All Categories
                 </Select.Item>
-                {#each categories as category}
+                {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category}
+                  {@const Icon = (LucideIcons as any)[category.icon]}
                   <Select.Item value={category.id} label={category.name}>
-                    {category.name}
+                    <div class="flex items-center gap-2">
+                      {#if Icon}
+                        <Icon class="h-4 w-4" style="color: {category.color}" />
+                      {/if}
+                      {category.name}
+                    </div>
                   </Select.Item>
                 {/each}
               </Select.Content>
@@ -558,20 +581,36 @@
       <!-- Category Filter -->
       <Select.Root type="single" bind:value={filterCategory}>
         <Select.Trigger class="w-full">
-          <span>
-            {filterCategory === "all"
-              ? "All Categories"
-              : getCategoryById(categories, filterCategory)?.name ||
-                "All Categories"}
+          <span class="flex items-center gap-2">
+            {#if filterCategory === "all"}
+              All Categories
+            {:else}
+              {@const selectedCat = getCategoryById(categories, filterCategory)}
+              {#if selectedCat}
+                {@const Icon = (LucideIcons as any)[selectedCat.icon]}
+                {#if Icon}
+                  <Icon class="h-4 w-4" style="color: {selectedCat.color}" />
+                {/if}
+                {selectedCat.name}
+              {:else}
+                All Categories
+              {/if}
+            {/if}
           </span>
         </Select.Trigger>
         <Select.Content>
           <Select.Item value="all" label="All Categories">
             All Categories
           </Select.Item>
-          {#each categories as category}
+          {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category}
+            {@const Icon = (LucideIcons as any)[category.icon]}
             <Select.Item value={category.id} label={category.name}>
-              {category.name}
+              <div class="flex items-center gap-2">
+                {#if Icon}
+                  <Icon class="h-4 w-4" style="color: {category.color}" />
+                {/if}
+                {category.name}
+              </div>
             </Select.Item>
           {/each}
         </Select.Content>
@@ -588,6 +627,61 @@
   onUpdate={onUpdateCategory}
   onDelete={onDeleteCategory}
 />
+
+<!-- Transaction count info (Desktop) -->
+{#if filteredAndSortedTransactions().length > 0}
+  <div
+    class="hidden sm:flex items-center justify-between text-sm text-muted-foreground px-1 pb-2 flex-shrink-0"
+  >
+    <div>
+      Showing {displayedTransactions().length} of {filteredAndSortedTransactions()
+        .length} transactions
+    </div>
+  </div>
+{/if}
+
+<!-- Desktop Table Header (Fixed) -->
+<div class="hidden sm:block flex-shrink-0">
+  <Table>
+    <TableHeader>
+      <TableRow class="border-b">
+        {@const CategoryIcon = getSortIcon("category")}
+        {@const DateIcon = getSortIcon("date")}
+        {@const AmountIcon = getSortIcon("amount")}
+        <TableHead class="w-[100px]">Type</TableHead>
+        <TableHead>
+          <button
+            onclick={() => handleSort("category")}
+            class="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
+          >
+            Category
+            <CategoryIcon class="h-4 w-4" />
+          </button>
+        </TableHead>
+        <TableHead>
+          <button
+            onclick={() => handleSort("date")}
+            class="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
+          >
+            Date
+            <DateIcon class="h-4 w-4" />
+          </button>
+        </TableHead>
+        <TableHead>Note</TableHead>
+        <TableHead class="text-right">
+          <button
+            onclick={() => handleSort("amount")}
+            class="flex items-center gap-1 hover:text-foreground transition-colors ml-auto cursor-pointer"
+          >
+            Amount
+            <AmountIcon class="h-4 w-4" />
+          </button>
+        </TableHead>
+        <TableHead class="text-right"></TableHead>
+      </TableRow>
+    </TableHeader>
+  </Table>
+</div>
 
 <!-- Scrollable Content -->
 <div
@@ -607,10 +701,10 @@
       {/if}
     </div>
   {:else}
-    <!-- Transaction count info -->
+    <!-- Transaction count info (Mobile) -->
     {#if filteredAndSortedTransactions().length > 0}
       <div
-        class="mb-3 flex items-center justify-between text-sm text-muted-foreground px-1"
+        class="mb-3 flex sm:hidden items-center justify-between text-sm text-muted-foreground px-1"
       >
         <div>
           Showing {displayedTransactions().length} of {filteredAndSortedTransactions()
@@ -663,43 +757,6 @@
     <!-- Desktop View -->
     <div class="hidden sm:block">
       <Table>
-        <TableHeader class="sticky top-0 z-10 bg-background">
-          <TableRow>
-            {@const CategoryIcon = getSortIcon("category")}
-            {@const DateIcon = getSortIcon("date")}
-            {@const AmountIcon = getSortIcon("amount")}
-            <TableHead class="w-[100px]">Type</TableHead>
-            <TableHead>
-              <button
-                onclick={() => handleSort("category")}
-                class="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
-              >
-                Category
-                <CategoryIcon class="h-4 w-4" />
-              </button>
-            </TableHead>
-            <TableHead>
-              <button
-                onclick={() => handleSort("date")}
-                class="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
-              >
-                Date
-                <DateIcon class="h-4 w-4" />
-              </button>
-            </TableHead>
-            <TableHead>Note</TableHead>
-            <TableHead class="text-right">
-              <button
-                onclick={() => handleSort("amount")}
-                class="flex items-center gap-1 hover:text-foreground transition-colors ml-auto cursor-pointer"
-              >
-                Amount
-                <AmountIcon class="h-4 w-4" />
-              </button>
-            </TableHead>
-            <TableHead class="text-right"></TableHead>
-          </TableRow>
-        </TableHeader>
         <TableBody>
           <!-- New Transaction Row -->
           {#if showNewTransactionRow}

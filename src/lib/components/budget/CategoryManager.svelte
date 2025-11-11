@@ -189,7 +189,7 @@
 
       <!-- Categories List -->
       <div class="space-y-2">
-        {#each categories as category (category.id)}
+        {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
           {#if editingId === category.id}
             <!-- Edit Mode -->
             <div class="p-4 border rounded-lg bg-muted/30">

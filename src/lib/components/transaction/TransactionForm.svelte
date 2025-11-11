@@ -54,7 +54,9 @@
 
   // Filter categories based on transaction type
   let filteredCategories = $derived(
-    categories.filter((c) => c.type === transactionType)
+    categories
+      .filter((c) => c.type === transactionType)
+      .sort((a, b) => a.name.localeCompare(b.name))
   );
 
   // Reset categoryId if it doesn't match the transaction type
