@@ -492,6 +492,614 @@
           "amount": 2500,
           "note": "Rent",
           "type": "expense"
+        },
+        {
+          "id": "exp-46",
+          "date": "2025-11-08",
+          "categoryId": "cat-1",
+          "amount": 145,
+          "note": "Late night snacks",
+          "type": "expense"
+        },
+        {
+          "id": "exp-47",
+          "date": "2025-11-08",
+          "categoryId": "cat-3",
+          "amount": 299,
+          "note": "Concert streaming PPV",
+          "type": "expense"
+        },
+        {
+          "id": "exp-48",
+          "date": "2025-11-09",
+          "categoryId": "cat-1",
+          "amount": 890,
+          "note": "Midweek grocery run",
+          "type": "expense"
+        },
+        {
+          "id": "exp-49",
+          "date": "2025-11-09",
+          "categoryId": "cat-2",
+          "amount": 320,
+          "note": "Car wash and vacuum",
+          "type": "expense"
+        },
+        {
+          "id": "exp-50",
+          "date": "2025-11-10",
+          "categoryId": "cat-4",
+          "amount": 1250,
+          "note": "Winter clothes shopping",
+          "type": "expense"
+        },
+        {
+          "id": "exp-51",
+          "date": "2025-11-10",
+          "categoryId": "cat-1",
+          "amount": 285,
+          "note": "Sushi takeout",
+          "type": "expense"
+        },
+        {
+          "id": "exp-52",
+          "date": "2025-11-11",
+          "categoryId": "cat-6",
+          "amount": 180,
+          "note": "Vitamins and supplements",
+          "type": "expense"
+        },
+        {
+          "id": "exp-53",
+          "date": "2025-10-30",
+          "categoryId": "cat-3",
+          "amount": 450,
+          "note": "Halloween party supplies",
+          "type": "expense"
+        },
+        {
+          "id": "exp-54",
+          "date": "2025-10-29",
+          "categoryId": "cat-1",
+          "amount": 125,
+          "note": "Bakery items",
+          "type": "expense"
+        },
+        {
+          "id": "exp-55",
+          "date": "2025-10-27",
+          "categoryId": "cat-2",
+          "amount": 85,
+          "note": "Parking fee",
+          "type": "expense"
+        },
+        {
+          "id": "exp-56",
+          "date": "2025-10-26",
+          "categoryId": "cat-1",
+          "amount": 340,
+          "note": "Lunch meeting",
+          "type": "expense"
+        },
+        {
+          "id": "exp-57",
+          "date": "2025-10-24",
+          "categoryId": "cat-4",
+          "amount": 799,
+          "note": "Home decor items",
+          "type": "expense"
+        },
+        {
+          "id": "exp-58",
+          "date": "2025-10-23",
+          "categoryId": "cat-7",
+          "amount": 220,
+          "note": "Pet supplies",
+          "type": "expense"
+        },
+        {
+          "id": "exp-59",
+          "date": "2025-10-21",
+          "categoryId": "cat-1",
+          "amount": 95,
+          "note": "Coffee and breakfast",
+          "type": "expense"
+        },
+        {
+          "id": "exp-60",
+          "date": "2025-10-19",
+          "categoryId": "cat-5",
+          "amount": 450,
+          "note": "Water bill",
+          "type": "expense"
+        },
+        {
+          "id": "exp-61",
+          "date": "2025-10-17",
+          "categoryId": "cat-6",
+          "amount": 650,
+          "note": "Dental checkup",
+          "type": "expense"
+        },
+        {
+          "id": "exp-62",
+          "date": "2025-10-16",
+          "categoryId": "cat-3",
+          "amount": 159,
+          "note": "Board games",
+          "type": "expense"
+        },
+        {
+          "id": "exp-63",
+          "date": "2025-10-14",
+          "categoryId": "cat-1",
+          "amount": 480,
+          "note": "Weekend brunch",
+          "type": "expense"
+        },
+        {
+          "id": "exp-64",
+          "date": "2025-10-13",
+          "categoryId": "cat-2",
+          "amount": 125,
+          "note": "Bike repair",
+          "type": "expense"
+        },
+        {
+          "id": "exp-65",
+          "date": "2025-10-11",
+          "categoryId": "cat-4",
+          "amount": 399,
+          "note": "New wallet",
+          "type": "expense"
+        },
+        {
+          "id": "exp-66",
+          "date": "2025-10-09",
+          "categoryId": "cat-1",
+          "amount": 750,
+          "note": "Grocery shopping",
+          "type": "expense"
+        },
+        {
+          "id": "exp-67",
+          "date": "2025-10-07",
+          "categoryId": "cat-3",
+          "amount": 199,
+          "note": "Disney+ subscription",
+          "type": "expense"
+        },
+        {
+          "id": "exp-68",
+          "date": "2025-10-06",
+          "categoryId": "cat-7",
+          "amount": 180,
+          "note": "Birthday gift",
+          "type": "expense"
+        },
+        {
+          "id": "exp-69",
+          "date": "2025-10-04",
+          "categoryId": "cat-1",
+          "amount": 290,
+          "note": "Pizza night",
+          "type": "expense"
+        },
+        {
+          "id": "exp-70",
+          "date": "2025-10-02",
+          "categoryId": "cat-6",
+          "amount": 220,
+          "note": "Running shoes",
+          "type": "expense"
+        },
+        {
+          "id": "exp-71",
+          "date": "2025-09-30",
+          "categoryId": "cat-2",
+          "amount": 495,
+          "note": "Car fuel",
+          "type": "expense"
+        },
+        {
+          "id": "exp-72",
+          "date": "2025-09-29",
+          "categoryId": "cat-1",
+          "amount": 165,
+          "note": "Ice cream and desserts",
+          "type": "expense"
+        },
+        {
+          "id": "exp-73",
+          "date": "2025-09-27",
+          "categoryId": "cat-4",
+          "amount": 1450,
+          "note": "New laptop bag",
+          "type": "expense"
+        },
+        {
+          "id": "exp-74",
+          "date": "2025-09-26",
+          "categoryId": "cat-5",
+          "amount": 350,
+          "note": "Home insurance",
+          "type": "expense"
+        },
+        {
+          "id": "exp-75",
+          "date": "2025-09-24",
+          "categoryId": "cat-3",
+          "amount": 420,
+          "note": "Music festival ticket",
+          "type": "expense"
+        },
+        {
+          "id": "exp-76",
+          "date": "2025-09-23",
+          "categoryId": "cat-1",
+          "amount": 540,
+          "note": "Asian food market",
+          "type": "expense"
+        },
+        {
+          "id": "exp-77",
+          "date": "2025-09-21",
+          "categoryId": "cat-6",
+          "amount": 380,
+          "note": "Physiotherapy session",
+          "type": "expense"
+        },
+        {
+          "id": "exp-78",
+          "date": "2025-09-19",
+          "categoryId": "cat-2",
+          "amount": 75,
+          "note": "Uber ride",
+          "type": "expense"
+        },
+        {
+          "id": "exp-79",
+          "date": "2025-09-17",
+          "categoryId": "cat-1",
+          "amount": 125,
+          "note": "Deli lunch",
+          "type": "expense"
+        },
+        {
+          "id": "exp-80",
+          "date": "2025-09-16",
+          "categoryId": "cat-7",
+          "amount": 295,
+          "note": "Office supplies",
+          "type": "expense"
+        },
+        {
+          "id": "exp-81",
+          "date": "2025-09-14",
+          "categoryId": "cat-4",
+          "amount": 850,
+          "note": "Clothing store sale",
+          "type": "expense"
+        },
+        {
+          "id": "exp-82",
+          "date": "2025-09-13",
+          "categoryId": "cat-1",
+          "amount": 970,
+          "note": "Weekend groceries",
+          "type": "expense"
+        },
+        {
+          "id": "exp-83",
+          "date": "2025-09-11",
+          "categoryId": "cat-3",
+          "amount": 340,
+          "note": "Mini golf and arcade",
+          "type": "expense"
+        },
+        {
+          "id": "exp-84",
+          "date": "2025-09-09",
+          "categoryId": "cat-2",
+          "amount": 180,
+          "note": "Car wash premium",
+          "type": "expense"
+        },
+        {
+          "id": "exp-85",
+          "date": "2025-09-07",
+          "categoryId": "cat-1",
+          "amount": 215,
+          "note": "Breakfast cafe",
+          "type": "expense"
+        },
+        {
+          "id": "exp-86",
+          "date": "2025-09-06",
+          "categoryId": "cat-6",
+          "amount": 290,
+          "note": "Protein powder",
+          "type": "expense"
+        },
+        {
+          "id": "exp-87",
+          "date": "2025-09-04",
+          "categoryId": "cat-5",
+          "amount": 580,
+          "note": "Mobile phone bill",
+          "type": "expense"
+        },
+        {
+          "id": "exp-88",
+          "date": "2025-09-02",
+          "categoryId": "cat-3",
+          "amount": 149,
+          "note": "Audible subscription",
+          "type": "expense"
+        },
+        {
+          "id": "exp-89",
+          "date": "2025-08-31",
+          "categoryId": "cat-1",
+          "amount": 1050,
+          "note": "Monthly food prep",
+          "type": "expense"
+        },
+        {
+          "id": "exp-90",
+          "date": "2025-08-30",
+          "categoryId": "cat-4",
+          "amount": 650,
+          "note": "Sunglasses",
+          "type": "expense"
+        },
+        {
+          "id": "income-7",
+          "date": "2025-08-01",
+          "categoryId": "cat-income-1",
+          "amount": 45000,
+          "note": "Monthly salary",
+          "type": "income"
+        },
+        {
+          "id": "income-8",
+          "date": "2025-07-01",
+          "categoryId": "cat-income-1",
+          "amount": 45000,
+          "note": "Monthly salary",
+          "type": "income"
+        },
+        {
+          "id": "income-9",
+          "date": "2025-10-10",
+          "categoryId": "cat-income-4",
+          "amount": 500,
+          "note": "Sold old furniture",
+          "type": "income"
+        },
+        {
+          "id": "income-10",
+          "date": "2025-09-15",
+          "categoryId": "cat-income-2",
+          "amount": 4500,
+          "note": "Logo design project",
+          "type": "income"
+        },
+        {
+          "id": "income-11",
+          "date": "2025-08-20",
+          "categoryId": "cat-income-2",
+          "amount": 7800,
+          "note": "Website maintenance contract",
+          "type": "income"
+        },
+        {
+          "id": "income-12",
+          "date": "2025-09-25",
+          "categoryId": "cat-income-3",
+          "amount": 980,
+          "note": "Investment returns",
+          "type": "income"
+        },
+        {
+          "id": "exp-91",
+          "date": "2025-08-29",
+          "categoryId": "cat-2",
+          "amount": 470,
+          "note": "Gas station",
+          "type": "expense"
+        },
+        {
+          "id": "exp-92",
+          "date": "2025-08-27",
+          "categoryId": "cat-1",
+          "amount": 185,
+          "note": "Fast food dinner",
+          "type": "expense"
+        },
+        {
+          "id": "exp-93",
+          "date": "2025-08-26",
+          "categoryId": "cat-7",
+          "amount": 345,
+          "note": "Hardware store",
+          "type": "expense"
+        },
+        {
+          "id": "exp-94",
+          "date": "2025-08-24",
+          "categoryId": "cat-3",
+          "amount": 599,
+          "note": "Video game purchase",
+          "type": "expense"
+        },
+        {
+          "id": "exp-95",
+          "date": "2025-08-23",
+          "categoryId": "cat-1",
+          "amount": 760,
+          "note": "Grocery run",
+          "type": "expense"
+        },
+        {
+          "id": "exp-96",
+          "date": "2025-08-22",
+          "categoryId": "cat-6",
+          "amount": 120,
+          "note": "Yoga mat",
+          "type": "expense"
+        },
+        {
+          "id": "exp-97",
+          "date": "2025-08-21",
+          "categoryId": "cat-4",
+          "amount": 2150,
+          "note": "Smart watch",
+          "type": "expense"
+        },
+        {
+          "id": "exp-98",
+          "date": "2025-08-19",
+          "categoryId": "cat-2",
+          "amount": 95,
+          "note": "Bus tickets",
+          "type": "expense"
+        },
+        {
+          "id": "exp-99",
+          "date": "2025-08-18",
+          "categoryId": "cat-1",
+          "amount": 425,
+          "note": "Nice restaurant dinner",
+          "type": "expense"
+        },
+        {
+          "id": "exp-100",
+          "date": "2025-08-17",
+          "categoryId": "cat-5",
+          "amount": 720,
+          "note": "Internet bill",
+          "type": "expense"
+        },
+        {
+          "id": "exp-101",
+          "date": "2025-08-16",
+          "categoryId": "cat-3",
+          "amount": 280,
+          "note": "Museum entry and cafe",
+          "type": "expense"
+        },
+        {
+          "id": "exp-102",
+          "date": "2025-08-14",
+          "categoryId": "cat-1",
+          "amount": 650,
+          "note": "Farmers market shopping",
+          "type": "expense"
+        },
+        {
+          "id": "exp-103",
+          "date": "2025-08-13",
+          "categoryId": "cat-7",
+          "amount": 190,
+          "note": "Cleaning supplies",
+          "type": "expense"
+        },
+        {
+          "id": "exp-104",
+          "date": "2025-08-11",
+          "categoryId": "cat-2",
+          "amount": 380,
+          "note": "Fuel",
+          "type": "expense"
+        },
+        {
+          "id": "exp-105",
+          "date": "2025-08-09",
+          "categoryId": "cat-1",
+          "amount": 145,
+          "note": "Sandwich shop",
+          "type": "expense"
+        },
+        {
+          "id": "exp-106",
+          "date": "2025-08-08",
+          "categoryId": "cat-6",
+          "amount": 540,
+          "note": "Personal trainer session",
+          "type": "expense"
+        },
+        {
+          "id": "exp-107",
+          "date": "2025-08-07",
+          "categoryId": "cat-4",
+          "amount": 299,
+          "note": "Accessories shopping",
+          "type": "expense"
+        },
+        {
+          "id": "exp-108",
+          "date": "2025-08-06",
+          "categoryId": "cat-1",
+          "amount": 890,
+          "note": "Weekly groceries",
+          "type": "expense"
+        },
+        {
+          "id": "exp-109",
+          "date": "2025-08-04",
+          "categoryId": "cat-3",
+          "amount": 380,
+          "note": "Bowling night",
+          "type": "expense"
+        },
+        {
+          "id": "exp-110",
+          "date": "2025-08-02",
+          "categoryId": "cat-5",
+          "amount": 450,
+          "note": "Streaming services bundle",
+          "type": "expense"
+        },
+        {
+          "id": "exp-111",
+          "date": "2025-07-31",
+          "categoryId": "cat-1",
+          "amount": 1120,
+          "note": "Big grocery haul",
+          "type": "expense"
+        },
+        {
+          "id": "exp-112",
+          "date": "2025-07-29",
+          "categoryId": "cat-2",
+          "amount": 520,
+          "note": "Gas refill",
+          "type": "expense"
+        },
+        {
+          "id": "exp-113",
+          "date": "2025-07-27",
+          "categoryId": "cat-3",
+          "amount": 750,
+          "note": "Summer festival pass",
+          "type": "expense"
+        },
+        {
+          "id": "exp-114",
+          "date": "2025-07-25",
+          "categoryId": "cat-4",
+          "amount": 1890,
+          "note": "Summer clothes",
+          "type": "expense"
+        },
+        {
+          "id": "exp-115",
+          "date": "2025-07-23",
+          "categoryId": "cat-1",
+          "amount": 320,
+          "note": "BBQ supplies",
+          "type": "expense"
         }
       ],
       "budgetLimits": {
