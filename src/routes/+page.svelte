@@ -2,6 +2,7 @@
   import { base } from "$app/paths";
   import { budgetStore } from "$lib/stores/budget";
   import { getDefaultCategories } from "$lib/defaults";
+  import { generateId, getCurrentTimestamp } from "$lib/utils/id";
   import { Button } from "$lib/components/ui/button";
   import {
     Card,
@@ -21,9 +22,9 @@
   );
 
   function handleCreateBudget(data: { name: string; currency: Currency }) {
-    const now = new Date().toISOString();
+    const now = getCurrentTimestamp();
     const newBudget = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name: data.name,
       currency: data.currency,
       dateFormat: "DD/MM/YYYY" as const,

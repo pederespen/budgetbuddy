@@ -1,5 +1,6 @@
 import { writable } from "svelte/store";
 import type { AppState, Budget, Transaction, Category } from "../types";
+import { getCurrentTimestamp } from "../utils/id";
 
 function createBudgetStore() {
   const initialState: AppState = { budgets: [], activeBudgetId: null };
@@ -42,7 +43,7 @@ function createBudgetStore() {
         ...state,
         budgets: state.budgets.map((b) =>
           b.id === budgetId
-            ? { ...b, ...updates, updatedAt: new Date().toISOString() }
+            ? { ...b, ...updates, updatedAt: getCurrentTimestamp() }
             : b,
         ),
       }));
@@ -57,7 +58,7 @@ function createBudgetStore() {
             ? {
                 ...b,
                 entries: [...b.entries, transaction],
-                updatedAt: new Date().toISOString(),
+                updatedAt: getCurrentTimestamp(),
               }
             : b,
         ),
@@ -78,7 +79,7 @@ function createBudgetStore() {
                 entries: b.entries.map((e) =>
                   e.id === transactionId ? { ...e, ...updates } : e,
                 ),
-                updatedAt: new Date().toISOString(),
+                updatedAt: getCurrentTimestamp(),
               }
             : b,
         ),
@@ -93,7 +94,7 @@ function createBudgetStore() {
             ? {
                 ...b,
                 entries: b.entries.filter((e) => e.id !== transactionId),
-                updatedAt: new Date().toISOString(),
+                updatedAt: getCurrentTimestamp(),
               }
             : b,
         ),
@@ -109,7 +110,7 @@ function createBudgetStore() {
             ? {
                 ...b,
                 categories: [...b.categories, category],
-                updatedAt: new Date().toISOString(),
+                updatedAt: getCurrentTimestamp(),
               }
             : b,
         ),
@@ -130,7 +131,7 @@ function createBudgetStore() {
                 categories: b.categories.map((c) =>
                   c.id === categoryId ? { ...c, ...updates } : c,
                 ),
-                updatedAt: new Date().toISOString(),
+                updatedAt: getCurrentTimestamp(),
               }
             : b,
         ),
@@ -145,7 +146,7 @@ function createBudgetStore() {
             ? {
                 ...b,
                 categories: b.categories.filter((c) => c.id !== categoryId),
-                updatedAt: new Date().toISOString(),
+                updatedAt: getCurrentTimestamp(),
               }
             : b,
         ),
@@ -161,7 +162,7 @@ function createBudgetStore() {
             ? {
                 ...b,
                 budgetLimits: { ...b.budgetLimits, [categoryId]: limit },
-                updatedAt: new Date().toISOString(),
+                updatedAt: getCurrentTimestamp(),
               }
             : b,
         ),
