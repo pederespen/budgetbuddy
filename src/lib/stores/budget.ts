@@ -43,7 +43,7 @@ function createBudgetStore() {
         budgets: state.budgets.map((b) =>
           b.id === budgetId
             ? { ...b, ...updates, updatedAt: new Date().toISOString() }
-            : b
+            : b,
         ),
       }));
     },
@@ -59,7 +59,7 @@ function createBudgetStore() {
                 entries: [...b.entries, transaction],
                 updatedAt: new Date().toISOString(),
               }
-            : b
+            : b,
         ),
       }));
     },
@@ -67,7 +67,7 @@ function createBudgetStore() {
     updateTransaction: (
       budgetId: string,
       transactionId: string,
-      updates: Partial<Transaction>
+      updates: Partial<Transaction>,
     ) => {
       update((state) => ({
         ...state,
@@ -76,11 +76,11 @@ function createBudgetStore() {
             ? {
                 ...b,
                 entries: b.entries.map((e) =>
-                  e.id === transactionId ? { ...e, ...updates } : e
+                  e.id === transactionId ? { ...e, ...updates } : e,
                 ),
                 updatedAt: new Date().toISOString(),
               }
-            : b
+            : b,
         ),
       }));
     },
@@ -95,7 +95,7 @@ function createBudgetStore() {
                 entries: b.entries.filter((e) => e.id !== transactionId),
                 updatedAt: new Date().toISOString(),
               }
-            : b
+            : b,
         ),
       }));
     },
@@ -111,7 +111,7 @@ function createBudgetStore() {
                 categories: [...b.categories, category],
                 updatedAt: new Date().toISOString(),
               }
-            : b
+            : b,
         ),
       }));
     },
@@ -119,7 +119,7 @@ function createBudgetStore() {
     updateCategory: (
       budgetId: string,
       categoryId: string,
-      updates: Partial<Category>
+      updates: Partial<Category>,
     ) => {
       update((state) => ({
         ...state,
@@ -128,11 +128,11 @@ function createBudgetStore() {
             ? {
                 ...b,
                 categories: b.categories.map((c) =>
-                  c.id === categoryId ? { ...c, ...updates } : c
+                  c.id === categoryId ? { ...c, ...updates } : c,
                 ),
                 updatedAt: new Date().toISOString(),
               }
-            : b
+            : b,
         ),
       }));
     },
@@ -147,7 +147,7 @@ function createBudgetStore() {
                 categories: b.categories.filter((c) => c.id !== categoryId),
                 updatedAt: new Date().toISOString(),
               }
-            : b
+            : b,
         ),
       }));
     },
@@ -163,7 +163,7 @@ function createBudgetStore() {
                 budgetLimits: { ...b.budgetLimits, [categoryId]: limit },
                 updatedAt: new Date().toISOString(),
               }
-            : b
+            : b,
         ),
       }));
     },

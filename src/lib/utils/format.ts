@@ -53,7 +53,7 @@ export function formatCurrency(amount: number, currency: Currency): string {
 
 export function formatDate(
   dateString: string,
-  format: DateFormat = "DD/MM/YYYY"
+  format: DateFormat = "DD/MM/YYYY",
 ): string {
   const date = new Date(dateString);
   const day = String(date.getDate()).padStart(2, "0");
@@ -78,7 +78,7 @@ export function formatDate(
 export function filterTransactionsByDateRange<T extends { date: string }>(
   transactions: T[],
   startDate: string | null,
-  endDate: string | null
+  endDate: string | null,
 ): T[] {
   if (!startDate && !endDate) {
     return transactions;
@@ -91,7 +91,7 @@ export function filterTransactionsByDateRange<T extends { date: string }>(
     const transactionDay = new Date(
       transactionDate.getFullYear(),
       transactionDate.getMonth(),
-      transactionDate.getDate()
+      transactionDate.getDate(),
     );
 
     if (startDate && endDate) {
@@ -126,7 +126,7 @@ export function filterTransactionsByDateRange<T extends { date: string }>(
 export function filterExpensesByDateRange<T extends { date: string }>(
   expenses: T[],
   startDate: string | null,
-  endDate: string | null
+  endDate: string | null,
 ): T[] {
   return filterTransactionsByDateRange(expenses, startDate, endDate);
 }

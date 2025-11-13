@@ -3,7 +3,7 @@ import * as LucideIcons from "lucide-svelte";
 
 export function getCategoryById(
   categories: Category[],
-  categoryId: string
+  categoryId: string,
 ): Category | undefined {
   return categories.find((c) => c.id === categoryId);
 }

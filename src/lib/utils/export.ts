@@ -10,12 +10,12 @@ export function exportAsJSON(budget: Budget): void {
   const dataStr = JSON.stringify(
     { budgets: [budget], activeBudgetId: budget.id },
     null,
-    2
+    2,
   );
   const blob = new Blob([dataStr], { type: "application/json" });
   downloadFile(
     blob,
-    `${sanitizeFilename(budget.name)}-${getDateString()}.json`
+    `${sanitizeFilename(budget.name)}-${getDateString()}.json`,
   );
 }
 
@@ -29,7 +29,7 @@ export function exportAsCSV(budget: Budget): void {
     .map((transaction) => {
       const category = getCategoryById(
         budget.categories,
-        transaction.categoryId
+        transaction.categoryId,
       );
       return [
         formatDate(transaction.date, budget.dateFormat),
@@ -59,7 +59,7 @@ export function exportAsXLSX(budget: Budget): void {
     .map((transaction) => {
       const category = getCategoryById(
         budget.categories,
-        transaction.categoryId
+        transaction.categoryId,
       );
       return {
         Date: formatDate(transaction.date, budget.dateFormat),
@@ -97,7 +97,7 @@ export function exportAsXLSX(budget: Budget): void {
 
   downloadFile(
     blob,
-    `${sanitizeFilename(budget.name)}-${getDateString()}.xlsx`
+    `${sanitizeFilename(budget.name)}-${getDateString()}.xlsx`,
   );
 }
 
