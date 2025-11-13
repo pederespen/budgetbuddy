@@ -2,12 +2,7 @@
   import { budgetStore } from "$lib/stores/budget";
   import { dateRangeStore } from "$lib/stores/dateRange";
   import { filterTransactionsByDateRange } from "$lib/utils/format";
-  import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-  } from "$lib/components/ui/card";
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
   import SpendingByCategory from "$lib/components/insights/SpendingByCategory.svelte";
   import SpendingTrend from "$lib/components/insights/SpendingTrend.svelte";
   import BudgetProgress from "$lib/components/insights/BudgetProgress.svelte";
@@ -17,9 +12,7 @@
   const state = $derived($budgetStore);
   const dateRange = $derived($dateRangeStore);
 
-  const activeBudget = $derived(
-    state.budgets.find((b) => b.id === state.activeBudgetId)
-  );
+  const activeBudget = $derived(state.budgets.find((b) => b.id === state.activeBudgetId));
 
   // Memoized: Filter transactions based on date range
   const filteredEntries = $derived(() => {
@@ -70,17 +63,17 @@
   // Memoized: Average transaction
   const avgTransaction = $derived(() => {
     const expenseList = expenses();
-    return expenseList.length > 0
-      ? (totalExpenses() / expenseList.length).toFixed(2)
-      : "0.00";
+    return expenseList.length > 0 ? (totalExpenses() / expenseList.length).toFixed(2) : "0.00";
   });
 
   // Create filtered budget for child components (with expenses only for charts)
-  const filteredBudget = $derived(() => {
+  const filteredBudget = $derived.by(() => {
     if (!activeBudget) return undefined;
+    const expenseList = expenses();
+    // Only create new object if expenses actually changed
     return {
       ...activeBudget,
-      entries: expenses(),
+      entries: expenseList,
     };
   });
 
@@ -98,14 +91,11 @@
   {#if !activeBudget}
     <Card>
       <CardContent class="pt-6">
-        <div
-          class="flex flex-col items-center justify-center py-12 text-center"
-        >
+        <div class="flex flex-col items-center justify-center py-12 text-center">
           <PieChart class="h-12 w-12 text-muted-foreground mb-4" />
           <h3 class="text-lg font-semibold mb-2">No Active Budget</h3>
           <p class="text-muted-foreground max-w-sm">
-            Create a budget to start tracking your transactions and see
-            insights.
+            Create a budget to start tracking your transactions and see insights.
           </p>
         </div>
       </CardContent>
@@ -113,9 +103,7 @@
   {:else if !hasData()}
     <Card>
       <CardContent class="pt-6">
-        <div
-          class="flex flex-col items-center justify-center py-12 text-center"
-        >
+        <div class="flex flex-col items-center justify-center py-12 text-center">
           <BarChart3 class="h-12 w-12 text-muted-foreground mb-4" />
           <h3 class="text-lg font-semibold mb-2">No Transactions Yet</h3>
           <p class="text-muted-foreground max-w-sm">
@@ -128,9 +116,7 @@
     <!-- Overview Cards -->
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
-        <CardHeader
-          class="flex flex-row items-center justify-between space-y-0 pb-2"
-        >
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle class="text-sm font-medium">Total Expenses</CardTitle>
           <TrendingUp class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
@@ -146,9 +132,7 @@
       </Card>
 
       <Card>
-        <CardHeader
-          class="flex flex-row items-center justify-between space-y-0 pb-2"
-        >
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle class="text-sm font-medium">Total Income</CardTitle>
           <TrendingUp class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
@@ -164,17 +148,12 @@
       </Card>
 
       <Card>
-        <CardHeader
-          class="flex flex-row items-center justify-between space-y-0 pb-2"
-        >
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle class="text-sm font-medium">Net</CardTitle>
           <TrendingUp class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div
-            class="text-2xl font-bold"
-            class:text-destructive={netAmount() < 0}
-          >
+          <div class="text-2xl font-bold" class:text-destructive={netAmount() < 0}>
             {activeBudget.currency}
             {netAmount().toFixed(2)}
           </div>
@@ -183,9 +162,7 @@
       </Card>
 
       <Card>
-        <CardHeader
-          class="flex flex-row items-center justify-between space-y-0 pb-2"
-        >
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle class="text-sm font-medium">Active Categories</CardTitle>
           <PieChart class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
@@ -200,9 +177,7 @@
       </Card>
 
       <Card>
-        <CardHeader
-          class="flex flex-row items-center justify-between space-y-0 pb-2"
-        >
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle class="text-sm font-medium">Budget Usage</CardTitle>
           <Target class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
@@ -215,9 +190,7 @@
       </Card>
 
       <Card>
-        <CardHeader
-          class="flex flex-row items-center justify-between space-y-0 pb-2"
-        >
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle class="text-sm font-medium">Avg. Transaction</CardTitle>
           <BarChart3 class="h-4 w-4 text-muted-foreground" />
         </CardHeader>

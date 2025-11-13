@@ -2,7 +2,6 @@
   import type { Budget } from "$lib/types";
   import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
   import { Button } from "$lib/components/ui/button";
-  import { SvelteMap } from "svelte/reactivity";
 
   type Props = {
     budget: Budget;
@@ -18,18 +17,17 @@
 
   const chartData = $derived(() => {
     // Group expense transactions by day (filter out income)
-    const dailyTotals = new SvelteMap<string, number>();
+    const dailyTotals: Record<string, number> = {};
 
     budget.entries.forEach((transaction) => {
       if (transaction.type === "expense") {
         const date = transaction.date.split("T")[0]; // Get just the date part
-        const current = dailyTotals.get(date) || 0;
-        dailyTotals.set(date, current + transaction.amount);
+        dailyTotals[date] = (dailyTotals[date] || 0) + transaction.amount;
       }
     });
 
     // Convert to array and sort by date
-    const data = Array.from(dailyTotals.entries())
+    const data = Object.entries(dailyTotals)
       .map(([date, amount]) => ({
         date: new Date(date),
         amount,

@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Budget } from "$lib/types";
   import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
-  import { SvelteMap } from "svelte/reactivity";
 
   type Props = {
     budget: Budget;
@@ -11,19 +10,19 @@
 
   // Note: budget.entries should already be filtered to expenses only by parent component
   const chartData = $derived(() => {
-    const categoryTotals = new SvelteMap<string, number>();
+    const categoryTotals: Record<string, number> = {};
 
     // Only process expense transactions
     budget.entries.forEach((transaction) => {
       if (transaction.type === "expense") {
-        const current = categoryTotals.get(transaction.categoryId) || 0;
-        categoryTotals.set(transaction.categoryId, current + transaction.amount);
+        categoryTotals[transaction.categoryId] =
+          (categoryTotals[transaction.categoryId] || 0) + transaction.amount;
       }
     });
 
-    const total = Array.from(categoryTotals.values()).reduce((sum, val) => sum + val, 0);
+    const total = Object.values(categoryTotals).reduce((sum, val) => sum + val, 0);
 
-    return Array.from(categoryTotals.entries())
+    return Object.entries(categoryTotals)
       .map(([categoryId, amount]) => {
         const category = budget.categories.find((c) => c.id === categoryId);
         return {
