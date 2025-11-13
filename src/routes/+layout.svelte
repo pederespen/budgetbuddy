@@ -10,11 +10,7 @@
 
   let { children } = $props();
 
-  let activeTab = $state($activeTabStore);
-
-  $effect(() => {
-    activeTab = $activeTabStore;
-  });
+  let activeTab = $derived.by(() => $activeTabStore);
 
   $effect(() => {
     activeTabStore.set(activeTab);

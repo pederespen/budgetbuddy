@@ -1,7 +1,5 @@
-<script lang="ts">
+<script lang="ts" generics="Item">
   import type { Snippet } from "svelte";
-
-  type Item = any;
 
   type Props = {
     items: Item[];

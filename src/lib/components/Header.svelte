@@ -27,8 +27,8 @@
     showTabs?: boolean;
   } = $props();
 
-  let theme = $state($themeStore);
-  let dateRange = $state($dateRangeStore);
+  let theme = $derived.by(() => $themeStore);
+  let dateRange = $derived.by(() => $dateRangeStore);
   let customDialogOpen = $state(false);
   let customStartDate = $state<DateValue | undefined>(undefined);
   let customEndDate = $state<DateValue | undefined>(undefined);
@@ -39,14 +39,6 @@
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
-  });
-
-  $effect(() => {
-    theme = $themeStore;
-  });
-
-  $effect(() => {
-    dateRange = $dateRangeStore;
   });
 
   function toggleTheme() {

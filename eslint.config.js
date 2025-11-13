@@ -22,6 +22,10 @@ export default [
         parser: ts.parser,
       },
     },
+    rules: {
+      // Disable for UI library components that may be used outside SvelteKit
+      "svelte/no-navigation-without-resolve": "off",
+    },
   },
   {
     ignores: ["build/", ".svelte-kit/", "dist/", "node_modules/"],

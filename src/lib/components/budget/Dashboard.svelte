@@ -43,19 +43,11 @@
 
   let { budget }: { budget: Budget } = $props();
 
-  let activeTab = $state($activeTabStore);
-  let dateRange = $state($dateRangeStore);
-
-  $effect(() => {
-    activeTab = $activeTabStore;
-  });
+  let activeTab = $derived.by(() => $activeTabStore);
+  let dateRange = $derived.by(() => $dateRangeStore);
 
   $effect(() => {
     activeTabStore.set(activeTab);
-  });
-
-  $effect(() => {
-    dateRange = $dateRangeStore;
   });
 
   // Local state for settings
