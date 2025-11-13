@@ -1,11 +1,7 @@
 <script lang="ts">
   import type { Budget } from "$lib/types";
-  import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-  } from "$lib/components/ui/card";
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import { SvelteMap } from "svelte/reactivity";
 
   type Props = {
     budget: Budget;
@@ -15,23 +11,17 @@
 
   // Note: budget.entries should already be filtered to expenses only by parent component
   const chartData = $derived(() => {
-    const categoryTotals = new Map<string, number>();
+    const categoryTotals = new SvelteMap<string, number>();
 
     // Only process expense transactions
     budget.entries.forEach((transaction) => {
       if (transaction.type === "expense") {
         const current = categoryTotals.get(transaction.categoryId) || 0;
-        categoryTotals.set(
-          transaction.categoryId,
-          current + transaction.amount
-        );
+        categoryTotals.set(transaction.categoryId, current + transaction.amount);
       }
     });
 
-    const total = Array.from(categoryTotals.values()).reduce(
-      (sum, val) => sum + val,
-      0
-    );
+    const total = Array.from(categoryTotals.values()).reduce((sum, val) => sum + val, 0);
 
     return Array.from(categoryTotals.entries())
       .map(([categoryId, amount]) => {
@@ -62,7 +52,7 @@
         <div class="flex items-center justify-center relative">
           <div class="relative w-full max-w-[280px] aspect-square">
             <svg viewBox="0 0 200 200" class="transform -rotate-90">
-              {#each chartData() as category, i}
+              {#each chartData() as category, i (category.name)}
                 {@const startAngle = chartData()
                   .slice(0, i)
                   .reduce((sum, c) => sum + c.percentage * 3.6, 0)}
@@ -71,61 +61,35 @@
                 {@const largeArc = category.percentage > 50 ? 1 : 0}
                 {@const isHovered = hoveredCategory === category.name}
                 {@const offset = isHovered ? 5 : 0}
-                {@const centerOffsetX =
-                  offset * Math.cos((Math.PI * midAngle) / 180)}
-                {@const centerOffsetY =
-                  offset * Math.sin((Math.PI * midAngle) / 180)}
-                {@const x1 =
-                  100 +
-                  centerOffsetX +
-                  80 * Math.cos((Math.PI * startAngle) / 180)}
-                {@const y1 =
-                  100 +
-                  centerOffsetY +
-                  80 * Math.sin((Math.PI * startAngle) / 180)}
-                {@const x2 =
-                  100 +
-                  centerOffsetX +
-                  80 * Math.cos((Math.PI * endAngle) / 180)}
-                {@const y2 =
-                  100 +
-                  centerOffsetY +
-                  80 * Math.sin((Math.PI * endAngle) / 180)}
-                {@const x3 =
-                  100 +
-                  centerOffsetX +
-                  50 * Math.cos((Math.PI * endAngle) / 180)}
-                {@const y3 =
-                  100 +
-                  centerOffsetY +
-                  50 * Math.sin((Math.PI * endAngle) / 180)}
-                {@const x4 =
-                  100 +
-                  centerOffsetX +
-                  50 * Math.cos((Math.PI * startAngle) / 180)}
-                {@const y4 =
-                  100 +
-                  centerOffsetY +
-                  50 * Math.sin((Math.PI * startAngle) / 180)}
+                {@const centerOffsetX = offset * Math.cos((Math.PI * midAngle) / 180)}
+                {@const centerOffsetY = offset * Math.sin((Math.PI * midAngle) / 180)}
+                {@const x1 = 100 + centerOffsetX + 80 * Math.cos((Math.PI * startAngle) / 180)}
+                {@const y1 = 100 + centerOffsetY + 80 * Math.sin((Math.PI * startAngle) / 180)}
+                {@const x2 = 100 + centerOffsetX + 80 * Math.cos((Math.PI * endAngle) / 180)}
+                {@const y2 = 100 + centerOffsetY + 80 * Math.sin((Math.PI * endAngle) / 180)}
+                {@const x3 = 100 + centerOffsetX + 50 * Math.cos((Math.PI * endAngle) / 180)}
+                {@const y3 = 100 + centerOffsetY + 50 * Math.sin((Math.PI * endAngle) / 180)}
+                {@const x4 = 100 + centerOffsetX + 50 * Math.cos((Math.PI * startAngle) / 180)}
+                {@const y4 = 100 + centerOffsetY + 50 * Math.sin((Math.PI * startAngle) / 180)}
 
                 <path
                   d="M {x1} {y1} A 80 80 0 {largeArc} 1 {x2} {y2} L {x3} {y3} A 50 50 0 {largeArc} 0 {x4} {y4} Z"
                   fill={category.color}
                   class="transition-all duration-200 cursor-pointer outline-none focus:outline-none"
-                  class:opacity-40={hoveredCategory &&
-                    hoveredCategory !== category.name}
+                  class:opacity-40={hoveredCategory && hoveredCategory !== category.name}
                   stroke="hsl(var(--background))"
                   stroke-width="2"
                   role="button"
                   tabindex="0"
-                  aria-label="{category.name}: {budget.currency}{category.value.toFixed(0)} ({category.percentage.toFixed(1)}%)"
+                  aria-label="{category.name}: {budget.currency}{category.value.toFixed(
+                    0
+                  )} ({category.percentage.toFixed(1)}%)"
                   onmouseenter={() => (hoveredCategory = category.name)}
                   onmouseleave={() => (hoveredCategory = null)}
                   onclick={() =>
-                    (hoveredCategory =
-                      hoveredCategory === category.name ? null : category.name)}
+                    (hoveredCategory = hoveredCategory === category.name ? null : category.name)}
                   onkeydown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
                       hoveredCategory = hoveredCategory === category.name ? null : category.name;
                     }
@@ -137,14 +101,10 @@
               class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
             >
               {#if hoveredCategory}
-                {@const hovered = chartData().find(
-                  (c) => c.name === hoveredCategory
-                )}
+                {@const hovered = chartData().find((c) => c.name === hoveredCategory)}
                 {#if hovered}
                   <div class="text-center">
-                    <div
-                      class="text-sm font-medium text-muted-foreground truncate max-w-[120px]"
-                    >
+                    <div class="text-sm font-medium text-muted-foreground truncate max-w-[120px]">
                       {hovered.name}
                     </div>
                     <div class="text-2xl font-bold">
@@ -158,9 +118,7 @@
                 {/if}
               {:else}
                 <div class="text-center">
-                  <div class="text-sm font-medium text-muted-foreground">
-                    Total
-                  </div>
+                  <div class="text-sm font-medium text-muted-foreground">Total</div>
                   <div class="text-2xl font-bold">{budget.currency}</div>
                   <div class="text-3xl font-bold">{total.toFixed(0)}</div>
                 </div>
@@ -169,9 +127,7 @@
           </div>
         </div>
       {:else}
-        <div
-          class="flex items-center justify-center py-12 text-muted-foreground"
-        >
+        <div class="flex items-center justify-center py-12 text-muted-foreground">
           No spending data available
         </div>
       {/if}

@@ -1,12 +1,8 @@
 <script lang="ts">
   import type { Budget } from "$lib/types";
-  import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-  } from "$lib/components/ui/card";
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
   import { Button } from "$lib/components/ui/button";
+  import { SvelteMap } from "svelte/reactivity";
 
   type Props = {
     budget: Budget;
@@ -22,7 +18,7 @@
 
   const chartData = $derived(() => {
     // Group expense transactions by day (filter out income)
-    const dailyTotals = new Map<string, number>();
+    const dailyTotals = new SvelteMap<string, number>();
 
     budget.entries.forEach((transaction) => {
       if (transaction.type === "expense") {
@@ -102,9 +98,7 @@
 
     const points = data.map((d, i) => ({
       x: (i / (data.length - 1)) * width,
-      y:
-        height -
-        ((viewMode === "daily" ? d.amount : d.cumulative) / maxValue) * height,
+      y: height - ((viewMode === "daily" ? d.amount : d.cumulative) / maxValue) * height,
     }));
 
     if (points.length === 1) {
@@ -155,7 +149,7 @@
           <div
             class="absolute left-0 top-4 bottom-8 flex flex-col justify-between text-xs text-muted-foreground"
           >
-            {#each [0, 0.25, 0.5, 0.75, 1] as tick}
+            {#each [0, 0.25, 0.5, 0.75, 1] as tick (tick)}
               <div>
                 {budget.currency}
                 {Math.round(maxValueRounded * (1 - tick)).toLocaleString()}
@@ -168,7 +162,7 @@
             <!-- Grid and area chart -->
             <div class="flex-1 relative border-l border-b border-border">
               <!-- Grid lines -->
-              {#each [0, 0.25, 0.5, 0.75, 1] as tick}
+              {#each [0, 0.25, 0.5, 0.75, 1] as tick (tick)}
                 <div
                   class="absolute left-0 right-0 border-t border-border/50"
                   style="top: {tick * 100}%"
@@ -194,21 +188,9 @@
                   vector-effect="non-scaling-stroke"
                 >
                   <defs>
-                    <linearGradient
-                      id={uniqueId}
-                      x1="0%"
-                      y1="0%"
-                      x2="0%"
-                      y2="100%"
-                    >
-                      <stop
-                        offset="0%"
-                        style="stop-color: #10b981; stop-opacity: 0.4"
-                      />
-                      <stop
-                        offset="100%"
-                        style="stop-color: #10b981; stop-opacity: 0.05"
-                      />
+                    <linearGradient id={uniqueId} x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" style="stop-color: #10b981; stop-opacity: 0.4" />
+                      <stop offset="100%" style="stop-color: #10b981; stop-opacity: 0.05" />
                     </linearGradient>
                   </defs>
 
@@ -230,8 +212,7 @@
                   />
 
                   <!-- Invisible hover columns for data points -->
-                  {#each chartData() as point, i}
-                    {@const x = (i / (chartData().length - 1)) * svgWidth}
+                  {#each chartData() as point, i (point.date.getTime())}
                     {@const columnX = i * columnWidth}
 
                     <!-- Hover column -->
@@ -247,10 +228,9 @@
                       aria-label="View data for {formatDate(point.date)}"
                       onmouseenter={() => (hoveredIndex = i)}
                       onmouseleave={() => (hoveredIndex = null)}
-                      onclick={() =>
-                        (hoveredIndex = hoveredIndex === i ? null : i)}
+                      onclick={() => (hoveredIndex = hoveredIndex === i ? null : i)}
                       onkeydown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
+                        if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
                           hoveredIndex = hoveredIndex === i ? null : i;
                         }
@@ -262,8 +242,7 @@
 
               <!-- Perfectly round data point overlay -->
               {#if hoveredIndex !== null && chartData()[hoveredIndex]}
-                {@const xPercent =
-                  (hoveredIndex / (chartData().length - 1)) * 100}
+                {@const xPercent = (hoveredIndex / (chartData().length - 1)) * 100}
                 {@const value =
                   viewMode === "daily"
                     ? chartData()[hoveredIndex].amount
@@ -285,25 +264,20 @@
               {#if hoveredIndex !== null && chartData()[hoveredIndex]}
                 {@const point = chartData()[hoveredIndex]}
                 {@const x = (hoveredIndex / (chartData().length - 1)) * 100}
-                {@const value =
-                  viewMode === "daily" ? point.amount : point.cumulative}
+                {@const value = viewMode === "daily" ? point.amount : point.cumulative}
                 {@const y = (1 - value / maxValueRounded) * 100}
                 <div
                   class="absolute bg-popover text-popover-foreground shadow-md rounded border px-2 py-1 pointer-events-none z-10 text-xs"
                   style="left: {x}%; top: {y}%; transform: translate(-50%, calc(-100% - 12px))"
                 >
-                  <div
-                    class="text-[10px] text-muted-foreground whitespace-nowrap mb-0.5"
-                  >
+                  <div class="text-[10px] text-muted-foreground whitespace-nowrap mb-0.5">
                     {formatDate(point.date)}
                   </div>
                   <div class="font-semibold whitespace-nowrap leading-tight">
                     {budget.currency}
                     {value.toFixed(2)}
                   </div>
-                  <div
-                    class="text-[10px] text-muted-foreground whitespace-nowrap"
-                  >
+                  <div class="text-[10px] text-muted-foreground whitespace-nowrap">
                     {viewMode === "daily" ? "Daily spending" : "Total so far"}
                   </div>
                 </div>
@@ -311,26 +285,18 @@
             </div>
 
             <!-- X-axis labels -->
-            <div
-              class="flex justify-between mt-2 text-xs text-muted-foreground"
-            >
+            <div class="flex justify-between mt-2 text-xs text-muted-foreground">
               {#if chartData().length > 0}
                 <span>{formatDate(chartData()[0].date)}</span>
                 {#if chartData().length > 1}
-                  <span
-                    >{formatDate(
-                      chartData()[chartData().length - 1].date
-                    )}</span
-                  >
+                  <span>{formatDate(chartData()[chartData().length - 1].date)}</span>
                 {/if}
               {/if}
             </div>
           </div>
         </div>
       {:else}
-        <div
-          class="flex items-center justify-center h-full text-muted-foreground"
-        >
+        <div class="flex items-center justify-center h-full text-muted-foreground">
           No spending data available
         </div>
       {/if}
