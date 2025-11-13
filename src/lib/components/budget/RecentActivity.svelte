@@ -13,6 +13,8 @@
   import { getCategoryById } from "$lib/utils/categories";
   import type { Transaction, Category, Currency, DateFormat } from "$lib/types";
 
+  type IconComponent = typeof LucideIcons[keyof typeof LucideIcons];
+
   let {
     transactions,
     categories,
@@ -56,7 +58,9 @@
             categories,
             transaction.categoryId
           )}
-          {@const Icon = category ? (LucideIcons as any)[category.icon] : null}
+          {@const Icon = category
+            ? (LucideIcons as Record<string, IconComponent>)[category.icon]
+            : null}
           <div
             class="flex items-center justify-between py-1.5 border-b last:border-0"
           >

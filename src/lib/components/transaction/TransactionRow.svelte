@@ -6,6 +6,8 @@
   import { Pencil, Trash2, MoreHorizontal, Copy } from "lucide-svelte";
   import * as LucideIcons from "lucide-svelte";
 
+  type IconComponent = typeof LucideIcons[keyof typeof LucideIcons];
+
   let {
     transaction,
     category,
@@ -28,7 +30,9 @@
     variant?: "table" | "card";
   } = $props();
 
-  const Icon = category ? (LucideIcons as any)[category.icon] : null;
+  const Icon = category
+    ? (LucideIcons as Record<string, IconComponent>)[category.icon]
+    : null;
   const isIncome = transaction.type === "income";
 </script>
 

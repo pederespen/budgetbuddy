@@ -16,6 +16,8 @@
   } from "@internationalized/date";
   import { currencySymbols } from "$lib/utils/format";
 
+  type IconComponent = typeof LucideIcons[keyof typeof LucideIcons];
+
   let {
     categories,
     currency,
@@ -116,7 +118,9 @@
       >
         {#if categoryId}
           {@const cat = getCategoryById(categories, categoryId)}
-          {@const Icon = cat ? (LucideIcons as any)[cat.icon] : null}
+          {@const Icon = cat
+            ? (LucideIcons as Record<string, IconComponent>)[cat.icon]
+            : null}
           {#if cat}
             <div class="flex items-center gap-1.5">
               <Icon class="w-4 h-4" style="color: {cat.color}" />
@@ -131,7 +135,9 @@
       </Select.Trigger>
       <Select.Content class="max-h-[200px]">
         {#each filteredCategories as category (category.id)}
-          {@const Icon = (LucideIcons as any)[category.icon]}
+          {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+            category.icon
+          ]}
           <Select.Item value={category.id} label={category.name}>
             <div class="flex items-center gap-2">
               <Icon class="w-4 h-4" style="color: {category.color}" />
@@ -222,7 +228,9 @@
           <Select.Trigger class="h-10 bg-card cursor-pointer w-full">
             {#if categoryId}
               {@const cat = getCategoryById(categories, categoryId)}
-              {@const Icon = cat ? (LucideIcons as any)[cat.icon] : null}
+              {@const Icon = cat
+                ? (LucideIcons as Record<string, IconComponent>)[cat.icon]
+                : null}
               {#if cat}
                 <div class="flex items-center gap-2">
                   <Icon class="w-5 h-5" style="color: {cat.color}" />
@@ -237,7 +245,9 @@
           </Select.Trigger>
           <Select.Content class="max-h-[200px]">
             {#each filteredCategories as category (category.id)}
-              {@const Icon = (LucideIcons as any)[category.icon]}
+              {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+                category.icon
+              ]}
               <Select.Item value={category.id} label={category.name}>
                 <div class="flex items-center gap-2">
                   <Icon class="w-4 h-4" style="color: {category.color}" />

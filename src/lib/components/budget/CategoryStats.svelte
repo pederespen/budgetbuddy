@@ -10,6 +10,8 @@
   import * as LucideIcons from "lucide-svelte";
   import type { Budget, Transaction } from "$lib/types";
 
+  type IconComponent = typeof LucideIcons[keyof typeof LucideIcons];
+
   let {
     budget,
     filteredTransactions,
@@ -82,7 +84,9 @@
     {:else}
       <div class="space-y-2">
         {#each categoryStats as { category, spent, percentOfTotal, transactionCount } (category.id)}
-          {@const Icon = (LucideIcons as any)[category.icon]}
+          {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+            category.icon
+          ]}
           <div
             class="flex items-center justify-between py-1.5 border-b last:border-0"
           >

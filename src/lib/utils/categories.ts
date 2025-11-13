@@ -1,6 +1,8 @@
 import type { Category } from "../types";
 import * as LucideIcons from "lucide-svelte";
 
+type IconComponent = typeof LucideIcons[keyof typeof LucideIcons];
+
 export function getCategoryById(
   categories: Category[],
   categoryId: string,
@@ -8,8 +10,11 @@ export function getCategoryById(
   return categories.find((c) => c.id === categoryId);
 }
 
-export function getIconComponent(iconName: string) {
-  return (LucideIcons as any)[iconName] || LucideIcons.HelpCircle;
+export function getIconComponent(iconName: string): IconComponent {
+  return (
+    (LucideIcons as Record<string, IconComponent>)[iconName] ||
+    LucideIcons.HelpCircle
+  );
 }
 
 // Popular icon options for categories

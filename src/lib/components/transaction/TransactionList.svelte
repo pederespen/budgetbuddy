@@ -6,13 +6,10 @@
     TransactionType,
   } from "$lib/types";
   import { getCategoryById } from "$lib/utils/categories";
-  import { exportAsJSON, exportAsCSV, exportAsXLSX } from "$lib/utils/export";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import * as Dialog from "$lib/components/ui/dialog";
-  import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
   import * as Select from "$lib/components/ui/select";
-  import * as Tabs from "$lib/components/ui/tabs";
   import {
     Table,
     TableBody,
@@ -22,14 +19,9 @@
   } from "$lib/components/ui/table";
   import {
     Plus,
-    Settings,
     ArrowUpDown,
     ArrowUp,
     ArrowDown,
-    Download,
-    FileJson,
-    FileSpreadsheet,
-    FileText,
     Search,
     Filter,
     X,
@@ -44,6 +36,8 @@
   import CategoryManager from "../budget/CategoryManager.svelte";
   import type { Budget } from "$lib/types";
   import { debounce } from "$lib/utils/performance";
+
+  type IconComponent = typeof LucideIcons[keyof typeof LucideIcons];
 
   let {
     budget,
@@ -237,9 +231,9 @@
   // Reset to initial load when filters change
   $effect(() => {
     // Watch filter changes
-    searchQuery;
-    filterCategory;
-    filterTransactionType;
+    void searchQuery;
+    void filterCategory;
+    void filterTransactionType;
     loadedItemsCount = 50;
   });
 
@@ -467,7 +461,9 @@
                       filterCategory
                     )}
                     {#if selectedCat}
-                      {@const Icon = (LucideIcons as any)[selectedCat.icon]}
+                      {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+                        selectedCat.icon
+                      ]}
                       {#if Icon}
                         <Icon
                           class="h-3.5 w-3.5"
@@ -486,7 +482,9 @@
                   All Categories
                 </Select.Item>
                 {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
-                  {@const Icon = (LucideIcons as any)[category.icon]}
+                  {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+                    category.icon
+                  ]}
                   <Select.Item value={category.id} label={category.name}>
                     <div class="flex items-center gap-2">
                       {#if Icon}
@@ -587,7 +585,9 @@
             {:else}
               {@const selectedCat = getCategoryById(categories, filterCategory)}
               {#if selectedCat}
-                {@const Icon = (LucideIcons as any)[selectedCat.icon]}
+                {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+                  selectedCat.icon
+                ]}
                 {#if Icon}
                   <Icon class="h-4 w-4" style="color: {selectedCat.color}" />
                 {/if}
@@ -603,7 +603,9 @@
             All Categories
           </Select.Item>
           {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
-            {@const Icon = (LucideIcons as any)[category.icon]}
+            {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+              category.icon
+            ]}
             <Select.Item value={category.id} label={category.name}>
               <div class="flex items-center gap-2">
                 {#if Icon}
