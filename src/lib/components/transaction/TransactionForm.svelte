@@ -17,7 +17,6 @@
   import { currencySymbols } from "$lib/utils/format";
 
   let {
-    mode = "new",
     categories,
     currency,
     date = $bindable(),
@@ -29,7 +28,6 @@
     onCancel,
     variant = "table",
   }: {
-    mode?: "new" | "edit";
     categories: Category[];
     currency: Currency;
     date: DateValue | undefined;

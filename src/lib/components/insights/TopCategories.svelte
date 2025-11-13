@@ -6,7 +6,6 @@
     CardHeader,
     CardTitle,
   } from "$lib/components/ui/card";
-  import { TrendingUp, TrendingDown } from "lucide-svelte";
 
   type Props = {
     budget: Budget;

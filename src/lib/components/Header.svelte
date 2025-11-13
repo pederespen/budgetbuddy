@@ -7,7 +7,6 @@
   import * as Dialog from "$lib/components/ui/dialog";
   import * as Popover from "$lib/components/ui/popover";
   import { Calendar as CalendarComponent } from "$lib/components/ui/calendar";
-  import { Input } from "$lib/components/ui/input";
   import { themeStore } from "$lib/stores/theme";
   import { dateRangeStore, type DateRangePreset } from "$lib/stores/dateRange";
   import { Sun, Moon, Calendar } from "lucide-svelte";

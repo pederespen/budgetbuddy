@@ -8,7 +8,7 @@
   import { Button } from "$lib/components/ui/button";
   import { formatCurrency } from "$lib/utils/format";
   import * as LucideIcons from "lucide-svelte";
-  import type { Budget, Category, Currency, Transaction } from "$lib/types";
+  import type { Budget, Transaction } from "$lib/types";
 
   let {
     budget,

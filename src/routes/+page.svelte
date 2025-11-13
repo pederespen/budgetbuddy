@@ -1,7 +1,6 @@
 <script lang="ts">
   import { base } from "$app/paths";
   import { budgetStore } from "$lib/stores/budget";
-  import { activeTabStore } from "$lib/stores/navigation";
   import { getDefaultCategories } from "$lib/defaults";
   import { Button } from "$lib/components/ui/button";
   import {

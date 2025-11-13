@@ -14,13 +14,11 @@
     dateFormatLabels,
     filterTransactionsByDateRange,
   } from "$lib/utils/format";
-  import { getCategoryById } from "$lib/utils/categories";
   import * as Select from "$lib/components/ui/select";
   import { Label } from "$lib/components/ui/label";
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
   import TransactionList from "../transaction/TransactionList.svelte";
-  import DualStatCard from "./DualStatCard.svelte";
   import RecentActivity from "./RecentActivity.svelte";
   import CategoryStats from "./CategoryStats.svelte";
   import SpendingByCategory from "../insights/SpendingByCategory.svelte";
@@ -36,15 +34,12 @@
     Check,
     X,
     Wallet,
-    ListOrdered,
-    Download,
     FileJson,
     FileText,
     FileSpreadsheet,
   } from "lucide-svelte";
   import { activeTabStore } from "$lib/stores/navigation";
   import { exportAsJSON, exportAsCSV, exportAsXLSX } from "$lib/utils/export";
-  import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 
   let { budget }: { budget: Budget } = $props();
 
@@ -107,16 +102,6 @@
   );
 
   let netAmount = $derived(totalIncome - totalExpenses);
-
-  // Calculate largest single expense
-  let largestExpense = $derived(
-    expenses.length > 0 ? Math.max(...expenses.map((e) => e.amount)) : 0
-  );
-
-  // Calculate average expense
-  let averageExpense = $derived(
-    expenses.length > 0 ? totalExpenses / expenses.length : 0
-  );
 
   // Create a budget object with filtered expenses for child components (insights should show expenses only)
   let filteredBudget = $derived({

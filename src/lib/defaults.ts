@@ -1,4 +1,4 @@
-import type { Budget, Category } from "./types";
+import type { Category } from "./types";
 
 export function getDefaultCategories(): Category[] {
   return [
