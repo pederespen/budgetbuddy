@@ -130,7 +130,7 @@
         {/if}
       </Select.Trigger>
       <Select.Content class="max-h-[200px]">
-        {#each filteredCategories as category}
+        {#each filteredCategories as category (category.id)}
           {@const Icon = (LucideIcons as any)[category.icon]}
           <Select.Item value={category.id} label={category.name}>
             <div class="flex items-center gap-2">
@@ -236,7 +236,7 @@
             {/if}
           </Select.Trigger>
           <Select.Content class="max-h-[200px]">
-            {#each filteredCategories as category}
+            {#each filteredCategories as category (category.id)}
               {@const Icon = (LucideIcons as any)[category.icon]}
               <Select.Item value={category.id} label={category.name}>
                 <div class="flex items-center gap-2">

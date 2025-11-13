@@ -139,7 +139,7 @@
               <div
                 class="mt-2 grid grid-cols-8 sm:grid-cols-10 gap-2 max-h-48 overflow-y-auto p-1"
               >
-                {#each POPULAR_ICONS as iconName}
+                {#each POPULAR_ICONS as iconName (iconName)}
                   {@const IconComponent = getIconComponent(iconName)}
                   <button
                     type="button"
@@ -157,7 +157,7 @@
             <div>
               <Label>Color</Label>
               <div class="mt-2 flex gap-2 flex-wrap">
-                {#each PRESET_COLORS as color}
+                {#each PRESET_COLORS as color (color)}
                   <button
                     type="button"
                     class="w-10 h-10 rounded-full border-2 border-background hover:scale-110 transition-transform relative"
@@ -209,7 +209,7 @@
                   <div
                     class="mt-2 grid grid-cols-8 sm:grid-cols-10 gap-2 max-h-48 overflow-y-auto p-1"
                   >
-                    {#each POPULAR_ICONS as iconName}
+                    {#each POPULAR_ICONS as iconName (iconName)}
                       {@const IconComponent = getIconComponent(iconName)}
                       <button
                         type="button"
@@ -227,7 +227,7 @@
                 <div>
                   <Label>Color</Label>
                   <div class="mt-2 flex gap-2 flex-wrap">
-                    {#each PRESET_COLORS as color}
+                    {#each PRESET_COLORS as color (color)}
                       <button
                         type="button"
                         class="w-10 h-10 rounded-full border-2 border-background hover:scale-110 transition-transform relative"

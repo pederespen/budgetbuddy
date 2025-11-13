@@ -155,7 +155,7 @@
               {getDisplayLabel()}
             </Select.Trigger>
             <Select.Content>
-              {#each dateRangeOptions as option}
+              {#each dateRangeOptions as option (option.value)}
                 <Select.Item
                   value={option.value}
                   onclick={() => {

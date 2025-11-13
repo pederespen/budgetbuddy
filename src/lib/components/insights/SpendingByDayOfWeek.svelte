@@ -57,7 +57,7 @@
     <div class="h-[240px]">
       {#if dayData().some((d) => d.total > 0)}
         <div class="flex items-end justify-between h-full gap-2 pb-6">
-          {#each dayData() as day, index}
+          {#each dayData() as day, index (day.day)}
             <div class="flex-1 flex flex-col items-center gap-2 h-full">
               <!-- Bar container -->
               <div class="flex-1 w-full flex flex-col justify-end relative">

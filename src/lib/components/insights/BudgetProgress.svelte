@@ -15,16 +15,13 @@
   let { budget }: Props = $props();
 
   const categoryProgress = $derived(() => {
-    const categoryTotals = new Map<string, number>();
+    const categoryTotals: Record<string, number> = {};
 
     // Only count expense transactions (budget limits apply to expenses)
     budget.entries.forEach((transaction) => {
       if (transaction.type === "expense") {
-        const current = categoryTotals.get(transaction.categoryId) || 0;
-        categoryTotals.set(
-          transaction.categoryId,
-          current + transaction.amount
-        );
+        categoryTotals[transaction.categoryId] =
+          (categoryTotals[transaction.categoryId] || 0) + transaction.amount;
       }
     });
 
@@ -32,7 +29,7 @@
     return budget.categories
       .filter((category) => category.type === "expense")
       .map((category) => {
-        const spent = categoryTotals.get(category.id) || 0;
+        const spent = categoryTotals[category.id] || 0;
         const limit = budget.budgetLimits[category.id] || 0;
         const percentage = limit > 0 ? (spent / limit) * 100 : 0;
 

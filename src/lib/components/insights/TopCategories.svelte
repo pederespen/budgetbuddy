@@ -14,25 +14,19 @@
   let { budget }: Props = $props();
 
   const topCategories = $derived(() => {
-    const categoryTotals = new Map<string, number>();
+    const categoryTotals: Record<string, number> = {};
 
     // Only count expense transactions
     budget.entries.forEach((transaction) => {
       if (transaction.type === "expense") {
-        const current = categoryTotals.get(transaction.categoryId) || 0;
-        categoryTotals.set(
-          transaction.categoryId,
-          current + transaction.amount
-        );
+        categoryTotals[transaction.categoryId] =
+          (categoryTotals[transaction.categoryId] || 0) + transaction.amount;
       }
     });
 
-    const total = Array.from(categoryTotals.values()).reduce(
-      (sum, val) => sum + val,
-      0
-    );
+    const total = Object.values(categoryTotals).reduce((sum, val) => sum + val, 0);
 
-    return Array.from(categoryTotals.entries())
+    return Object.entries(categoryTotals)
       .map(([categoryId, amount]) => {
         const category = budget.categories.find((c) => c.id === categoryId);
         const percentage = total > 0 ? (amount / total) * 100 : 0;

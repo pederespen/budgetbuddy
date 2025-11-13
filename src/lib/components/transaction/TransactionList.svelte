@@ -485,7 +485,7 @@
                 <Select.Item value="all" label="All Categories">
                   All Categories
                 </Select.Item>
-                {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category}
+                {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
                   {@const Icon = (LucideIcons as any)[category.icon]}
                   <Select.Item value={category.id} label={category.name}>
                     <div class="flex items-center gap-2">
@@ -602,7 +602,7 @@
           <Select.Item value="all" label="All Categories">
             All Categories
           </Select.Item>
-          {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category}
+          {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
             {@const Icon = (LucideIcons as any)[category.icon]}
             <Select.Item value={category.id} label={category.name}>
               <div class="flex items-center gap-2">
@@ -649,7 +649,7 @@
         {@const DateIcon = getSortIcon("date")}
         {@const AmountIcon = getSortIcon("amount")}
         <TableHead class="w-[100px]">Type</TableHead>
-        <TableHead>
+        <TableHead class="w-[200px]">
           <button
             onclick={() => handleSort("category")}
             class="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
@@ -658,7 +658,7 @@
             <CategoryIcon class="h-4 w-4" />
           </button>
         </TableHead>
-        <TableHead>
+        <TableHead class="w-[140px]">
           <button
             onclick={() => handleSort("date")}
             class="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
@@ -668,7 +668,7 @@
           </button>
         </TableHead>
         <TableHead>Note</TableHead>
-        <TableHead class="text-right">
+        <TableHead class="text-right w-[120px]">
           <button
             onclick={() => handleSort("amount")}
             class="flex items-center gap-1 hover:text-foreground transition-colors ml-auto cursor-pointer"
@@ -677,7 +677,7 @@
             <AmountIcon class="h-4 w-4" />
           </button>
         </TableHead>
-        <TableHead class="text-right"></TableHead>
+        <TableHead class="text-right w-[80px]"></TableHead>
       </TableRow>
     </TableHeader>
   </Table>
