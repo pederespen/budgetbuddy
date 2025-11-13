@@ -1,22 +1,11 @@
 <script lang="ts">
-  import type {
-    Transaction,
-    Currency,
-    Category,
-    TransactionType,
-  } from "$lib/types";
+  import type { Transaction, Currency, Category, TransactionType } from "$lib/types";
   import { getCategoryById } from "$lib/utils/categories";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import * as Dialog from "$lib/components/ui/dialog";
   import * as Select from "$lib/components/ui/select";
-  import {
-    Table,
-    TableBody,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from "$lib/components/ui/table";
+  import { Table, TableBody, TableHead, TableHeader, TableRow } from "$lib/components/ui/table";
   import {
     Plus,
     ArrowUpDown,
@@ -37,7 +26,7 @@
   import type { Budget } from "$lib/types";
   import { debounce } from "$lib/utils/performance";
 
-  type IconComponent = typeof LucideIcons[keyof typeof LucideIcons];
+  type IconComponent = (typeof LucideIcons)[keyof typeof LucideIcons];
 
   let {
     budget,
@@ -143,8 +132,7 @@
     // Sort
     return [...filtered].sort((a, b) => {
       if (sortColumn === "date") {
-        const comparison =
-          new Date(a.date).getTime() - new Date(b.date).getTime();
+        const comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
         return sortDirection === "asc" ? comparison : -comparison;
       } else if (sortColumn === "amount") {
         const comparison = a.amount - b.amount;
@@ -176,8 +164,7 @@
     if (isLoadingMore || !hasMore()) return;
 
     const target = e.target as HTMLDivElement;
-    const scrollBottom =
-      target.scrollHeight - target.scrollTop - target.clientHeight;
+    const scrollBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
 
     // Load more when user is within 200px of bottom
     if (scrollBottom < 200) {
@@ -273,11 +260,7 @@
   }
 
   function handleSaveNew() {
-    if (
-      !newTransactionCategoryId ||
-      !newTransactionAmount ||
-      !newTransactionDate
-    ) {
+    if (!newTransactionCategoryId || !newTransactionAmount || !newTransactionDate) {
       alert("Please fill in date, category and amount");
       return;
     }
@@ -330,11 +313,7 @@
   }
 
   function handleSaveEdit(transactionId: string) {
-    if (
-      !editTransactionCategoryId ||
-      !editTransactionAmount ||
-      !editTransactionDate
-    ) {
+    if (!editTransactionCategoryId || !editTransactionAmount || !editTransactionDate) {
       alert("Please fill in date, category and amount");
       return;
     }
@@ -437,13 +416,9 @@
                 </span>
               </Select.Trigger>
               <Select.Content>
-                <Select.Item value="all" label="All Types">
-                  All Types
-                </Select.Item>
+                <Select.Item value="all" label="All Types">All Types</Select.Item>
                 <Select.Item value="income" label="Income">Income</Select.Item>
-                <Select.Item value="expense" label="Expenses">
-                  Expenses
-                </Select.Item>
+                <Select.Item value="expense" label="Expenses">Expenses</Select.Item>
               </Select.Content>
             </Select.Root>
           </div>
@@ -456,19 +431,13 @@
                   {#if filterCategory === "all"}
                     All Categories
                   {:else}
-                    {@const selectedCat = getCategoryById(
-                      categories,
-                      filterCategory
-                    )}
+                    {@const selectedCat = getCategoryById(categories, filterCategory)}
                     {#if selectedCat}
                       {@const Icon = (LucideIcons as Record<string, IconComponent>)[
                         selectedCat.icon
                       ]}
                       {#if Icon}
-                        <Icon
-                          class="h-3.5 w-3.5"
-                          style="color: {selectedCat.color}"
-                        />
+                        <Icon class="h-3.5 w-3.5" style="color: {selectedCat.color}" />
                       {/if}
                       {selectedCat.name}
                     {:else}
@@ -478,13 +447,9 @@
                 </span>
               </Select.Trigger>
               <Select.Content>
-                <Select.Item value="all" label="All Categories">
-                  All Categories
-                </Select.Item>
+                <Select.Item value="all" label="All Categories">All Categories</Select.Item>
                 {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
-                  {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-                    category.icon
-                  ]}
+                  {@const Icon = (LucideIcons as Record<string, IconComponent>)[category.icon]}
                   <Select.Item value={category.id} label={category.name}>
                     <div class="flex items-center gap-2">
                       {#if Icon}
@@ -585,9 +550,7 @@
             {:else}
               {@const selectedCat = getCategoryById(categories, filterCategory)}
               {#if selectedCat}
-                {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-                  selectedCat.icon
-                ]}
+                {@const Icon = (LucideIcons as Record<string, IconComponent>)[selectedCat.icon]}
                 {#if Icon}
                   <Icon class="h-4 w-4" style="color: {selectedCat.color}" />
                 {/if}
@@ -599,13 +562,9 @@
           </span>
         </Select.Trigger>
         <Select.Content>
-          <Select.Item value="all" label="All Categories">
-            All Categories
-          </Select.Item>
+          <Select.Item value="all" label="All Categories">All Categories</Select.Item>
           {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
-            {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-              category.icon
-            ]}
+            {@const Icon = (LucideIcons as Record<string, IconComponent>)[category.icon]}
             <Select.Item value={category.id} label={category.name}>
               <div class="flex items-center gap-2">
                 {#if Icon}
@@ -636,8 +595,7 @@
     class="hidden sm:flex items-center justify-between text-sm text-muted-foreground px-1 pb-2 flex-shrink-0"
   >
     <div>
-      Showing {displayedTransactions().length} of {filteredAndSortedTransactions()
-        .length} transactions
+      Showing {displayedTransactions().length} of {filteredAndSortedTransactions().length} transactions
     </div>
   </div>
 {/if}
@@ -686,18 +644,12 @@
 </div>
 
 <!-- Scrollable Content -->
-<div
-  class="flex-1 overflow-auto"
-  bind:this={scrollContainer}
-  onscroll={handleScroll}
->
+<div class="flex-1 overflow-auto" bind:this={scrollContainer} onscroll={handleScroll}>
   {#if filteredAndSortedTransactions().length === 0 && !showNewTransactionRow}
     <div class="py-8 text-center text-muted-foreground">
       {#if activeFiltersCount() > 0}
         <p>No transactions match your filters.</p>
-        <Button variant="link" onclick={clearFilters} class="mt-2">
-          Clear filters
-        </Button>
+        <Button variant="link" onclick={clearFilters} class="mt-2">Clear filters</Button>
       {:else}
         <p>No transactions yet. Click "Add New" to get started!</p>
       {/if}
@@ -709,8 +661,7 @@
         class="mb-3 flex sm:hidden items-center justify-between text-sm text-muted-foreground px-1"
       >
         <div>
-          Showing {displayedTransactions().length} of {filteredAndSortedTransactions()
-            .length} transactions
+          Showing {displayedTransactions().length} of {filteredAndSortedTransactions().length} transactions
         </div>
       </div>
     {/if}
@@ -720,10 +671,7 @@
       <!-- Transactions List (Mobile) - No inline forms anymore -->
       <div class="divide-y">
         {#each displayedTransactions() as transaction (transaction.id)}
-          {@const category = getCategoryById(
-            categories,
-            transaction.categoryId
-          )}
+          {@const category = getCategoryById(categories, transaction.categoryId)}
           <!-- View Mode (Mobile) -->
           <TransactionRow
             {transaction}
@@ -749,9 +697,7 @@
       <!-- Load more button (Mobile - fallback if scroll doesn't trigger) -->
       {#if hasMore() && !isLoadingMore}
         <div class="py-3 text-center">
-          <Button variant="outline" size="sm" onclick={loadMore}>
-            Load More
-          </Button>
+          <Button variant="outline" size="sm" onclick={loadMore}>Load More</Button>
         </div>
       {/if}
     </div>
@@ -781,10 +727,7 @@
 
           <!-- Existing Transactions -->
           {#each displayedTransactions() as transaction (transaction.id)}
-            {@const category = getCategoryById(
-              categories,
-              transaction.categoryId
-            )}
+            {@const category = getCategoryById(categories, transaction.categoryId)}
 
             {#if editingTransactionId === transaction.id}
               <!-- Edit Mode -->
@@ -834,8 +777,7 @@
       {#if hasMore() && !isLoadingMore}
         <div class="py-3 text-center">
           <Button variant="outline" size="sm" onclick={loadMore}>
-            Load More ({filteredAndSortedTransactions().length -
-              loadedItemsCount} remaining)
+            Load More ({filteredAndSortedTransactions().length - loadedItemsCount} remaining)
           </Button>
         </div>
       {/if}

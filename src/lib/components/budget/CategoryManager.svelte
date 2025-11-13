@@ -4,11 +4,7 @@
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import * as Dialog from "$lib/components/ui/dialog";
-  import {
-    POPULAR_ICONS,
-    PRESET_COLORS,
-    getIconComponent,
-  } from "$lib/utils/categories";
+  import { POPULAR_ICONS, PRESET_COLORS, getIconComponent } from "$lib/utils/categories";
   import { Trash2, Plus, Check, Pencil } from "lucide-svelte";
 
   let {
@@ -136,9 +132,7 @@
 
             <div>
               <Label>Icon</Label>
-              <div
-                class="mt-2 grid grid-cols-8 sm:grid-cols-10 gap-2 max-h-48 overflow-y-auto p-1"
-              >
+              <div class="mt-2 grid grid-cols-8 sm:grid-cols-10 gap-2 max-h-48 overflow-y-auto p-1">
                 {#each POPULAR_ICONS as iconName (iconName)}
                   {@const IconComponent = getIconComponent(iconName)}
                   <button
@@ -168,9 +162,7 @@
                     onclick={() => (newColor = color)}
                   >
                     {#if newColor === color}
-                      <Check
-                        class="h-5 w-5 text-white absolute inset-0 m-auto"
-                      />
+                      <Check class="h-5 w-5 text-white absolute inset-0 m-auto" />
                     {/if}
                   </button>
                 {/each}
@@ -178,9 +170,7 @@
             </div>
 
             <div class="flex gap-2 justify-end">
-              <Button variant="outline" size="sm" onclick={handleCancelAdd}>
-                Cancel
-              </Button>
+              <Button variant="outline" size="sm" onclick={handleCancelAdd}>Cancel</Button>
               <Button size="sm" onclick={handleSaveAdd}>Save</Button>
             </div>
           </div>
@@ -238,9 +228,7 @@
                         onclick={() => (editColor = color)}
                       >
                         {#if editColor === color}
-                          <Check
-                            class="h-5 w-5 text-white absolute inset-0 m-auto"
-                          />
+                          <Check class="h-5 w-5 text-white absolute inset-0 m-auto" />
                         {/if}
                       </button>
                     {/each}
@@ -248,16 +236,8 @@
                 </div>
 
                 <div class="flex gap-2 justify-end">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onclick={handleCancelEdit}
-                  >
-                    Cancel
-                  </Button>
-                  <Button size="sm" onclick={() => handleSaveEdit(category.id)}>
-                    Save
-                  </Button>
+                  <Button variant="outline" size="sm" onclick={handleCancelEdit}>Cancel</Button>
+                  <Button size="sm" onclick={() => handleSaveEdit(category.id)}>Save</Button>
                 </div>
               </div>
             </div>
@@ -265,18 +245,13 @@
             <!-- View Mode -->
             {@const IconComponent = getIconComponent(category.icon)}
             {@const transactionCount = getCategoryTransactionCount(category.id)}
-            <div
-              class="flex items-center justify-between p-3 border rounded-lg transition-colors"
-            >
+            <div class="flex items-center justify-between p-3 border rounded-lg transition-colors">
               <div class="flex items-center gap-3">
                 <div
                   class="w-10 h-10 rounded-full flex items-center justify-center"
                   style="background-color: {category.color}20"
                 >
-                  <IconComponent
-                    class="h-5 w-5"
-                    style="color: {category.color}"
-                  />
+                  <IconComponent class="h-5 w-5" style="color: {category.color}" />
                 </div>
                 <div>
                   <div class="font-medium">{category.name}</div>

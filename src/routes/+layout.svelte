@@ -17,9 +17,7 @@
   });
 
   let activeBudget: Budget | undefined = $derived(
-    $budgetStore.budgets.find(
-      (b: Budget) => b.id === $budgetStore.activeBudgetId
-    )
+    $budgetStore.budgets.find((b: Budget) => b.id === $budgetStore.activeBudgetId)
   );
 
   // Initialize theme on mount

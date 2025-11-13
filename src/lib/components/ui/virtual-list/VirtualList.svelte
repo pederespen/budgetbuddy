@@ -16,12 +16,8 @@
 
   // Calculate visible range
   const visibleRange = $derived(() => {
-    const containerHeight =
-      parseInt(height.replace("px", "")) || window.innerHeight;
-    const startIndex = Math.max(
-      0,
-      Math.floor(scrollTop / itemHeight) - overscan
-    );
+    const containerHeight = parseInt(height.replace("px", "")) || window.innerHeight;
+    const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
     const endIndex = Math.min(
       items.length - 1,
       Math.ceil((scrollTop + containerHeight) / itemHeight) + overscan
@@ -46,12 +42,7 @@
   }
 </script>
 
-<div
-  bind:this={containerEl}
-  class="overflow-auto"
-  style:height
-  onscroll={handleScroll}
->
+<div bind:this={containerEl} class="overflow-auto" style:height onscroll={handleScroll}>
   <div style:height="{totalHeight}px" style:position="relative">
     <div style:transform="translateY({offsetY}px)">
       {#each visibleItems() as { item, index } (index)}

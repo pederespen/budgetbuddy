@@ -1,7 +1,7 @@
 import type { Category } from "../types";
 import * as LucideIcons from "lucide-svelte";
 
-type IconComponent = typeof LucideIcons[keyof typeof LucideIcons];
+type IconComponent = (typeof LucideIcons)[keyof typeof LucideIcons];
 
 export function getCategoryById(
   categories: Category[],

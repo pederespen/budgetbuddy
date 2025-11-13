@@ -9,14 +9,10 @@
   import { Check, X, CalendarIcon } from "lucide-svelte";
   import * as LucideIcons from "lucide-svelte";
   import { cn } from "$lib/utils";
-  import {
-    DateFormatter,
-    type DateValue,
-    getLocalTimeZone,
-  } from "@internationalized/date";
+  import { DateFormatter, type DateValue, getLocalTimeZone } from "@internationalized/date";
   import { currencySymbols } from "$lib/utils/format";
 
-  type IconComponent = typeof LucideIcons[keyof typeof LucideIcons];
+  type IconComponent = (typeof LucideIcons)[keyof typeof LucideIcons];
 
   let {
     categories,
@@ -98,9 +94,7 @@
   <!-- Table Row Variant: Type | Category | Date | Note | Amount | Actions -->
   <td class="w-[100px]">
     <Select.Root type="single" bind:value={transactionType}>
-      <Select.Trigger
-        class="h-8 text-xs bg-card border-input w-full cursor-pointer"
-      >
+      <Select.Trigger class="h-8 text-xs bg-card border-input w-full cursor-pointer">
         <span>
           {transactionType === "income" ? "Income" : "Expense"}
         </span>
@@ -113,14 +107,10 @@
   </td>
   <td class="w-[200px]">
     <Select.Root type="single" bind:value={categoryId}>
-      <Select.Trigger
-        class="h-8 text-xs bg-card border-input w-full cursor-pointer"
-      >
+      <Select.Trigger class="h-8 text-xs bg-card border-input w-full cursor-pointer">
         {#if categoryId}
           {@const cat = getCategoryById(categories, categoryId)}
-          {@const Icon = cat
-            ? (LucideIcons as Record<string, IconComponent>)[cat.icon]
-            : null}
+          {@const Icon = cat ? (LucideIcons as Record<string, IconComponent>)[cat.icon] : null}
           {#if cat}
             <div class="flex items-center gap-1.5">
               <Icon class="w-4 h-4" style="color: {cat.color}" />
@@ -135,9 +125,7 @@
       </Select.Trigger>
       <Select.Content class="max-h-[200px]">
         {#each filteredCategories as category (category.id)}
-          {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-            category.icon
-          ]}
+          {@const Icon = (LucideIcons as Record<string, IconComponent>)[category.icon]}
           <Select.Item value={category.id} label={category.name}>
             <div class="flex items-center gap-2">
               <Icon class="w-4 h-4" style="color: {category.color}" />
@@ -156,11 +144,7 @@
           !date && "text-muted-foreground"
         )}
       >
-        <span
-          >{date
-            ? df.format(date.toDate(getLocalTimeZone()))
-            : "Pick date"}</span
-        >
+        <span>{date ? df.format(date.toDate(getLocalTimeZone())) : "Pick date"}</span>
         <CalendarIcon class="h-3 w-3" />
       </Popover.Trigger>
       <Popover.Content class="w-auto p-0" align="start">
@@ -228,9 +212,7 @@
           <Select.Trigger class="h-10 bg-card cursor-pointer w-full">
             {#if categoryId}
               {@const cat = getCategoryById(categories, categoryId)}
-              {@const Icon = cat
-                ? (LucideIcons as Record<string, IconComponent>)[cat.icon]
-                : null}
+              {@const Icon = cat ? (LucideIcons as Record<string, IconComponent>)[cat.icon] : null}
               {#if cat}
                 <div class="flex items-center gap-2">
                   <Icon class="w-5 h-5" style="color: {cat.color}" />
@@ -245,9 +227,7 @@
           </Select.Trigger>
           <Select.Content class="max-h-[200px]">
             {#each filteredCategories as category (category.id)}
-              {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-                category.icon
-              ]}
+              {@const Icon = (LucideIcons as Record<string, IconComponent>)[category.icon]}
               <Select.Item value={category.id} label={category.name}>
                 <div class="flex items-center gap-2">
                   <Icon class="w-4 h-4" style="color: {category.color}" />
@@ -269,11 +249,7 @@
               !date && "text-muted-foreground"
             )}
           >
-            <span
-              >{date
-                ? df.format(date.toDate(getLocalTimeZone()))
-                : "Pick date"}</span
-            >
+            <span>{date ? df.format(date.toDate(getLocalTimeZone())) : "Pick date"}</span>
             <CalendarIcon class="h-4 w-4" />
           </Popover.Trigger>
           <Popover.Content class="w-auto p-0" align="start">
@@ -295,9 +271,7 @@
             class="h-10 bg-card flex-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             onkeydown={handleKeydown}
           />
-          <span class="text-muted-foreground font-semibold text-sm"
-            >{currencySymbol}</span
-          >
+          <span class="text-muted-foreground font-semibold text-sm">{currencySymbol}</span>
         </div>
       </div>
 
@@ -315,14 +289,7 @@
     </div>
 
     <div class="flex gap-2 pt-2">
-      <Button
-        variant="outline"
-        size="default"
-        onclick={onCancel}
-        class="flex-1"
-      >
-        Cancel
-      </Button>
+      <Button variant="outline" size="default" onclick={onCancel} class="flex-1">Cancel</Button>
       <Button size="default" onclick={onSave} class="flex-1">Save</Button>
     </div>
   </div>

@@ -1,11 +1,6 @@
 <script lang="ts">
   import type { Budget } from "$lib/types";
-  import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-  } from "$lib/components/ui/card";
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
   import { Progress } from "$lib/components/ui/progress";
 
   type Props = {
@@ -57,18 +52,11 @@
           <div class="space-y-2">
             <div class="flex items-center justify-between text-sm">
               <div class="flex items-center gap-2">
-                <div
-                  class="w-3 h-3 rounded-full"
-                  style="background-color: {category.color}"
-                ></div>
+                <div class="w-3 h-3 rounded-full" style="background-color: {category.color}"></div>
                 <span class="font-medium">{category.name}</span>
               </div>
               <div class="flex items-center gap-2">
-                <span
-                  class={category.isOverBudget
-                    ? "text-destructive font-semibold"
-                    : ""}
-                >
+                <span class={category.isOverBudget ? "text-destructive font-semibold" : ""}>
                   {budget.currency}
                   {category.spent.toFixed(2)}
                 </span>
@@ -88,9 +76,7 @@
                   style="--progress-background: {category.color}"
                 />
                 {#if category.isOverBudget}
-                  <div
-                    class="absolute inset-0 flex items-center justify-end pr-1"
-                  >
+                  <div class="absolute inset-0 flex items-center justify-end pr-1">
                     <span class="text-xs font-bold text-destructive">
                       {(category.percentage - 100).toFixed(0)}% over
                     </span>
@@ -103,9 +89,7 @@
           </div>
         {/each}
       {:else}
-        <div
-          class="flex items-center justify-center py-8 text-muted-foreground text-sm"
-        >
+        <div class="flex items-center justify-center py-8 text-muted-foreground text-sm">
           No budget limits set
         </div>
       {/if}

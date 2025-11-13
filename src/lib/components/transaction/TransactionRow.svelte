@@ -6,7 +6,7 @@
   import { Pencil, Trash2, MoreHorizontal, Copy } from "lucide-svelte";
   import * as LucideIcons from "lucide-svelte";
 
-  type IconComponent = typeof LucideIcons[keyof typeof LucideIcons];
+  type IconComponent = (typeof LucideIcons)[keyof typeof LucideIcons];
 
   let {
     transaction,
@@ -30,9 +30,7 @@
     variant?: "table" | "card";
   } = $props();
 
-  const Icon = category
-    ? (LucideIcons as Record<string, IconComponent>)[category.icon]
-    : null;
+  const Icon = category ? (LucideIcons as Record<string, IconComponent>)[category.icon] : null;
   const isIncome = transaction.type === "income";
 </script>
 
@@ -56,9 +54,7 @@
       <span>{category?.name || "Unknown"}</span>
     </div>
   </td>
-  <td class="w-[140px] font-medium"
-    >{formatDate(transaction.date, dateFormat)}</td
-  >
+  <td class="w-[140px] font-medium">{formatDate(transaction.date, dateFormat)}</td>
   <td class="truncate">
     {transaction.note || ""}
   </td>

@@ -1,11 +1,5 @@
 <script lang="ts">
-  import type {
-    Budget,
-    Transaction,
-    Category,
-    Currency,
-    DateFormat,
-  } from "$lib/types";
+  import type { Budget, Transaction, Category, Currency, DateFormat } from "$lib/types";
   import { budgetStore } from "$lib/stores/budget";
   import { dateRangeStore } from "$lib/stores/dateRange";
   import {
@@ -76,22 +70,14 @@
   );
 
   // Separate income and expenses
-  let expenses = $derived(
-    filteredEntries.filter((entry) => entry.type === "expense")
-  );
+  let expenses = $derived(filteredEntries.filter((entry) => entry.type === "expense"));
 
-  let incomes = $derived(
-    filteredEntries.filter((entry) => entry.type === "income")
-  );
+  let incomes = $derived(filteredEntries.filter((entry) => entry.type === "income"));
 
   // Calculate totals
-  let totalExpenses = $derived(
-    expenses.reduce((sum, entry) => sum + entry.amount, 0)
-  );
+  let totalExpenses = $derived(expenses.reduce((sum, entry) => sum + entry.amount, 0));
 
-  let totalIncome = $derived(
-    incomes.reduce((sum, entry) => sum + entry.amount, 0)
-  );
+  let totalIncome = $derived(incomes.reduce((sum, entry) => sum + entry.amount, 0));
 
   let netAmount = $derived(totalIncome - totalExpenses);
 
@@ -101,14 +87,9 @@
     entries: expenses,
   });
 
-  async function getExchangeRate(
-    from: Currency,
-    to: Currency
-  ): Promise<number> {
+  async function getExchangeRate(from: Currency, to: Currency): Promise<number> {
     try {
-      const response = await fetch(
-        `https://api.exchangerate-api.com/v4/latest/${from}`
-      );
+      const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);
       const data = await response.json();
       return data.rates[to] || 1;
     } catch (error) {
@@ -194,10 +175,7 @@
     budgetStore.addCategory(budget.id, category);
   }
 
-  function handleUpdateCategory(
-    categoryId: string,
-    updates: Partial<Category>
-  ) {
+  function handleUpdateCategory(categoryId: string, updates: Partial<Category>) {
     budgetStore.updateCategory(budget.id, categoryId, updates);
   }
 
@@ -219,9 +197,7 @@
           <div class="bg-card rounded-lg border p-3">
             <div class="flex items-center gap-2 mb-2">
               <Wallet class="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
-              <span class="text-xs font-medium text-muted-foreground"
-                >Income</span
-              >
+              <span class="text-xs font-medium text-muted-foreground">Income</span>
             </div>
             <div class="text-xl font-bold">
               {formatCurrency(totalIncome, budget.currency)}
@@ -235,9 +211,7 @@
           <div class="bg-card rounded-lg border p-3">
             <div class="flex items-center gap-2 mb-2">
               <Receipt class="h-4 w-4 text-rose-600 dark:text-rose-500" />
-              <span class="text-xs font-medium text-muted-foreground"
-                >Expenses</span
-              >
+              <span class="text-xs font-medium text-muted-foreground">Expenses</span>
             </div>
             <div class="text-xl font-bold">
               {formatCurrency(totalExpenses, budget.currency)}
@@ -255,9 +229,7 @@
               <TrendingUp
                 class={`h-5 w-5 ${netAmount >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
               />
-              <span class="text-sm font-medium text-muted-foreground"
-                >Net Balance</span
-              >
+              <span class="text-sm font-medium text-muted-foreground">Net Balance</span>
             </div>
             <div
               class={`text-2xl font-bold ${netAmount >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
@@ -372,9 +344,7 @@
 
           <!-- Display Settings Section -->
           <div class="space-y-3">
-            <h3
-              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
-            >
+            <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wider">
               Display Settings
             </h3>
             <div class="space-y-4">
@@ -394,32 +364,19 @@
                     <span>{currencyShortLabels[selectedCurrency]}</span>
                   </Select.Trigger>
                   <Select.Content>
-                    <Select.Item value="NOK" label="NOK (kr)"
-                      >NOK (kr)</Select.Item
-                    >
-                    <Select.Item value="USD" label="USD ($)"
-                      >USD ($)</Select.Item
-                    >
-                    <Select.Item value="EUR" label="EUR (€)"
-                      >EUR (€)</Select.Item
-                    >
-                    <Select.Item value="GBP" label="GBP (£)"
-                      >GBP (£)</Select.Item
-                    >
-                    <Select.Item value="SEK" label="SEK (kr)"
-                      >SEK (kr)</Select.Item
-                    >
-                    <Select.Item value="DKK" label="DKK (kr)"
-                      >DKK (kr)</Select.Item
-                    >
+                    <Select.Item value="NOK" label="NOK (kr)">NOK (kr)</Select.Item>
+                    <Select.Item value="USD" label="USD ($)">USD ($)</Select.Item>
+                    <Select.Item value="EUR" label="EUR (€)">EUR (€)</Select.Item>
+                    <Select.Item value="GBP" label="GBP (£)">GBP (£)</Select.Item>
+                    <Select.Item value="SEK" label="SEK (kr)">SEK (kr)</Select.Item>
+                    <Select.Item value="DKK" label="DKK (kr)">DKK (kr)</Select.Item>
                   </Select.Content>
                 </Select.Root>
                 <p class="text-xs text-muted-foreground">
                   {#if isConvertingCurrency}
                     Converting all amounts using live exchange rates...
                   {:else}
-                    Changing currency will convert all amounts using live
-                    exchange rates
+                    Changing currency will convert all amounts using live exchange rates
                   {/if}
                 </p>
               </div>
@@ -435,18 +392,10 @@
                     <span>{dateFormatLabels[selectedDateFormat]}</span>
                   </Select.Trigger>
                   <Select.Content>
-                    <Select.Item value="DD/MM/YYYY" label="DD/MM/YYYY"
-                      >DD/MM/YYYY</Select.Item
-                    >
-                    <Select.Item value="MM/DD/YYYY" label="MM/DD/YYYY"
-                      >MM/DD/YYYY</Select.Item
-                    >
-                    <Select.Item value="YYYY-MM-DD" label="YYYY-MM-DD"
-                      >YYYY-MM-DD</Select.Item
-                    >
-                    <Select.Item value="DD.MM.YYYY" label="DD.MM.YYYY"
-                      >DD.MM.YYYY</Select.Item
-                    >
+                    <Select.Item value="DD/MM/YYYY" label="DD/MM/YYYY">DD/MM/YYYY</Select.Item>
+                    <Select.Item value="MM/DD/YYYY" label="MM/DD/YYYY">MM/DD/YYYY</Select.Item>
+                    <Select.Item value="YYYY-MM-DD" label="YYYY-MM-DD">YYYY-MM-DD</Select.Item>
+                    <Select.Item value="DD.MM.YYYY" label="DD.MM.YYYY">DD.MM.YYYY</Select.Item>
                   </Select.Content>
                 </Select.Root>
               </div>
@@ -455,9 +404,7 @@
 
           <!-- Export Section -->
           <div class="space-y-3">
-            <h3
-              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
-            >
+            <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wider">
               Export Data
             </h3>
             <div class="space-y-2">
@@ -549,18 +496,12 @@
         <!-- Key Metrics - Clean Grid Layout -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
           <!-- Income Card -->
-          <div
-            class="bg-card rounded-lg border p-4 hover:shadow-md transition-shadow"
-          >
+          <div class="bg-card rounded-lg border p-4 hover:shadow-md transition-shadow">
             <div class="flex items-center gap-2 mb-3">
               <div class="p-2 rounded-lg bg-emerald-500/10">
-                <Wallet
-                  class="h-5 w-5 text-emerald-600 dark:text-emerald-500"
-                />
+                <Wallet class="h-5 w-5 text-emerald-600 dark:text-emerald-500" />
               </div>
-              <span class="text-sm font-medium text-muted-foreground"
-                >Income</span
-              >
+              <span class="text-sm font-medium text-muted-foreground">Income</span>
             </div>
             <div class="text-2xl font-bold mb-1">
               {formatCurrency(totalIncome, budget.currency)}
@@ -571,16 +512,12 @@
           </div>
 
           <!-- Expenses Card -->
-          <div
-            class="bg-card rounded-lg border p-4 hover:shadow-md transition-shadow"
-          >
+          <div class="bg-card rounded-lg border p-4 hover:shadow-md transition-shadow">
             <div class="flex items-center gap-2 mb-3">
               <div class="p-2 rounded-lg bg-rose-500/10">
                 <Receipt class="h-5 w-5 text-rose-600 dark:text-rose-500" />
               </div>
-              <span class="text-sm font-medium text-muted-foreground"
-                >Expenses</span
-              >
+              <span class="text-sm font-medium text-muted-foreground">Expenses</span>
             </div>
             <div class="text-2xl font-bold mb-1">
               {formatCurrency(totalExpenses, budget.currency)}
@@ -591,9 +528,7 @@
           </div>
 
           <!-- Net Balance Card -->
-          <div
-            class="bg-card rounded-lg border p-4 hover:shadow-md transition-shadow"
-          >
+          <div class="bg-card rounded-lg border p-4 hover:shadow-md transition-shadow">
             <div class="flex items-center gap-2 mb-3">
               <div
                 class={`p-2 rounded-lg ${netAmount >= 0 ? "bg-emerald-500/10" : "bg-rose-500/10"}`}
@@ -602,9 +537,7 @@
                   class={`h-5 w-5 ${netAmount >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
                 />
               </div>
-              <span class="text-sm font-medium text-muted-foreground"
-                >Net Balance</span
-              >
+              <span class="text-sm font-medium text-muted-foreground">Net Balance</span>
             </div>
             <div
               class={`text-2xl font-bold mb-1 ${netAmount >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
@@ -659,9 +592,7 @@
           <div class="text-center py-12 text-muted-foreground">
             <TrendingUp class="h-16 w-16 mx-auto mb-4 opacity-50" />
             <p class="text-lg">No transactions yet</p>
-            <p class="text-sm mt-2">
-              Add some transactions to see insights and analytics
-            </p>
+            <p class="text-sm mt-2">Add some transactions to see insights and analytics</p>
           </div>
         {:else}
           <div class="space-y-6 pb-6">
@@ -696,12 +627,7 @@
                       class="flex-1"
                       placeholder="Budget name"
                     />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onclick={handleSaveName}
-                      title="Save"
-                    >
+                    <Button variant="ghost" size="icon" onclick={handleSaveName} title="Save">
                       <Check class="h-4 w-4" />
                     </Button>
                     <Button
@@ -735,9 +661,7 @@
 
           <!-- Display Settings Section -->
           <div class="space-y-4">
-            <h3
-              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
-            >
+            <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wider">
               Display Settings
             </h3>
             <div class="space-y-4">
@@ -757,32 +681,19 @@
                     <span>{currencyShortLabels[selectedCurrency]}</span>
                   </Select.Trigger>
                   <Select.Content>
-                    <Select.Item value="NOK" label="NOK (kr)"
-                      >NOK (kr)</Select.Item
-                    >
-                    <Select.Item value="USD" label="USD ($)"
-                      >USD ($)</Select.Item
-                    >
-                    <Select.Item value="EUR" label="EUR (€)"
-                      >EUR (€)</Select.Item
-                    >
-                    <Select.Item value="GBP" label="GBP (£)"
-                      >GBP (£)</Select.Item
-                    >
-                    <Select.Item value="SEK" label="SEK (kr)"
-                      >SEK (kr)</Select.Item
-                    >
-                    <Select.Item value="DKK" label="DKK (kr)"
-                      >DKK (kr)</Select.Item
-                    >
+                    <Select.Item value="NOK" label="NOK (kr)">NOK (kr)</Select.Item>
+                    <Select.Item value="USD" label="USD ($)">USD ($)</Select.Item>
+                    <Select.Item value="EUR" label="EUR (€)">EUR (€)</Select.Item>
+                    <Select.Item value="GBP" label="GBP (£)">GBP (£)</Select.Item>
+                    <Select.Item value="SEK" label="SEK (kr)">SEK (kr)</Select.Item>
+                    <Select.Item value="DKK" label="DKK (kr)">DKK (kr)</Select.Item>
                   </Select.Content>
                 </Select.Root>
                 <p class="text-xs text-muted-foreground">
                   {#if isConvertingCurrency}
                     Converting all amounts using live exchange rates...
                   {:else}
-                    Changing currency will convert all amounts using live
-                    exchange rates
+                    Changing currency will convert all amounts using live exchange rates
                   {/if}
                 </p>
               </div>
@@ -794,25 +705,14 @@
                   bind:value={selectedDateFormat}
                   onValueChange={handleDateFormatChange}
                 >
-                  <Select.Trigger
-                    id="dateformat-desktop"
-                    class="w-full max-w-xs"
-                  >
+                  <Select.Trigger id="dateformat-desktop" class="w-full max-w-xs">
                     <span>{dateFormatLabels[selectedDateFormat]}</span>
                   </Select.Trigger>
                   <Select.Content>
-                    <Select.Item value="DD/MM/YYYY" label="DD/MM/YYYY"
-                      >DD/MM/YYYY</Select.Item
-                    >
-                    <Select.Item value="MM/DD/YYYY" label="MM/DD/YYYY"
-                      >MM/DD/YYYY</Select.Item
-                    >
-                    <Select.Item value="YYYY-MM-DD" label="YYYY-MM-DD"
-                      >YYYY-MM-DD</Select.Item
-                    >
-                    <Select.Item value="DD.MM.YYYY" label="DD.MM.YYYY"
-                      >DD.MM.YYYY</Select.Item
-                    >
+                    <Select.Item value="DD/MM/YYYY" label="DD/MM/YYYY">DD/MM/YYYY</Select.Item>
+                    <Select.Item value="MM/DD/YYYY" label="MM/DD/YYYY">MM/DD/YYYY</Select.Item>
+                    <Select.Item value="YYYY-MM-DD" label="YYYY-MM-DD">YYYY-MM-DD</Select.Item>
+                    <Select.Item value="DD.MM.YYYY" label="DD.MM.YYYY">DD.MM.YYYY</Select.Item>
                   </Select.Content>
                 </Select.Root>
               </div>
@@ -821,9 +721,7 @@
 
           <!-- Export Section -->
           <div class="space-y-3">
-            <h3
-              class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
-            >
+            <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wider">
               Export Data
             </h3>
             <div class="space-y-2">

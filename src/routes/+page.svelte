@@ -17,9 +17,7 @@
   let showCreateForm = $state(false);
 
   let activeBudget: Budget | undefined = $derived(
-    $budgetStore.budgets.find(
-      (b: Budget) => b.id === $budgetStore.activeBudgetId
-    )
+    $budgetStore.budgets.find((b: Budget) => b.id === $budgetStore.activeBudgetId)
   );
 
   function handleCreateBudget(data: { name: string; currency: Currency }) {
@@ -87,8 +85,7 @@
               <CardHeader>
                 <CardTitle>Create New Budget</CardTitle>
                 <CardDescription>
-                  Set up your budget with a name, currency, period, and optional
-                  spending limit.
+                  Set up your budget with a name, currency, period, and optional spending limit.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -106,29 +103,20 @@
               <CardHeader class="text-center">
                 <CardTitle class="text-3xl">Welcome to BudgetBuddy</CardTitle>
                 <CardDescription>
-                  Your privacy-focused budget tracker. All data stays on your
-                  device.
+                  Your privacy-focused budget tracker. All data stays on your device.
                 </CardDescription>
               </CardHeader>
               <CardContent class="space-y-4">
-                <Button
-                  onclick={() => (showCreateForm = true)}
-                  class="w-full"
-                  size="lg"
-                >
+                <Button onclick={() => (showCreateForm = true)} class="w-full" size="lg">
                   Create New Budget
                 </Button>
-                <Button
-                  variant="outline"
-                  class="w-full"
-                  onclick={handleImportFile}>Import from File (JSON)</Button
+                <Button variant="outline" class="w-full" onclick={handleImportFile}
+                  >Import from File (JSON)</Button
                 >
                 <div class="pt-2">
                   <div class="w-full border-t mb-4"></div>
-                  <Button
-                    variant="outline"
-                    class="w-full"
-                    onclick={handleLoadDemo}>Load Demo Data</Button
+                  <Button variant="outline" class="w-full" onclick={handleLoadDemo}
+                    >Load Demo Data</Button
                   >
                 </div>
               </CardContent>

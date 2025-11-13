@@ -1,11 +1,6 @@
 <script lang="ts">
   import type { Budget } from "$lib/types";
-  import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-  } from "$lib/components/ui/card";
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
 
   type Props = {
     budget: Budget;
@@ -37,10 +32,7 @@
       total: dayTotals[index],
       count: dayCounts[index],
       // Ensure minimum height of 8% for bars with data
-      percentage:
-        dayTotals[index] > 0
-          ? Math.max((dayTotals[index] / maxAmount) * 100, 8)
-          : 0,
+      percentage: dayTotals[index] > 0 ? Math.max((dayTotals[index] / maxAmount) * 100, 8) : 0,
     }));
   });
 
@@ -64,9 +56,7 @@
                 <button
                   type="button"
                   class="w-full bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-t-md transition-all hover:from-emerald-600 hover:to-emerald-500 relative cursor-pointer touch-manipulation"
-                  style="height: {day.percentage}%; min-height: {day.total > 0
-                    ? '20px'
-                    : '0'}"
+                  style="height: {day.percentage}%; min-height: {day.total > 0 ? '20px' : '0'}"
                   onclick={() => handleBarClick(index)}
                   onmouseenter={() => (activeDay = index)}
                   onmouseleave={() => (activeDay = null)}
@@ -74,9 +64,7 @@
                 >
                   <!-- Tooltip on hover or click -->
                   {#if activeDay === index}
-                    <div
-                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50"
-                    >
+                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50">
                       <div
                         class="bg-popover text-popover-foreground shadow-lg rounded border px-3 py-2 text-xs whitespace-nowrap"
                       >
@@ -100,9 +88,7 @@
           {/each}
         </div>
       {:else}
-        <div
-          class="flex items-center justify-center h-full text-muted-foreground text-sm"
-        >
+        <div class="flex items-center justify-center h-full text-muted-foreground text-sm">
           No expenses yet
         </div>
       {/if}

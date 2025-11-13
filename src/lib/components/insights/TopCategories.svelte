@@ -1,11 +1,6 @@
 <script lang="ts">
   import type { Budget } from "$lib/types";
-  import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-  } from "$lib/components/ui/card";
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
 
   type Props = {
     budget: Budget;
@@ -59,8 +54,7 @@
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center justify-between mb-1">
-                <span class="font-medium text-sm truncate">{category.name}</span
-                >
+                <span class="font-medium text-sm truncate">{category.name}</span>
                 <span class="text-sm font-semibold">
                   {budget.currency}
                   {category.amount.toFixed(2)}
@@ -81,9 +75,7 @@
           </div>
         {/each}
       {:else}
-        <div
-          class="flex items-center justify-center py-8 text-muted-foreground text-sm"
-        >
+        <div class="flex items-center justify-center py-8 text-muted-foreground text-sm">
           No expenses yet
         </div>
       {/if}
