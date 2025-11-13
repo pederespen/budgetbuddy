@@ -111,16 +111,25 @@
                 <path
                   d="M {x1} {y1} A 80 80 0 {largeArc} 1 {x2} {y2} L {x3} {y3} A 50 50 0 {largeArc} 0 {x4} {y4} Z"
                   fill={category.color}
-                  class="transition-all duration-200 cursor-pointer"
+                  class="transition-all duration-200 cursor-pointer outline-none focus:outline-none"
                   class:opacity-40={hoveredCategory &&
                     hoveredCategory !== category.name}
                   stroke="hsl(var(--background))"
                   stroke-width="2"
+                  role="button"
+                  tabindex="0"
+                  aria-label="{category.name}: {budget.currency}{category.value.toFixed(0)} ({category.percentage.toFixed(1)}%)"
                   onmouseenter={() => (hoveredCategory = category.name)}
                   onmouseleave={() => (hoveredCategory = null)}
                   onclick={() =>
                     (hoveredCategory =
                       hoveredCategory === category.name ? null : category.name)}
+                  onkeydown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      hoveredCategory = hoveredCategory === category.name ? null : category.name;
+                    }
+                  }}
                 />
               {/each}
             </svg>

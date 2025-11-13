@@ -242,10 +242,19 @@
                       height={svgHeight}
                       fill="transparent"
                       class="cursor-pointer outline-none"
+                      role="button"
+                      tabindex="0"
+                      aria-label="View data for {formatDate(point.date)}"
                       onmouseenter={() => (hoveredIndex = i)}
                       onmouseleave={() => (hoveredIndex = null)}
                       onclick={() =>
                         (hoveredIndex = hoveredIndex === i ? null : i)}
+                      onkeydown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          hoveredIndex = hoveredIndex === i ? null : i;
+                        }
+                      }}
                     />
                   {/each}
                 </svg>
