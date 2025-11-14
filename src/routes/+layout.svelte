@@ -17,7 +17,9 @@
   });
 
   let activeBudget: Budget | undefined = $derived(
-    $budgetStore.budgets.find((b: Budget) => b.id === $budgetStore.activeBudgetId)
+    $budgetStore.budgets.find(
+      (b: Budget) => b.id === $budgetStore.activeBudgetId
+    )
   );
 
   // Initialize theme on mount
@@ -35,9 +37,9 @@
   />
 </svelte:head>
 
-<div class="h-screen flex flex-col overflow-hidden">
+<div class="h-screen flex flex-col">
   <Header bind:activeTab showTabs={!!activeBudget} />
-  <div class="flex-1 overflow-hidden">
+  <div class="flex-1 overflow-y-auto overflow-x-hidden">
     {@render children()}
   </div>
 </div>

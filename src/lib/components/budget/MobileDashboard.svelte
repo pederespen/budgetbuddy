@@ -2,7 +2,10 @@
   import type { Budget, Transaction, Category } from "$lib/types";
   import { budgetStore } from "$lib/stores/budget";
   import { dateRangeStore } from "$lib/stores/dateRange";
-  import { formatCurrency, filterTransactionsByDateRange } from "$lib/utils/format";
+  import {
+    formatCurrency,
+    filterTransactionsByDateRange,
+  } from "$lib/utils/format";
   import { Home, Receipt, TrendingUp, Settings, Wallet } from "lucide-svelte";
   import { activeTabStore } from "$lib/stores/navigation";
   import TransactionList from "../transaction/TransactionList.svelte";
@@ -34,12 +37,20 @@
   );
 
   // Separate income and expenses
-  let expenses = $derived(filteredEntries.filter((entry) => entry.type === "expense"));
-  let incomes = $derived(filteredEntries.filter((entry) => entry.type === "income"));
+  let expenses = $derived(
+    filteredEntries.filter((entry) => entry.type === "expense")
+  );
+  let incomes = $derived(
+    filteredEntries.filter((entry) => entry.type === "income")
+  );
 
   // Calculate totals
-  let totalExpenses = $derived(expenses.reduce((sum, entry) => sum + entry.amount, 0));
-  let totalIncome = $derived(incomes.reduce((sum, entry) => sum + entry.amount, 0));
+  let totalExpenses = $derived(
+    expenses.reduce((sum, entry) => sum + entry.amount, 0)
+  );
+  let totalIncome = $derived(
+    incomes.reduce((sum, entry) => sum + entry.amount, 0)
+  );
   let netAmount = $derived(totalIncome - totalExpenses);
 
   // Create a budget object with filtered expenses for child components
@@ -64,7 +75,10 @@
     budgetStore.addCategory(budget.id, category);
   }
 
-  function handleUpdateCategory(categoryId: string, updates: Partial<Category>) {
+  function handleUpdateCategory(
+    categoryId: string,
+    updates: Partial<Category>
+  ) {
     budgetStore.updateCategory(budget.id, categoryId, updates);
   }
 
@@ -73,9 +87,9 @@
   }
 </script>
 
-<div class="h-full flex flex-col overflow-hidden">
+<div class="h-full flex flex-col">
   <!-- Content Area -->
-  <div class="flex-1 overflow-auto pb-20">
+  <div class="flex-1 overflow-y-auto pb-24">
     {#if activeTab === "overview"}
       <!-- Overview Content -->
       <div class="space-y-3 py-3">
@@ -86,7 +100,9 @@
             iconColor="text-emerald-600 dark:text-emerald-500"
             label="Income"
             value={formatCurrency(totalIncome, budget.currency)}
-            subtitle="{incomes.length} transaction{incomes.length === 1 ? '' : 's'}"
+            subtitle="{incomes.length} transaction{incomes.length === 1
+              ? ''
+              : 's'}"
             variant="compact"
           />
 
@@ -95,7 +111,9 @@
             iconColor="text-rose-600 dark:text-rose-500"
             label="Expenses"
             value={formatCurrency(totalExpenses, budget.currency)}
-            subtitle="{expenses.length} transaction{expenses.length === 1 ? '' : 's'}"
+            subtitle="{expenses.length} transaction{expenses.length === 1
+              ? ''
+              : 's'}"
             variant="compact"
           />
         </div>
@@ -107,7 +125,9 @@
               <TrendingUp
                 class={`h-5 w-5 ${netAmount >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
               />
-              <span class="text-sm font-medium text-muted-foreground">Net Balance</span>
+              <span class="text-sm font-medium text-muted-foreground"
+                >Net Balance</span
+              >
             </div>
             <div
               class={`text-2xl font-bold ${netAmount >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}`}
@@ -178,6 +198,7 @@
   <!-- Bottom Navigation -->
   <nav
     class="fixed bottom-0 left-0 right-0 bg-background border-t flex justify-around items-center h-16 px-2"
+    style="padding-bottom: max(0px, env(safe-area-inset-bottom));"
   >
     <button
       onclick={() => (activeTab = "overview")}

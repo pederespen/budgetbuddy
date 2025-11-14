@@ -140,4 +140,20 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Enable smooth scrolling on mobile */
+  html {
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Ensure proper scrolling behavior */
+  body,
+  html {
+    overflow-x: hidden;
+  }
+  /* Support for devices with notches/safe areas */
+  @supports (padding: max(0px)) {
+    body {
+      padding-left: max(0px, env(safe-area-inset-left));
+      padding-right: max(0px, env(safe-area-inset-right));
+    }
+  }
 }
