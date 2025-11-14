@@ -137,18 +137,37 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  :root {
+    /* Fallback for browsers that don't support CSS custom properties */
+    --vh: 1vh;
+  }
+
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Use actual viewport height that accounts for mobile browser UI */
+  .app-container {
+    height: 100vh; /* Fallback for older browsers */
+    height: 100dvh; /* Dynamic viewport height - accounts for browser UI */
+    height: calc(
+      var(--vh, 1vh) * 100
+    ); /* JS fallback for browsers without dvh support */
+  }
+
   /* Enable smooth scrolling on mobile */
   html {
     -webkit-overflow-scrolling: touch;
   }
+
   /* Ensure proper scrolling behavior */
   body,
   html {
     overflow-x: hidden;
+    height: 100%;
   }
+
   /* Support for devices with notches/safe areas */
   @supports (padding: max(0px)) {
     body {

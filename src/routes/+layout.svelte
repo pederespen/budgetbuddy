@@ -25,6 +25,19 @@
   // Initialize theme on mount
   onMount(() => {
     themeStore.init();
+
+    // Fix mobile viewport height to account for browser UI
+    const setVH = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+
+    setVH();
+    window.addEventListener("resize", setVH);
+
+    return () => {
+      window.removeEventListener("resize", setVH);
+    };
   });
 </script>
 
@@ -37,7 +50,7 @@
   />
 </svelte:head>
 
-<div class="h-screen flex flex-col">
+<div class="app-container flex flex-col">
   <Header bind:activeTab showTabs={!!activeBudget} />
   <div class="flex-1 overflow-y-auto overflow-x-hidden">
     {@render children()}
