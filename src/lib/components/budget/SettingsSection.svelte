@@ -6,30 +6,39 @@
   import { Label } from "$lib/components/ui/label";
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
-  import { Pencil, Check, X, FileJson, FileText, FileSpreadsheet } from "lucide-svelte";
+  import {
+    Pencil,
+    Check,
+    X,
+    FileJson,
+    FileText,
+    FileSpreadsheet,
+  } from "lucide-svelte";
   import { exportAsJSON, exportAsCSV, exportAsXLSX } from "$lib/utils/export";
 
   let { budget }: { budget: Budget } = $props();
 
-  // Local state for settings
   let selectedCurrency = $state<Currency>(budget.currency);
   let selectedDateFormat = $state<DateFormat>(budget.dateFormat);
   let isConvertingCurrency = $state(false);
 
-  // Budget name editing
   let isEditingName = $state(false);
   let editedName = $state(budget.name);
 
-  // Sync local state with budget changes
   $effect(() => {
     selectedCurrency = budget.currency;
     selectedDateFormat = budget.dateFormat;
     editedName = budget.name;
   });
 
-  async function getExchangeRate(from: Currency, to: Currency): Promise<number> {
+  async function getExchangeRate(
+    from: Currency,
+    to: Currency
+  ): Promise<number> {
     try {
-      const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);
+      const response = await fetch(
+        `https://api.exchangerate-api.com/v4/latest/${from}`
+      );
       const data = await response.json();
       return data.rates[to] || 1;
     } catch (error) {
@@ -107,17 +116,32 @@
               class="flex-1"
               placeholder="Budget name"
             />
-            <Button variant="ghost" size="icon" onclick={handleSaveName} title="Save">
+            <Button
+              variant="ghost"
+              size="icon"
+              onclick={handleSaveName}
+              title="Save"
+            >
               <Check class="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onclick={handleCancelEditName} title="Cancel">
+            <Button
+              variant="ghost"
+              size="icon"
+              onclick={handleCancelEditName}
+              title="Cancel"
+            >
               <X class="h-4 w-4" />
             </Button>
           </div>
         {:else}
           <div class="flex items-center gap-2 max-w-xs">
             <p class="text-sm flex-1">{budget.name}</p>
-            <Button variant="ghost" size="icon" onclick={handleStartEditName} title="Edit name">
+            <Button
+              variant="ghost"
+              size="icon"
+              onclick={handleStartEditName}
+              title="Edit name"
+            >
               <Pencil class="h-4 w-4" />
             </Button>
           </div>
@@ -131,7 +155,9 @@
 
   <!-- Display Settings Section -->
   <div class="space-y-4">
-    <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+    <h3
+      class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+    >
       Display Settings
     </h3>
     <div class="space-y-4">
@@ -143,7 +169,11 @@
           onValueChange={handleCurrencyChange}
           disabled={isConvertingCurrency}
         >
-          <Select.Trigger id="currency" class="w-full max-w-xs" disabled={isConvertingCurrency}>
+          <Select.Trigger
+            id="currency"
+            class="w-full max-w-xs"
+            disabled={isConvertingCurrency}
+          >
             <span>{currencyShortLabels[selectedCurrency]}</span>
           </Select.Trigger>
           <Select.Content>
@@ -175,10 +205,18 @@
             <span>{dateFormatLabels[selectedDateFormat]}</span>
           </Select.Trigger>
           <Select.Content>
-            <Select.Item value="DD/MM/YYYY" label="DD/MM/YYYY">DD/MM/YYYY</Select.Item>
-            <Select.Item value="MM/DD/YYYY" label="MM/DD/YYYY">MM/DD/YYYY</Select.Item>
-            <Select.Item value="YYYY-MM-DD" label="YYYY-MM-DD">YYYY-MM-DD</Select.Item>
-            <Select.Item value="DD.MM.YYYY" label="DD.MM.YYYY">DD.MM.YYYY</Select.Item>
+            <Select.Item value="DD/MM/YYYY" label="DD/MM/YYYY"
+              >DD/MM/YYYY</Select.Item
+            >
+            <Select.Item value="MM/DD/YYYY" label="MM/DD/YYYY"
+              >MM/DD/YYYY</Select.Item
+            >
+            <Select.Item value="YYYY-MM-DD" label="YYYY-MM-DD"
+              >YYYY-MM-DD</Select.Item
+            >
+            <Select.Item value="DD.MM.YYYY" label="DD.MM.YYYY"
+              >DD.MM.YYYY</Select.Item
+            >
           </Select.Content>
         </Select.Root>
       </div>
@@ -187,9 +225,15 @@
 
   <!-- Export Section -->
   <div class="space-y-3">
-    <h3 class="text-sm font-medium text-muted-foreground uppercase tracking-wider">Export Data</h3>
+    <h3
+      class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+    >
+      Export Data
+    </h3>
     <div class="space-y-2">
-      <p class="text-sm text-muted-foreground">Download your budget data in different formats</p>
+      <p class="text-sm text-muted-foreground">
+        Download your budget data in different formats
+      </p>
       <div class="flex gap-2 max-w-xs">
         <Button
           variant="outline"

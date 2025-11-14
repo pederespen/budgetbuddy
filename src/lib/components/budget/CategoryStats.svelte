@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+  } from "$lib/components/ui/card";
   import { Button } from "$lib/components/ui/button";
   import { formatCurrency } from "$lib/utils/format";
   import * as LucideIcons from "lucide-svelte";
@@ -17,21 +22,24 @@
     onViewInsights: () => void;
   } = $props();
 
-  // Use filtered transactions if provided, otherwise use all entries
-  // Filter to only show expense transactions (not income)
   let transactions = $derived(
     (filteredTransactions ?? budget.entries).filter((t) => t.type === "expense")
   );
 
-  // Filter to only expense categories
-  let expenseCategories = $derived(budget.categories.filter((c) => c.type === "expense"));
+  let expenseCategories = $derived(
+    budget.categories.filter((c) => c.type === "expense")
+  );
 
-  // Calculate spending per category (expenses only)
   let categoryStats = $derived(
     expenseCategories
       .map((category) => {
-        const categoryTransactions = transactions.filter((t) => t.categoryId === category.id);
-        const spent = categoryTransactions.reduce((sum, t) => sum + t.amount, 0);
+        const categoryTransactions = transactions.filter(
+          (t) => t.categoryId === category.id
+        );
+        const spent = categoryTransactions.reduce(
+          (sum, t) => sum + t.amount,
+          0
+        );
         const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
         const percentOfTotal = totalSpent > 0 ? (spent / totalSpent) * 100 : 0;
 
@@ -42,12 +50,11 @@
           transactionCount: categoryTransactions.length,
         };
       })
-      .filter((stat) => stat.spent > 0) // Only show categories with spending
-      .sort((a, b) => b.spent - a.spent) // Sort by spending, highest first
-      .slice(0, 5) // Show only top 5 categories
+      .filter((stat) => stat.spent > 0)
+      .sort((a, b) => b.spent - a.spent)
+      .slice(0, 5)
   );
 
-  // Count total expense categories with spending
   let totalCategoriesWithSpending = $derived(
     expenseCategories.filter((category) => {
       const spent = transactions
@@ -72,8 +79,12 @@
     {:else}
       <div class="space-y-2">
         {#each categoryStats as { category, spent, percentOfTotal, transactionCount } (category.id)}
-          {@const Icon = (LucideIcons as Record<string, IconComponent>)[category.icon]}
-          <div class="flex items-center justify-between py-1.5 border-b last:border-0">
+          {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+            category.icon
+          ]}
+          <div
+            class="flex items-center justify-between py-1.5 border-b last:border-0"
+          >
             <div class="flex items-center gap-2 flex-1 min-w-0">
               <div
                 class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
@@ -100,7 +111,12 @@
       </div>
       {#if totalCategoriesWithSpending > 5}
         <div class="text-center mt-3">
-          <Button variant="ghost" size="sm" class="text-xs h-7" onclick={onViewInsights}>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="text-xs h-7"
+            onclick={onViewInsights}
+          >
             View more insights
           </Button>
         </div>

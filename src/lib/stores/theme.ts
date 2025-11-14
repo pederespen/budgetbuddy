@@ -4,7 +4,6 @@ import { browser } from "$app/environment";
 type Theme = "light" | "dark";
 
 function createThemeStore() {
-  // Initialize theme from localStorage or system preference
   const getInitialTheme = (): Theme => {
     if (!browser) return "dark";
 

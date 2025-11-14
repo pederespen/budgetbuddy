@@ -11,21 +11,20 @@ export type TransactionType = "income" | "expense";
 export interface Category {
   id: string;
   name: string;
-  icon: string; // lucide icon name
-  color: string; // hex color
-  type: TransactionType; // income or expense category
+  icon: string;
+  color: string;
+  type: TransactionType;
 }
 
 export interface Transaction {
   id: string;
-  date: string; // ISO date string
-  categoryId: string; // Reference to category id
+  date: string;
+  categoryId: string;
   amount: number;
   note: string;
-  type: TransactionType; // income or expense
+  type: TransactionType;
 }
 
-// Legacy type alias for backwards compatibility during migration
 export type Expense = Transaction;
 
 export interface BudgetLimit {

@@ -1,6 +1,11 @@
 <script lang="ts">
   import type { Budget } from "$lib/types";
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+  } from "$lib/components/ui/card";
   import { Button } from "$lib/components/ui/button";
 
   type Props = {
@@ -12,21 +17,18 @@
   let hoveredIndex = $state<number | null>(null);
   let viewMode = $state<"daily" | "cumulative">("daily");
 
-  // Generate a unique ID for this instance
   const uniqueId = `gradient-${Math.random().toString(36).substr(2, 9)}`;
 
   const chartData = $derived(() => {
-    // Group expense transactions by day (filter out income)
     const dailyTotals: Record<string, number> = {};
 
     budget.entries.forEach((transaction) => {
       if (transaction.type === "expense") {
-        const date = transaction.date.split("T")[0]; // Get just the date part
+        const date = transaction.date.split("T")[0];
         dailyTotals[date] = (dailyTotals[date] || 0) + transaction.amount;
       }
     });
 
-    // Convert to array and sort by date
     const data = Object.entries(dailyTotals)
       .map(([date, amount]) => ({
         date: new Date(date),
@@ -34,7 +36,6 @@
       }))
       .sort((a, b) => a.date.getTime() - b.date.getTime());
 
-    // Calculate cumulative totals
     let cumulative = 0;
     return data.map((d) => {
       cumulative += d.amount;
@@ -46,33 +47,25 @@
     });
   });
 
-  // Use daily amounts or cumulative based on view mode
   const maxValue = $derived(
     viewMode === "daily"
       ? Math.max(...chartData().map((d) => d.amount), 100)
       : Math.max(...chartData().map((d) => d.cumulative), 100)
   );
 
-  // Round to nice numbers for Y-axis with better spacing
   function roundToNice(value: number): number {
     if (value === 0) return 0;
 
-    // Add 10% padding to the max value
     const paddedValue = value * 1.1;
-
-    // Find the order of magnitude
     const magnitude = Math.pow(10, Math.floor(Math.log10(paddedValue)));
-
-    // Try nice step sizes relative to magnitude
     const steps = [1, 2, 2.5, 5];
 
     for (const step of steps) {
       const stepValue = step * magnitude;
       const rounded = Math.ceil(paddedValue / stepValue) * stepValue;
-      return rounded; // Return the first one that works
+      return rounded;
     }
 
-    // Fallback (shouldn't reach here)
     return Math.ceil(paddedValue);
   }
 
@@ -96,7 +89,9 @@
 
     const points = data.map((d, i) => ({
       x: (i / (data.length - 1)) * width,
-      y: height - ((viewMode === "daily" ? d.amount : d.cumulative) / maxValue) * height,
+      y:
+        height -
+        ((viewMode === "daily" ? d.amount : d.cumulative) / maxValue) * height,
     }));
 
     if (points.length === 1) {
@@ -186,9 +181,21 @@
                   vector-effect="non-scaling-stroke"
                 >
                   <defs>
-                    <linearGradient id={uniqueId} x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style="stop-color: #10b981; stop-opacity: 0.4" />
-                      <stop offset="100%" style="stop-color: #10b981; stop-opacity: 0.05" />
+                    <linearGradient
+                      id={uniqueId}
+                      x1="0%"
+                      y1="0%"
+                      x2="0%"
+                      y2="100%"
+                    >
+                      <stop
+                        offset="0%"
+                        style="stop-color: #10b981; stop-opacity: 0.4"
+                      />
+                      <stop
+                        offset="100%"
+                        style="stop-color: #10b981; stop-opacity: 0.05"
+                      />
                     </linearGradient>
                   </defs>
 
@@ -226,7 +233,8 @@
                       aria-label="View data for {formatDate(point.date)}"
                       onmouseenter={() => (hoveredIndex = i)}
                       onmouseleave={() => (hoveredIndex = null)}
-                      onclick={() => (hoveredIndex = hoveredIndex === i ? null : i)}
+                      onclick={() =>
+                        (hoveredIndex = hoveredIndex === i ? null : i)}
                       onkeydown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
@@ -240,7 +248,8 @@
 
               <!-- Perfectly round data point overlay -->
               {#if hoveredIndex !== null && chartData()[hoveredIndex]}
-                {@const xPercent = (hoveredIndex / (chartData().length - 1)) * 100}
+                {@const xPercent =
+                  (hoveredIndex / (chartData().length - 1)) * 100}
                 {@const value =
                   viewMode === "daily"
                     ? chartData()[hoveredIndex].amount
@@ -262,20 +271,25 @@
               {#if hoveredIndex !== null && chartData()[hoveredIndex]}
                 {@const point = chartData()[hoveredIndex]}
                 {@const x = (hoveredIndex / (chartData().length - 1)) * 100}
-                {@const value = viewMode === "daily" ? point.amount : point.cumulative}
+                {@const value =
+                  viewMode === "daily" ? point.amount : point.cumulative}
                 {@const y = (1 - value / maxValueRounded) * 100}
                 <div
                   class="absolute bg-popover text-popover-foreground shadow-md rounded border px-2 py-1 pointer-events-none z-10 text-xs"
                   style="left: {x}%; top: {y}%; transform: translate(-50%, calc(-100% - 12px))"
                 >
-                  <div class="text-[10px] text-muted-foreground whitespace-nowrap mb-0.5">
+                  <div
+                    class="text-[10px] text-muted-foreground whitespace-nowrap mb-0.5"
+                  >
                     {formatDate(point.date)}
                   </div>
                   <div class="font-semibold whitespace-nowrap leading-tight">
                     {budget.currency}
                     {value.toFixed(2)}
                   </div>
-                  <div class="text-[10px] text-muted-foreground whitespace-nowrap">
+                  <div
+                    class="text-[10px] text-muted-foreground whitespace-nowrap"
+                  >
                     {viewMode === "daily" ? "Daily spending" : "Total so far"}
                   </div>
                 </div>
@@ -283,18 +297,26 @@
             </div>
 
             <!-- X-axis labels -->
-            <div class="flex justify-between mt-2 text-xs text-muted-foreground">
+            <div
+              class="flex justify-between mt-2 text-xs text-muted-foreground"
+            >
               {#if chartData().length > 0}
                 <span>{formatDate(chartData()[0].date)}</span>
                 {#if chartData().length > 1}
-                  <span>{formatDate(chartData()[chartData().length - 1].date)}</span>
+                  <span
+                    >{formatDate(
+                      chartData()[chartData().length - 1].date
+                    )}</span
+                  >
                 {/if}
               {/if}
             </div>
           </div>
         </div>
       {:else}
-        <div class="flex items-center justify-center h-full text-muted-foreground">
+        <div
+          class="flex items-center justify-center h-full text-muted-foreground"
+        >
           No spending data available
         </div>
       {/if}

@@ -1,11 +1,22 @@
 <script lang="ts">
-  import type { Transaction, Currency, Category, TransactionType } from "$lib/types";
+  import type {
+    Transaction,
+    Currency,
+    Category,
+    TransactionType,
+  } from "$lib/types";
   import { getCategoryById } from "$lib/utils/categories";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import * as Dialog from "$lib/components/ui/dialog";
   import * as Select from "$lib/components/ui/select";
-  import { Table, TableBody, TableHead, TableHeader, TableRow } from "$lib/components/ui/table";
+  import {
+    Table,
+    TableBody,
+    TableHead,
+    TableHeader,
+    TableRow,
+  } from "$lib/components/ui/table";
   import {
     Plus,
     ArrowUpDown,
@@ -59,30 +70,25 @@
   let mobileDialogMode = $state<"new" | "edit">("new");
   let editingTransactionIdForMobile = $state<string>("");
 
-  // Sorting state
   type SortColumn = "category" | "date" | "amount";
   type SortDirection = "asc" | "desc";
   let sortColumn = $state<SortColumn>("date");
   let sortDirection = $state<SortDirection>("desc");
 
-  // Filter and search state
   let searchQuery = $state("");
   let debouncedSearchQuery = $state("");
   let filterCategory = $state<string>("all");
   let filterTransactionType = $state<"all" | TransactionType>("all");
   let showFilters = $state(false);
 
-  // Debounce search for better performance with large datasets
   const updateDebouncedSearch = debounce((value: string) => {
     debouncedSearchQuery = value;
   }, 300);
 
-  // Update debounced search when searchQuery changes
   $effect(() => {
     updateDebouncedSearch(searchQuery);
   });
 
-  // Form state for new transaction
   let newTransactionDate = $state<DateValue | undefined>(
     parseDate(new Date().toISOString().split("T")[0])
   );
@@ -91,29 +97,24 @@
   let newTransactionNote = $state<string>("");
   let newTransactionType = $state<TransactionType>("expense");
 
-  // Form state for editing transaction
   let editTransactionDate = $state<DateValue | undefined>(undefined);
   let editTransactionCategoryId = $state<string>("");
   let editTransactionAmount = $state<string>("");
   let editTransactionNote = $state<string>("");
   let editTransactionType = $state<TransactionType>("expense");
 
-  // Infinite scroll state
-  let loadedItemsCount = $state(50); // Start with 50 transactions
-  const itemsPerLoad = 50; // Load 50 more each time
+  let loadedItemsCount = $state(50);
+  const itemsPerLoad = 50;
   let isLoadingMore = $state(false);
   let scrollContainer: HTMLDivElement;
 
-  // Filter and sort transactions
   let filteredAndSortedTransactions = $derived(() => {
     let filtered = transactions;
 
-    // Apply transaction type filter
     if (filterTransactionType !== "all") {
       filtered = filtered.filter((t) => t.type === filterTransactionType);
     }
 
-    // Apply search filter
     if (debouncedSearchQuery.trim()) {
       const query = debouncedSearchQuery.toLowerCase();
       filtered = filtered.filter((transaction) => {
@@ -124,15 +125,14 @@
       });
     }
 
-    // Apply category filter
     if (filterCategory !== "all") {
       filtered = filtered.filter((e) => e.categoryId === filterCategory);
     }
 
-    // Sort
     return [...filtered].sort((a, b) => {
       if (sortColumn === "date") {
-        const comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+        const comparison =
+          new Date(a.date).getTime() - new Date(b.date).getTime();
         return sortDirection === "asc" ? comparison : -comparison;
       } else if (sortColumn === "amount") {
         const comparison = a.amount - b.amount;
@@ -149,7 +149,6 @@
     });
   });
 
-  // Infinite scroll: Display limited items
   const displayedTransactions = $derived(() => {
     const allTransactions = filteredAndSortedTransactions();
     return allTransactions.slice(0, loadedItemsCount);
@@ -159,14 +158,13 @@
     return filteredAndSortedTransactions().length > loadedItemsCount;
   });
 
-  // Handle infinite scroll
   function handleScroll(e: Event) {
     if (isLoadingMore || !hasMore()) return;
 
     const target = e.target as HTMLDivElement;
-    const scrollBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
+    const scrollBottom =
+      target.scrollHeight - target.scrollTop - target.clientHeight;
 
-    // Load more when user is within 200px of bottom
     if (scrollBottom < 200) {
       loadMore();
     }
@@ -194,10 +192,8 @@
 
   function handleSort(column: SortColumn) {
     if (sortColumn === column) {
-      // Toggle direction
       sortDirection = sortDirection === "asc" ? "desc" : "asc";
     } else {
-      // New column, default to ascending
       sortColumn = column;
       sortDirection = "asc";
     }
@@ -212,12 +208,10 @@
     searchQuery = "";
     debouncedSearchQuery = "";
     filterCategory = "all";
-    loadedItemsCount = 50; // Reset loaded items when clearing filters
+    loadedItemsCount = 50;
   }
 
-  // Reset to initial load when filters change
   $effect(() => {
-    // Watch filter changes
     void searchQuery;
     void filterCategory;
     void filterTransactionType;
@@ -240,13 +234,11 @@
   function handleAddNew() {
     showNewTransactionRow = true;
     editingTransactionId = null;
-    // Reset form
     newTransactionDate = parseDate(new Date().toISOString().split("T")[0]);
     newTransactionCategoryId = "";
     newTransactionAmount = "";
     newTransactionNote = "";
 
-    // For mobile, open dialog
     if (window.innerWidth < 640) {
       mobileDialogMode = "new";
       showMobileDialog = true;
@@ -260,7 +252,11 @@
   }
 
   function handleSaveNew() {
-    if (!newTransactionCategoryId || !newTransactionAmount || !newTransactionDate) {
+    if (
+      !newTransactionCategoryId ||
+      !newTransactionAmount ||
+      !newTransactionDate
+    ) {
       alert("Please fill in date, category and amount");
       return;
     }
@@ -288,7 +284,6 @@
   function handleStartEdit(transaction: Transaction) {
     editingTransactionId = transaction.id;
     showNewTransactionRow = false;
-    // Handle both date-only strings (YYYY-MM-DD) and ISO timestamps
     const dateString = transaction.date.includes("T")
       ? transaction.date.split("T")[0]
       : transaction.date;
@@ -298,12 +293,11 @@
     editTransactionNote = transaction.note;
     editTransactionType = transaction.type;
 
-    // For mobile, open dialog
     if (window.innerWidth < 640) {
       mobileDialogMode = "edit";
       showMobileDialog = true;
       editingTransactionIdForMobile = transaction.id;
-      editingTransactionId = null; // Don't show inline on mobile
+      editingTransactionId = null;
     }
   }
 
@@ -313,7 +307,11 @@
   }
 
   function handleSaveEdit(transactionId: string) {
-    if (!editTransactionCategoryId || !editTransactionAmount || !editTransactionDate) {
+    if (
+      !editTransactionCategoryId ||
+      !editTransactionAmount ||
+      !editTransactionDate
+    ) {
       alert("Please fill in date, category and amount");
       return;
     }
@@ -416,9 +414,13 @@
                 </span>
               </Select.Trigger>
               <Select.Content>
-                <Select.Item value="all" label="All Types">All Types</Select.Item>
+                <Select.Item value="all" label="All Types"
+                  >All Types</Select.Item
+                >
                 <Select.Item value="income" label="Income">Income</Select.Item>
-                <Select.Item value="expense" label="Expenses">Expenses</Select.Item>
+                <Select.Item value="expense" label="Expenses"
+                  >Expenses</Select.Item
+                >
               </Select.Content>
             </Select.Root>
           </div>
@@ -431,13 +433,19 @@
                   {#if filterCategory === "all"}
                     All Categories
                   {:else}
-                    {@const selectedCat = getCategoryById(categories, filterCategory)}
+                    {@const selectedCat = getCategoryById(
+                      categories,
+                      filterCategory
+                    )}
                     {#if selectedCat}
-                      {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-                        selectedCat.icon
-                      ]}
+                      {@const Icon = (
+                        LucideIcons as Record<string, IconComponent>
+                      )[selectedCat.icon]}
                       {#if Icon}
-                        <Icon class="h-3.5 w-3.5" style="color: {selectedCat.color}" />
+                        <Icon
+                          class="h-3.5 w-3.5"
+                          style="color: {selectedCat.color}"
+                        />
                       {/if}
                       {selectedCat.name}
                     {:else}
@@ -447,9 +455,13 @@
                 </span>
               </Select.Trigger>
               <Select.Content>
-                <Select.Item value="all" label="All Categories">All Categories</Select.Item>
+                <Select.Item value="all" label="All Categories"
+                  >All Categories</Select.Item
+                >
                 {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
-                  {@const Icon = (LucideIcons as Record<string, IconComponent>)[category.icon]}
+                  {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+                    category.icon
+                  ]}
                   <Select.Item value={category.id} label={category.name}>
                     <div class="flex items-center gap-2">
                       {#if Icon}
@@ -550,7 +562,9 @@
             {:else}
               {@const selectedCat = getCategoryById(categories, filterCategory)}
               {#if selectedCat}
-                {@const Icon = (LucideIcons as Record<string, IconComponent>)[selectedCat.icon]}
+                {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+                  selectedCat.icon
+                ]}
                 {#if Icon}
                   <Icon class="h-4 w-4" style="color: {selectedCat.color}" />
                 {/if}
@@ -562,9 +576,13 @@
           </span>
         </Select.Trigger>
         <Select.Content>
-          <Select.Item value="all" label="All Categories">All Categories</Select.Item>
+          <Select.Item value="all" label="All Categories"
+            >All Categories</Select.Item
+          >
           {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
-            {@const Icon = (LucideIcons as Record<string, IconComponent>)[category.icon]}
+            {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+              category.icon
+            ]}
             <Select.Item value={category.id} label={category.name}>
               <div class="flex items-center gap-2">
                 {#if Icon}
@@ -595,7 +613,8 @@
     class="hidden sm:flex items-center justify-between text-sm text-muted-foreground px-1 pb-2 flex-shrink-0"
   >
     <div>
-      Showing {displayedTransactions().length} of {filteredAndSortedTransactions().length} transactions
+      Showing {displayedTransactions().length} of {filteredAndSortedTransactions()
+        .length} transactions
     </div>
   </div>
 {/if}
@@ -644,12 +663,18 @@
 </div>
 
 <!-- Scrollable Content -->
-<div class="flex-1 overflow-auto" bind:this={scrollContainer} onscroll={handleScroll}>
+<div
+  class="flex-1 overflow-auto"
+  bind:this={scrollContainer}
+  onscroll={handleScroll}
+>
   {#if filteredAndSortedTransactions().length === 0 && !showNewTransactionRow}
     <div class="py-8 text-center text-muted-foreground">
       {#if activeFiltersCount() > 0}
         <p>No transactions match your filters.</p>
-        <Button variant="link" onclick={clearFilters} class="mt-2">Clear filters</Button>
+        <Button variant="link" onclick={clearFilters} class="mt-2"
+          >Clear filters</Button
+        >
       {:else}
         <p>No transactions yet. Click "Add New" to get started!</p>
       {/if}
@@ -661,7 +686,8 @@
         class="mb-3 flex sm:hidden items-center justify-between text-sm text-muted-foreground px-1"
       >
         <div>
-          Showing {displayedTransactions().length} of {filteredAndSortedTransactions().length} transactions
+          Showing {displayedTransactions().length} of {filteredAndSortedTransactions()
+            .length} transactions
         </div>
       </div>
     {/if}
@@ -671,7 +697,10 @@
       <!-- Transactions List (Mobile) - No inline forms anymore -->
       <div class="divide-y">
         {#each displayedTransactions() as transaction (transaction.id)}
-          {@const category = getCategoryById(categories, transaction.categoryId)}
+          {@const category = getCategoryById(
+            categories,
+            transaction.categoryId
+          )}
           <!-- View Mode (Mobile) -->
           <TransactionRow
             {transaction}
@@ -697,7 +726,9 @@
       <!-- Load more button (Mobile - fallback if scroll doesn't trigger) -->
       {#if hasMore() && !isLoadingMore}
         <div class="py-3 text-center">
-          <Button variant="outline" size="sm" onclick={loadMore}>Load More</Button>
+          <Button variant="outline" size="sm" onclick={loadMore}
+            >Load More</Button
+          >
         </div>
       {/if}
     </div>
@@ -727,7 +758,10 @@
 
           <!-- Existing Transactions -->
           {#each displayedTransactions() as transaction (transaction.id)}
-            {@const category = getCategoryById(categories, transaction.categoryId)}
+            {@const category = getCategoryById(
+              categories,
+              transaction.categoryId
+            )}
 
             {#if editingTransactionId === transaction.id}
               <!-- Edit Mode -->
@@ -777,7 +811,8 @@
       {#if hasMore() && !isLoadingMore}
         <div class="py-3 text-center">
           <Button variant="outline" size="sm" onclick={loadMore}>
-            Load More ({filteredAndSortedTransactions().length - loadedItemsCount} remaining)
+            Load More ({filteredAndSortedTransactions().length -
+              loadedItemsCount} remaining)
           </Button>
         </div>
       {/if}

@@ -22,11 +22,9 @@
     )
   );
 
-  // Initialize theme on mount
   onMount(() => {
     themeStore.init();
 
-    // Fix mobile viewport height to account for browser UI
     const setVH = () => {
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty("--vh", `${vh}px`);

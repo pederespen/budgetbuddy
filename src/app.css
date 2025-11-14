@@ -6,40 +6,30 @@
 
 :root {
   --radius: 0.625rem;
-  /* Cream background #fffbea */
   --background: oklch(0.99 0.03 95);
   --foreground: oklch(0.25 0.02 140);
-  /* Light cream for cards */
   --card: oklch(1 0.02 95);
   --card-foreground: oklch(0.25 0.02 140);
   --popover: oklch(1 0.02 95);
   --popover-foreground: oklch(0.25 0.02 140);
-  /* Green primary #00b465 */
   --primary: oklch(0.68 0.18 155);
   --primary-foreground: oklch(1 0.02 95);
-  /* Softer green secondary */
   --secondary: oklch(0.95 0.04 95);
   --secondary-foreground: oklch(0.5 0.15 155);
-  /* Muted cream tones */
   --muted: oklch(0.96 0.03 95);
   --muted-foreground: oklch(0.5 0.02 140);
-  /* Accent green */
   --accent: oklch(0.78 0.15 155);
   --accent-foreground: oklch(0.25 0.02 140);
-  /* Red for destructive actions */
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(0.99 0.03 95);
-  /* Borders and inputs with subtle green tint */
   --border: oklch(0.9 0.02 95);
   --input: oklch(0.96 0.02 95);
   --ring: oklch(0.68 0.18 155);
-  /* Chart colors with green theme */
   --chart-1: oklch(0.68 0.18 155);
   --chart-2: oklch(0.65 0.18 180);
   --chart-3: oklch(0.75 0.15 95);
   --chart-4: oklch(0.6 0.2 80);
   --chart-5: oklch(0.55 0.18 120);
-  /* Sidebar */
   --sidebar: oklch(0.99 0.03 95);
   --sidebar-foreground: oklch(0.25 0.02 140);
   --sidebar-primary: oklch(0.68 0.18 155);
@@ -51,40 +41,30 @@
 }
 
 .dark {
-  /* Dark background with subtle warmth */
   --background: oklch(0.15 0.01 140);
   --foreground: oklch(0.98 0.02 95);
-  /* Darker cards */
   --card: oklch(0.2 0.01 140);
   --card-foreground: oklch(0.98 0.02 95);
   --popover: oklch(0.2 0.01 140);
   --popover-foreground: oklch(0.98 0.02 95);
-  /* Brighter green for dark mode #00b465 */
   --primary: oklch(0.68 0.18 155);
   --primary-foreground: oklch(0.98 0.02 95);
-  /* Dark secondary */
   --secondary: oklch(0.25 0.02 140);
   --secondary-foreground: oklch(0.98 0.02 95);
-  /* Muted dark tones */
   --muted: oklch(0.25 0.02 140);
   --muted-foreground: oklch(0.65 0.02 140);
-  /* Accent green */
   --accent: oklch(0.3 0.02 155);
   --accent-foreground: oklch(0.78 0.15 155);
-  /* Red for destructive actions */
   --destructive: oklch(0.55 0.22 25);
   --destructive-foreground: oklch(0.98 0.02 95);
-  /* Dark borders */
   --border: oklch(0.3 0.01 140);
   --input: oklch(0.25 0.01 140);
   --ring: oklch(0.68 0.18 155);
-  /* Chart colors adjusted for dark mode */
   --chart-1: oklch(0.68 0.18 155);
   --chart-2: oklch(0.65 0.18 180);
   --chart-3: oklch(0.75 0.15 95);
   --chart-4: oklch(0.6 0.2 80);
   --chart-5: oklch(0.55 0.18 120);
-  /* Sidebar */
   --sidebar: oklch(0.2 0.01 140);
   --sidebar-foreground: oklch(0.98 0.02 95);
   --sidebar-primary: oklch(0.68 0.18 155);
@@ -139,7 +119,6 @@
   }
 
   :root {
-    /* Fallback for browsers that don't support CSS custom properties */
     --vh: 1vh;
   }
 
@@ -147,28 +126,22 @@
     @apply bg-background text-foreground;
   }
 
-  /* Use actual viewport height that accounts for mobile browser UI */
   .app-container {
-    height: 100vh; /* Fallback for older browsers */
-    height: 100dvh; /* Dynamic viewport height - accounts for browser UI */
-    height: calc(
-      var(--vh, 1vh) * 100
-    ); /* JS fallback for browsers without dvh support */
+    height: 100vh;
+    height: 100dvh;
+    height: calc(var(--vh, 1vh) * 100);
   }
 
-  /* Enable smooth scrolling on mobile */
   html {
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Ensure proper scrolling behavior */
   body,
   html {
     overflow-x: hidden;
     height: 100%;
   }
 
-  /* Support for devices with notches/safe areas */
   @supports (padding: max(0px)) {
     body {
       padding-left: max(0px, env(safe-area-inset-left));

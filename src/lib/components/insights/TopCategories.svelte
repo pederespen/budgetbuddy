@@ -1,6 +1,11 @@
 <script lang="ts">
   import type { Budget } from "$lib/types";
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+  } from "$lib/components/ui/card";
 
   type Props = {
     budget: Budget;
@@ -11,7 +16,6 @@
   const topCategories = $derived(() => {
     const categoryTotals: Record<string, number> = {};
 
-    // Only count expense transactions
     budget.entries.forEach((transaction) => {
       if (transaction.type === "expense") {
         categoryTotals[transaction.categoryId] =
@@ -19,7 +23,10 @@
       }
     });
 
-    const total = Object.values(categoryTotals).reduce((sum, val) => sum + val, 0);
+    const total = Object.values(categoryTotals).reduce(
+      (sum, val) => sum + val,
+      0
+    );
 
     return Object.entries(categoryTotals)
       .map(([categoryId, amount]) => {
@@ -54,7 +61,8 @@
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center justify-between mb-1">
-                <span class="font-medium text-sm truncate">{category.name}</span>
+                <span class="font-medium text-sm truncate">{category.name}</span
+                >
                 <span class="text-sm font-semibold">
                   {budget.currency}
                   {category.amount.toFixed(2)}
@@ -75,7 +83,9 @@
           </div>
         {/each}
       {:else}
-        <div class="flex items-center justify-center py-8 text-muted-foreground text-sm">
+        <div
+          class="flex items-center justify-center py-8 text-muted-foreground text-sm"
+        >
           No expenses yet
         </div>
       {/if}

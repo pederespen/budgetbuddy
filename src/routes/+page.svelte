@@ -63,7 +63,6 @@
         const text = await file.text();
         const data = JSON.parse(text);
 
-        // Basic validation
         if (!data.budgets || !Array.isArray(data.budgets)) {
           throw new Error("Invalid budget file format");
         }

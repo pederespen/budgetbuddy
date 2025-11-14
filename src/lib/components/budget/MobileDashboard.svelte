@@ -27,7 +27,6 @@
     activeTabStore.set(activeTab);
   });
 
-  // Filter transactions based on date range
   let filteredEntries = $derived(
     filterTransactionsByDateRange(
       budget.entries,
@@ -36,7 +35,6 @@
     )
   );
 
-  // Separate income and expenses
   let expenses = $derived(
     filteredEntries.filter((entry) => entry.type === "expense")
   );
@@ -44,7 +42,6 @@
     filteredEntries.filter((entry) => entry.type === "income")
   );
 
-  // Calculate totals
   let totalExpenses = $derived(
     expenses.reduce((sum, entry) => sum + entry.amount, 0)
   );
@@ -53,7 +50,6 @@
   );
   let netAmount = $derived(totalIncome - totalExpenses);
 
-  // Create a budget object with filtered expenses for child components
   let filteredBudget = $derived({
     ...budget,
     entries: expenses,

@@ -3,7 +3,6 @@ import { generateId } from "./utils/id";
 
 export function getDefaultCategories(): Category[] {
   return [
-    // Expense categories
     {
       id: generateId(),
       name: "Food & Groceries",
@@ -53,7 +52,6 @@ export function getDefaultCategories(): Category[] {
       color: "#636e72",
       type: "expense",
     },
-    // Income categories
     {
       id: generateId(),
       name: "Salary",

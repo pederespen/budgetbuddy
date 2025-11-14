@@ -21,7 +21,6 @@
     state.budgets.find((b) => b.id === state.activeBudgetId)
   );
 
-  // Memoized: Filter transactions based on date range
   const filteredEntries = $derived(() => {
     if (!activeBudget) return [];
     return filterTransactionsByDateRange(
@@ -31,7 +30,6 @@
     );
   });
 
-  // Memoized: Separate expenses and income
   const expenses = $derived(() => {
     return filteredEntries().filter((e) => e.type === "expense");
   });
@@ -40,7 +38,6 @@
     return filteredEntries().filter((e) => e.type === "income");
   });
 
-  // Memoized: Calculate totals
   const totalExpenses = $derived(() => {
     return expenses().reduce((sum, e) => sum + e.amount, 0);
   });
@@ -51,12 +48,10 @@
 
   const netAmount = $derived(() => totalIncome() - totalExpenses());
 
-  // Memoized: Active categories count
   const activeCategoriesCount = $derived(() => {
     return new Set(filteredEntries().map((e) => e.categoryId)).size;
   });
 
-  // Memoized: Budget usage percentage
   const budgetUsagePercentage = $derived(() => {
     if (!activeBudget) return 0;
     const totalBudget = Object.values(activeBudget.budgetLimits).reduce(
@@ -67,7 +62,6 @@
     return totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
   });
 
-  // Memoized: Average transaction
   const avgTransaction = $derived(() => {
     const expenseList = expenses();
     return expenseList.length > 0
@@ -75,11 +69,9 @@
       : "0.00";
   });
 
-  // Create filtered budget for child components (with expenses only for charts)
   const filteredBudget = $derived.by(() => {
     if (!activeBudget) return undefined;
     const expenseList = expenses();
-    // Only create new object if expenses actually changed
     return {
       ...activeBudget,
       entries: expenseList,

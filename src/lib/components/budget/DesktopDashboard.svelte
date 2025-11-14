@@ -2,7 +2,10 @@
   import type { Budget, Transaction, Category } from "$lib/types";
   import { budgetStore } from "$lib/stores/budget";
   import { dateRangeStore } from "$lib/stores/dateRange";
-  import { formatCurrency, filterTransactionsByDateRange } from "$lib/utils/format";
+  import {
+    formatCurrency,
+    filterTransactionsByDateRange,
+  } from "$lib/utils/format";
   import { Wallet, Receipt, TrendingUp } from "lucide-svelte";
   import { activeTabStore } from "$lib/stores/navigation";
   import TransactionList from "../transaction/TransactionList.svelte";
@@ -24,7 +27,6 @@
     activeTabStore.set(activeTab);
   });
 
-  // Filter transactions based on date range
   let filteredEntries = $derived(
     filterTransactionsByDateRange(
       budget.entries,
@@ -33,16 +35,21 @@
     )
   );
 
-  // Separate income and expenses
-  let expenses = $derived(filteredEntries.filter((entry) => entry.type === "expense"));
-  let incomes = $derived(filteredEntries.filter((entry) => entry.type === "income"));
+  let expenses = $derived(
+    filteredEntries.filter((entry) => entry.type === "expense")
+  );
+  let incomes = $derived(
+    filteredEntries.filter((entry) => entry.type === "income")
+  );
 
-  // Calculate totals
-  let totalExpenses = $derived(expenses.reduce((sum, entry) => sum + entry.amount, 0));
-  let totalIncome = $derived(incomes.reduce((sum, entry) => sum + entry.amount, 0));
+  let totalExpenses = $derived(
+    expenses.reduce((sum, entry) => sum + entry.amount, 0)
+  );
+  let totalIncome = $derived(
+    incomes.reduce((sum, entry) => sum + entry.amount, 0)
+  );
   let netAmount = $derived(totalIncome - totalExpenses);
 
-  // Create a budget object with filtered expenses for child components
   let filteredBudget = $derived({
     ...budget,
     entries: expenses,
@@ -64,7 +71,10 @@
     budgetStore.addCategory(budget.id, category);
   }
 
-  function handleUpdateCategory(categoryId: string, updates: Partial<Category>) {
+  function handleUpdateCategory(
+    categoryId: string,
+    updates: Partial<Category>
+  ) {
     budgetStore.updateCategory(budget.id, categoryId, updates);
   }
 
@@ -85,7 +95,9 @@
             iconColor="text-emerald-600 dark:text-emerald-500"
             label="Income"
             value={formatCurrency(totalIncome, budget.currency)}
-            subtitle="{incomes.length} transaction{incomes.length === 1 ? '' : 's'}"
+            subtitle="{incomes.length} transaction{incomes.length === 1
+              ? ''
+              : 's'}"
           />
 
           <MetricCard
@@ -93,7 +105,9 @@
             iconColor="text-rose-600 dark:text-rose-500"
             label="Expenses"
             value={formatCurrency(totalExpenses, budget.currency)}
-            subtitle="{expenses.length} transaction{expenses.length === 1 ? '' : 's'}"
+            subtitle="{expenses.length} transaction{expenses.length === 1
+              ? ''
+              : 's'}"
           />
 
           <MetricCard
@@ -149,7 +163,9 @@
           <div class="text-center py-12 text-muted-foreground">
             <TrendingUp class="h-16 w-16 mx-auto mb-4 opacity-50" />
             <p class="text-lg">No transactions yet</p>
-            <p class="text-sm mt-2">Add some transactions to see insights and analytics</p>
+            <p class="text-sm mt-2">
+              Add some transactions to see insights and analytics
+            </p>
           </div>
         {:else}
           <div class="space-y-6 pb-6">

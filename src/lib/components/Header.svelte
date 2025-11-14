@@ -58,7 +58,6 @@
 
   function handleDateRangeChange(value: string | undefined) {
     if (value === "custom") {
-      // Open the custom dialog (whether first time or re-selecting)
       openCustomDialog();
     } else if (value) {
       dateRangeStore.setPreset(value as DateRangePreset);
@@ -66,8 +65,11 @@
   }
 
   function openCustomDialog() {
-    // If custom range is already set, pre-fill the dates
-    if (dateRange.preset === "custom" && dateRange.startDate && dateRange.endDate) {
+    if (
+      dateRange.preset === "custom" &&
+      dateRange.startDate &&
+      dateRange.endDate
+    ) {
       const start = dateRange.startDate;
       const end = dateRange.endDate;
       customStartDate = new CalendarDate(
@@ -75,7 +77,11 @@
         start.getMonth() + 1,
         start.getDate()
       );
-      customEndDate = new CalendarDate(end.getFullYear(), end.getMonth() + 1, end.getDate());
+      customEndDate = new CalendarDate(
+        end.getFullYear(),
+        end.getMonth() + 1,
+        end.getDate()
+      );
     }
     customDialogOpen = true;
   }
@@ -87,7 +93,11 @@
         customStartDate.month - 1,
         customStartDate.day
       );
-      const endDate = new Date(customEndDate.year, customEndDate.month - 1, customEndDate.day);
+      const endDate = new Date(
+        customEndDate.year,
+        customEndDate.month - 1,
+        customEndDate.day
+      );
       dateRangeStore.setCustomRange(startDate, endDate);
       customDialogOpen = false;
       customStartDate = undefined;
@@ -96,7 +106,11 @@
   }
 
   function getDisplayLabel(): string {
-    if (dateRange.preset === "custom" && dateRange.startDate && dateRange.endDate) {
+    if (
+      dateRange.preset === "custom" &&
+      dateRange.startDate &&
+      dateRange.endDate
+    ) {
       const start = dateRange.startDate.toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "2-digit",
@@ -107,7 +121,10 @@
       });
       return `${start} - ${end}`;
     }
-    return dateRangeOptions.find((o) => o.value === dateRange.preset)?.label || "All Time";
+    return (
+      dateRangeOptions.find((o) => o.value === dateRange.preset)?.label ||
+      "All Time"
+    );
   }
 </script>
 
@@ -118,22 +135,34 @@
     <div class="flex h-14 items-center px-4 relative">
       <div class="flex items-center">
         {#if browser}
-          <img src={theme === "dark" ? logoDark : logo} alt="BudgetBuddy" class="h-10" />
+          <img
+            src={theme === "dark" ? logoDark : logo}
+            alt="BudgetBuddy"
+            class="h-10"
+          />
         {:else}
           <img src={logo} alt="BudgetBuddy" class="h-10" />
         {/if}
       </div>
 
       {#if showTabs}
-        <div class="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div
+          class="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        >
           <Tabs.Root bind:value={activeTab}>
             <Tabs.List class="grid w-full grid-cols-4 max-w-2xl">
-              <Tabs.Trigger value="overview" class="cursor-pointer px-6">Overview</Tabs.Trigger>
+              <Tabs.Trigger value="overview" class="cursor-pointer px-6"
+                >Overview</Tabs.Trigger
+              >
               <Tabs.Trigger value="transactions" class="cursor-pointer px-6">
                 Transactions
               </Tabs.Trigger>
-              <Tabs.Trigger value="insights" class="cursor-pointer px-6">Insights</Tabs.Trigger>
-              <Tabs.Trigger value="settings" class="cursor-pointer px-6">Settings</Tabs.Trigger>
+              <Tabs.Trigger value="insights" class="cursor-pointer px-6"
+                >Insights</Tabs.Trigger
+              >
+              <Tabs.Trigger value="settings" class="cursor-pointer px-6"
+                >Settings</Tabs.Trigger
+              >
             </Tabs.List>
           </Tabs.Root>
         </div>
@@ -141,7 +170,11 @@
 
       <div class="ml-auto flex items-center gap-2 z-10">
         {#if showTabs}
-          <Select.Root type="single" value={dateRange.preset} onValueChange={handleDateRangeChange}>
+          <Select.Root
+            type="single"
+            value={dateRange.preset}
+            onValueChange={handleDateRangeChange}
+          >
             <Select.Trigger class="w-[160px] h-9">
               <Calendar class="h-4 w-4 mr-2" />
               {getDisplayLabel()}
@@ -151,7 +184,6 @@
                 <Select.Item
                   value={option.value}
                   onclick={() => {
-                    // If clicking custom (whether already selected or not), open dialog
                     if (option.value === "custom") {
                       openCustomDialog();
                     }
@@ -181,7 +213,9 @@
                     >
                       <span>
                         {customStartDate
-                          ? df.format(customStartDate.toDate(getLocalTimeZone()))
+                          ? df.format(
+                              customStartDate.toDate(getLocalTimeZone())
+                            )
                           : "Pick start date"}
                       </span>
                       <Calendar class="h-4 w-4" />
@@ -238,7 +272,10 @@
                 >
                   Cancel
                 </Button>
-                <Button onclick={applyCustomRange} disabled={!customStartDate || !customEndDate}>
+                <Button
+                  onclick={applyCustomRange}
+                  disabled={!customStartDate || !customEndDate}
+                >
                   Apply Range
                 </Button>
               </Dialog.Footer>
@@ -246,7 +283,12 @@
           </Dialog.Root>
         {/if}
 
-        <Button variant="ghost" size="icon" onclick={toggleTheme} aria-label="Toggle theme">
+        <Button
+          variant="ghost"
+          size="icon"
+          onclick={toggleTheme}
+          aria-label="Toggle theme"
+        >
           {#if theme === "dark"}
             <Sun class="h-5 w-5" />
           {:else}
