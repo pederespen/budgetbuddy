@@ -76,7 +76,7 @@
     } else {
       expandedPatterns.add(pattern);
     }
-    expandedPatterns = expandedPatterns; // Trigger reactivity
+    expandedPatterns = new Set(expandedPatterns); // Create new Set for Svelte 5 reactivity
   }
 
   function getCategoryColor(category: Category | null | undefined): string {
@@ -121,8 +121,9 @@
             </div>
             <button
               onclick={() => toggleExpanded(group.pattern)}
-              class="p-1 hover:bg-background rounded"
+              class="p-1 hover:bg-background rounded flex-shrink-0"
               type="button"
+              aria-label="Toggle example transactions"
             >
               {#if expandedPatterns.has(group.pattern)}
                 <ChevronUp class="w-4 h-4" />

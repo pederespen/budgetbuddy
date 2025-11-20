@@ -315,36 +315,25 @@
     pattern: string,
     category: Category | null
   ) {
-    console.log("Pattern category change:", {
-      pattern,
-      category,
-      currentMap: patternCategoryMap,
-    });
     patternCategoryMap.set(pattern, category);
     // Force reactivity by creating a new Map
     patternCategoryMap = new Map(patternCategoryMap);
-    console.log("Updated map:", patternCategoryMap);
   }
 
   function handleAddCategory(category: Category) {
-    console.log("Adding category:", category);
     categories = [...categories, category];
-    console.log("Categories after add:", categories);
   }
 
   function handleUpdateCategory(
     categoryId: string,
     updates: Partial<Category>
   ) {
-    console.log("Updating category:", { categoryId, updates });
     categories = categories.map((c) =>
       c.id === categoryId ? { ...c, ...updates } : c
     );
-    console.log("Categories after update:", categories);
   }
 
   function handleDeleteCategory(categoryId: string) {
-    console.log("Deleting category:", categoryId);
     categories = categories.filter((c) => c.id !== categoryId);
     // Clear any pattern mappings that used this category
     patternCategoryMap.forEach((cat, pattern) => {
@@ -353,7 +342,6 @@
       }
     });
     patternCategoryMap = new Map(patternCategoryMap);
-    console.log("Categories after delete:", categories);
   }
 
   function handleImport() {
@@ -415,6 +403,16 @@
     dispatch("cancel");
   }
 
+  function goBack() {
+    if (currentStep === "preview") {
+      currentStep = "upload";
+    } else if (currentStep === "internal") {
+      currentStep = "preview";
+    } else if (currentStep === "review") {
+      currentStep = "internal";
+    }
+  }
+
   let categorizedCount = $derived(
     patternGroups.filter(
       (g) =>
@@ -456,12 +454,7 @@
 <div class="h-screen bg-background flex flex-col overflow-hidden">
   <div class="border-b flex-shrink-0">
     <div class="container mx-auto px-4 py-2">
-      <div class="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onclick={handleClose}>
-          <ArrowLeft class="h-5 w-5" />
-        </Button>
-        <h1 class="text-xl font-bold">Import Transactions from CSV</h1>
-      </div>
+      <h1 class="text-xl font-bold">Import Transactions from CSV</h1>
     </div>
   </div>
 
@@ -488,6 +481,24 @@
                 onchange={handleFileSelect}
                 class="mt-2 block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
               />
+            </div>
+            <div class="mt-4 flex justify-start">
+              <Button variant="ghost" onclick={handleClose} class="gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+                Back
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -719,8 +730,23 @@
               </div>
             </div>
 
-            <div class="flex justify-end gap-2">
-              <Button variant="outline" onclick={reset}>Cancel</Button>
+            <div class="flex justify-between gap-2">
+              <Button variant="ghost" onclick={goBack} class="gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+                Back
+              </Button>
               <Button onclick={confirmPreview}>Continue</Button>
             </div>
           </CardContent>
@@ -782,8 +808,23 @@
             </div>
           </CardContent>
           <div class="border-t p-4 flex-shrink-0">
-            <div class="flex justify-end gap-2">
-              <Button variant="outline" onclick={reset}>Cancel</Button>
+            <div class="flex justify-between gap-2">
+              <Button variant="ghost" onclick={goBack} class="gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+                Back
+              </Button>
               <Button onclick={confirmInternalTransfers}>
                 Continue with {potentialInternalTransfers.filter(
                   (g) => g.shouldRemove
@@ -866,8 +907,23 @@
             </div>
           </CardContent>
           <div class="border-t p-4 flex-shrink-0">
-            <div class="flex justify-end gap-2">
-              <Button variant="outline" onclick={reset}>Cancel</Button>
+            <div class="flex justify-between gap-2">
+              <Button variant="ghost" onclick={goBack} class="gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+                Back
+              </Button>
               <Button onclick={handleImport}>
                 Import {totalTransactions} Transactions
               </Button>
