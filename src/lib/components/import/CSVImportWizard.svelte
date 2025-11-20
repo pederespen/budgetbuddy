@@ -453,19 +453,19 @@
   });
 </script>
 
-<div class="min-h-screen bg-background">
-  <div class="border-b">
-    <div class="container mx-auto px-4 py-4">
+<div class="h-screen bg-background flex flex-col overflow-hidden">
+  <div class="border-b flex-shrink-0">
+    <div class="container mx-auto px-4 py-2">
       <div class="flex items-center gap-4">
         <Button variant="ghost" size="icon" onclick={handleClose}>
           <ArrowLeft class="h-5 w-5" />
         </Button>
-        <h1 class="text-2xl font-bold">Import Transactions from CSV</h1>
+        <h1 class="text-xl font-bold">Import Transactions from CSV</h1>
       </div>
     </div>
   </div>
 
-  <div class="container mx-auto px-4 py-8">
+  <div class="container mx-auto px-4 py-4 flex-1 overflow-y-auto">
     {#if currentStep === "upload"}
       <div class="space-y-4">
         <Card>
@@ -495,18 +495,18 @@
     {/if}
 
     {#if currentStep === "preview" && allCsvData.length > 0 && columnMapping}
-      <div class="space-y-4">
+      <div class="space-y-3">
         <Card>
-          <CardHeader>
-            <CardTitle>Preview & Confirm</CardTitle>
-            <CardDescription>
+          <CardHeader class="pb-3">
+            <CardTitle class="text-lg">Preview & Confirm</CardTitle>
+            <CardDescription class="text-sm">
               Review the files and data structure below.
             </CardDescription>
           </CardHeader>
-          <CardContent class="space-y-3">
+          <CardContent class="space-y-2">
             {#if allCsvData.length > 1}
               <div
-                class="flex items-center justify-between gap-4 border-b pb-3"
+                class="flex items-center justify-between gap-4 border-b pb-2"
               >
                 <Button
                   variant="outline"
@@ -553,7 +553,7 @@
               </div>
             {/if}
 
-            <div class="grid grid-cols-2 gap-3 text-sm">
+            <div class="grid grid-cols-2 gap-2 text-xs">
               {#if allCsvData.length === 1}
                 <div>
                   <p class="text-muted-foreground">File</p>
@@ -572,19 +572,19 @@
               </div>
             </div>
 
-            <div class="space-y-3 border rounded-lg p-4 bg-muted/50">
-              <p class="text-sm font-medium">Column Mapping</p>
+            <div class="space-y-2 border rounded-lg p-3 bg-muted/50">
+              <p class="text-xs font-medium">Column Mapping</p>
               <p class="text-xs text-muted-foreground">
                 Confirm which columns contain the required data:
               </p>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <div class="space-y-1.5">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                <div class="space-y-1">
                   <Label for="date-column" class="text-xs">Date Column *</Label>
                   <Select.Root type="single" bind:value={columnMapping.date}>
                     <Select.Trigger
                       id="date-column"
-                      class="text-xs bg-background"
+                      class="text-xs bg-background h-8"
                     >
                       <span>{columnMapping.date || "Select column"}</span>
                     </Select.Trigger>
@@ -598,7 +598,7 @@
                   </Select.Root>
                 </div>
 
-                <div class="space-y-1.5">
+                <div class="space-y-1">
                   <Label for="description-column" class="text-xs"
                     >Description Column *</Label
                   >
@@ -608,7 +608,7 @@
                   >
                     <Select.Trigger
                       id="description-column"
-                      class="text-xs bg-background"
+                      class="text-xs bg-background h-8"
                     >
                       <span>{columnMapping.description || "Select column"}</span
                       >
@@ -623,7 +623,7 @@
                   </Select.Root>
                 </div>
 
-                <div class="space-y-1.5">
+                <div class="space-y-1">
                   <Label for="amount-in-column" class="text-xs"
                     >Amount In Column *</Label
                   >
@@ -633,7 +633,7 @@
                   >
                     <Select.Trigger
                       id="amount-in-column"
-                      class="text-xs bg-background"
+                      class="text-xs bg-background h-8"
                     >
                       <span>{columnMapping.amountIn || "Select column"}</span>
                     </Select.Trigger>
@@ -647,7 +647,7 @@
                   </Select.Root>
                 </div>
 
-                <div class="space-y-1.5">
+                <div class="space-y-1">
                   <Label for="amount-out-column" class="text-xs"
                     >Amount Out Column *</Label
                   >
@@ -657,7 +657,7 @@
                   >
                     <Select.Trigger
                       id="amount-out-column"
-                      class="text-xs bg-background"
+                      class="text-xs bg-background h-8"
                     >
                       <span>{columnMapping.amountOut || "Select column"}</span>
                     </Select.Trigger>
@@ -698,7 +698,7 @@
                     <tr>
                       {#each allCsvData[selectedPreviewIndex].preview.headers as header}
                         <th
-                          class="px-4 py-2 text-left font-medium text-xs whitespace-nowrap"
+                          class="px-3 py-1.5 text-left font-medium text-xs whitespace-nowrap"
                           >{header}</th
                         >
                       {/each}
@@ -708,7 +708,7 @@
                     {#each getCSVPreview(allCsvData[selectedPreviewIndex].preview, 5).rows as row}
                       <tr class="border-t">
                         {#each allCsvData[selectedPreviewIndex].preview.headers as header}
-                          <td class="px-4 py-2 text-xs whitespace-nowrap"
+                          <td class="px-3 py-1.5 text-xs whitespace-nowrap"
                             >{row[header] || ""}</td
                           >
                         {/each}
@@ -729,9 +729,9 @@
     {/if}
 
     {#if currentStep === "internal"}
-      <div class="space-y-4">
-        <Card>
-          <CardHeader>
+      <div class="flex flex-col max-h-[600px]">
+        <Card class="flex flex-col h-full overflow-hidden">
+          <CardHeader class="pb-3 flex-shrink-0">
             <CardTitle>Review Internal Transfers</CardTitle>
             <CardDescription>
               We detected {potentialInternalTransfers.length} potential internal
@@ -739,7 +739,7 @@
               amounts on the same date). Select which ones to exclude from your budget.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent class="flex-1 overflow-y-auto">
             <div class="space-y-3">
               {#each potentialInternalTransfers as group}
                 <div class="border rounded-lg p-4">
@@ -779,25 +779,26 @@
                   </div>
                 </div>
               {/each}
-
-              <div class="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onclick={reset}>Cancel</Button>
-                <Button onclick={confirmInternalTransfers}>
-                  Continue with {potentialInternalTransfers.filter(
-                    (g) => g.shouldRemove
-                  ).length} excluded
-                </Button>
-              </div>
             </div>
           </CardContent>
+          <div class="border-t p-4 flex-shrink-0">
+            <div class="flex justify-end gap-2">
+              <Button variant="outline" onclick={reset}>Cancel</Button>
+              <Button onclick={confirmInternalTransfers}>
+                Continue with {potentialInternalTransfers.filter(
+                  (g) => g.shouldRemove
+                ).length} excluded
+              </Button>
+            </div>
+          </div>
         </Card>
       </div>
     {/if}
 
     {#if currentStep === "review"}
-      <div class="space-y-4">
-        <Card>
-          <CardHeader>
+      <div class="flex flex-col max-h-[600px]">
+        <Card class="flex flex-col h-full overflow-hidden">
+          <CardHeader class="pb-3 flex-shrink-0">
             <div class="flex items-start justify-between">
               <div>
                 <CardTitle>Review & Categorize Patterns</CardTitle>
@@ -817,9 +818,9 @@
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
-            <div class="space-y-4">
-              <div class="flex gap-4 text-sm">
+          <CardContent class="flex-1 overflow-y-auto">
+            <div class="space-y-3">
+              <div class="flex gap-3 text-sm">
                 <div
                   class="flex-1 p-3 bg-green-50 dark:bg-green-950 rounded-lg"
                 >
@@ -862,15 +863,16 @@
                     e.detail.category
                   )}
               />
-
-              <div class="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onclick={reset}>Cancel</Button>
-                <Button onclick={handleImport}>
-                  Import {totalTransactions} Transactions
-                </Button>
-              </div>
             </div>
           </CardContent>
+          <div class="border-t p-4 flex-shrink-0">
+            <div class="flex justify-end gap-2">
+              <Button variant="outline" onclick={reset}>Cancel</Button>
+              <Button onclick={handleImport}>
+                Import {totalTransactions} Transactions
+              </Button>
+            </div>
+          </div>
         </Card>
       </div>
     {/if}
