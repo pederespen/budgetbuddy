@@ -34,7 +34,9 @@
     onToggleSelect?: () => void;
   } = $props();
 
-  const Icon = category ? (LucideIcons as Record<string, IconComponent>)[category.icon] : null;
+  const Icon = category
+    ? (LucideIcons as Record<string, IconComponent>)[category.icon]
+    : null;
   const isIncome = transaction.type === "income";
 </script>
 
@@ -66,7 +68,9 @@
       <span>{category?.name || "Unknown"}</span>
     </div>
   </td>
-  <td class="w-[140px] font-medium">{formatDate(transaction.date, dateFormat)}</td>
+  <td class="w-[140px] font-medium"
+    >{formatDate(transaction.date, dateFormat)}</td
+  >
   <td class="truncate">
     {transaction.note || ""}
   </td>

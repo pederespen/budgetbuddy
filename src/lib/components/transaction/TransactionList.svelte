@@ -354,7 +354,7 @@
   }
 
   function selectAll() {
-    const allIds = displayedTransactions().map(t => t.id);
+    const allIds = displayedTransactions().map((t) => t.id);
     selectedTransactionIds = new Set(allIds);
   }
 
@@ -364,21 +364,21 @@
 
   function handleBatchDelete() {
     if (selectedTransactionIds.size === 0) return;
-    
+
     const count = selectedTransactionIds.size;
-    if (confirm(`Delete ${count} transaction${count > 1 ? 's' : ''}?`)) {
-      selectedTransactionIds.forEach(id => onDelete(id));
+    if (confirm(`Delete ${count} transaction${count > 1 ? "s" : ""}?`)) {
+      selectedTransactionIds.forEach((id) => onDelete(id));
       selectedTransactionIds = new Set();
     }
   }
 
   function handleBatchCategoryUpdate() {
     if (selectedTransactionIds.size === 0 || !batchEditCategoryId) return;
-    
+
     // Apply category change to all selected transactions in a batch
     const idsToUpdate = Array.from(selectedTransactionIds);
-    idsToUpdate.forEach(id => {
-      const transaction = transactions.find(t => t.id === id);
+    idsToUpdate.forEach((id) => {
+      const transaction = transactions.find((t) => t.id === id);
       if (transaction) {
         onEdit({ ...transaction, categoryId: batchEditCategoryId });
       }
@@ -388,13 +388,12 @@
     const categoryId = batchEditCategoryId;
     batchEditCategoryId = "";
     selectedTransactionIds = new Set();
-    
+
     // Force reactivity by resetting category after a tick
     setTimeout(() => {
       batchEditCategoryId = "";
     }, 0);
   }
-
 </script>
 
 <!-- Mobile Dialog for Add/Edit -->
@@ -581,16 +580,18 @@
 
   <!-- Batch Actions Toolbar (Desktop only) - Fixed at bottom -->
   {#if selectedTransactionIds.size > 0}
-    <div class="hidden sm:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 bg-card border shadow-2xl rounded-lg items-center gap-3 animate-in slide-in-from-bottom-5 duration-300">
+    <div
+      class="hidden sm:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 bg-card border shadow-2xl rounded-lg items-center gap-3 animate-in slide-in-from-bottom-5 duration-300"
+    >
       <span class="text-sm font-semibold">
         {selectedTransactionIds.size} selected
       </span>
       <div class="h-4 w-px bg-border"></div>
-      
+
       <!-- Category Select -->
       <div class="w-[180px]">
-        <Select.Root 
-          type="single" 
+        <Select.Root
+          type="single"
           bind:value={batchEditCategoryId}
           onValueChange={() => {
             if (batchEditCategoryId) {
@@ -604,8 +605,10 @@
             </span>
           </Select.Trigger>
           <Select.Content>
-            {#each [...categories].sort((a, b) => a.name.localeCompare(b.name)) as category (category.id)}
-              {@const Icon = (LucideIcons as Record<string, IconComponent>)[category.icon]}
+            {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
+              {@const Icon = (LucideIcons as Record<string, IconComponent>)[
+                category.icon
+              ]}
               <Select.Item value={category.id} label={category.name}>
                 <div class="flex items-center gap-2">
                   {#if Icon}
@@ -620,12 +623,17 @@
       </div>
 
       <div class="h-4 w-px bg-border"></div>
-      
+
       <Button size="sm" variant="ghost" onclick={deselectAll} class="h-8">
         Clear
       </Button>
-      
-      <Button size="sm" variant="destructive" onclick={handleBatchDelete} class="h-8">
+
+      <Button
+        size="sm"
+        variant="destructive"
+        onclick={handleBatchDelete}
+        class="h-8"
+      >
         <Trash2 class="h-4 w-4" />
       </Button>
     </div>
@@ -742,9 +750,13 @@
         <TableHead class="w-[50px] pl-4">
           <input
             type="checkbox"
-            checked={selectedTransactionIds.size === displayedTransactions().length && displayedTransactions().length > 0}
+            checked={selectedTransactionIds.size ===
+              displayedTransactions().length &&
+              displayedTransactions().length > 0}
             onchange={() => {
-              if (selectedTransactionIds.size === displayedTransactions().length) {
+              if (
+                selectedTransactionIds.size === displayedTransactions().length
+              ) {
                 deselectAll();
               } else {
                 selectAll();
@@ -923,7 +935,8 @@
                     disabled={showNewTransactionRow}
                     variant="table"
                     selected={selectedTransactionIds.has(transaction.id)}
-                    onToggleSelect={() => toggleTransactionSelection(transaction.id)}
+                    onToggleSelect={() =>
+                      toggleTransactionSelection(transaction.id)}
                   />
                 {/key}
               </TableRow>
