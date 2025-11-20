@@ -27,6 +27,8 @@
     X,
     Tags,
     Loader2,
+    Pencil,
+    Trash2,
   } from "lucide-svelte";
   import * as LucideIcons from "lucide-svelte";
   import { parseDate } from "@internationalized/date";
@@ -107,6 +109,10 @@
   const itemsPerLoad = 50;
   let isLoadingMore = $state(false);
   let scrollContainer: HTMLDivElement;
+
+  // Batch selection state
+  let selectedTransactionIds = $state<Set<string>>(new Set());
+  let batchEditCategoryId = $state<string>("");
 
   let filteredAndSortedTransactions = $derived(() => {
     let filtered = transactions;
@@ -335,6 +341,60 @@
     editingTransactionId = null;
     showMobileDialog = false;
   }
+
+  // Batch selection handlers
+  function toggleTransactionSelection(transactionId: string) {
+    const newSet = new Set(selectedTransactionIds);
+    if (newSet.has(transactionId)) {
+      newSet.delete(transactionId);
+    } else {
+      newSet.add(transactionId);
+    }
+    selectedTransactionIds = newSet;
+  }
+
+  function selectAll() {
+    const allIds = displayedTransactions().map(t => t.id);
+    selectedTransactionIds = new Set(allIds);
+  }
+
+  function deselectAll() {
+    selectedTransactionIds = new Set();
+  }
+
+  function handleBatchDelete() {
+    if (selectedTransactionIds.size === 0) return;
+    
+    const count = selectedTransactionIds.size;
+    if (confirm(`Delete ${count} transaction${count > 1 ? 's' : ''}?`)) {
+      selectedTransactionIds.forEach(id => onDelete(id));
+      selectedTransactionIds = new Set();
+    }
+  }
+
+  function handleBatchCategoryUpdate() {
+    if (selectedTransactionIds.size === 0 || !batchEditCategoryId) return;
+    
+    // Apply category change to all selected transactions in a batch
+    const idsToUpdate = Array.from(selectedTransactionIds);
+    idsToUpdate.forEach(id => {
+      const transaction = transactions.find(t => t.id === id);
+      if (transaction) {
+        onEdit({ ...transaction, categoryId: batchEditCategoryId });
+      }
+    });
+
+    // Clear selections and reset category picker
+    const categoryId = batchEditCategoryId;
+    batchEditCategoryId = "";
+    selectedTransactionIds = new Set();
+    
+    // Force reactivity by resetting category after a tick
+    setTimeout(() => {
+      batchEditCategoryId = "";
+    }, 0);
+  }
+
 </script>
 
 <!-- Mobile Dialog for Add/Edit -->
@@ -519,6 +579,58 @@
     </div>
   </div>
 
+  <!-- Batch Actions Toolbar (Desktop only) - Fixed at bottom -->
+  {#if selectedTransactionIds.size > 0}
+    <div class="hidden sm:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 bg-card border shadow-2xl rounded-lg items-center gap-3 animate-in slide-in-from-bottom-5 duration-300">
+      <span class="text-sm font-semibold">
+        {selectedTransactionIds.size} selected
+      </span>
+      <div class="h-4 w-px bg-border"></div>
+      
+      <!-- Category Select -->
+      <div class="w-[180px]">
+        <Select.Root 
+          type="single" 
+          bind:value={batchEditCategoryId}
+          onValueChange={() => {
+            if (batchEditCategoryId) {
+              handleBatchCategoryUpdate();
+            }
+          }}
+        >
+          <Select.Trigger class="w-full h-8 text-sm">
+            <span class="flex items-center gap-2 truncate">
+              Change category
+            </span>
+          </Select.Trigger>
+          <Select.Content>
+            {#each [...categories].sort((a, b) => a.name.localeCompare(b.name)) as category (category.id)}
+              {@const Icon = (LucideIcons as Record<string, IconComponent>)[category.icon]}
+              <Select.Item value={category.id} label={category.name}>
+                <div class="flex items-center gap-2">
+                  {#if Icon}
+                    <Icon class="h-4 w-4" style="color: {category.color}" />
+                  {/if}
+                  {category.name}
+                </div>
+              </Select.Item>
+            {/each}
+          </Select.Content>
+        </Select.Root>
+      </div>
+
+      <div class="h-4 w-px bg-border"></div>
+      
+      <Button size="sm" variant="ghost" onclick={deselectAll} class="h-8">
+        Clear
+      </Button>
+      
+      <Button size="sm" variant="destructive" onclick={handleBatchDelete} class="h-8">
+        <Trash2 class="h-4 w-4" />
+      </Button>
+    </div>
+  {/if}
+
   <!-- Mobile: Collapsible Filters Section -->
   {#if showFilters}
     <div class="block sm:hidden p-4 bg-muted/50 rounded-lg space-y-3">
@@ -627,6 +739,20 @@
         {@const CategoryIcon = getSortIcon("category")}
         {@const DateIcon = getSortIcon("date")}
         {@const AmountIcon = getSortIcon("amount")}
+        <TableHead class="w-[50px] pl-4">
+          <input
+            type="checkbox"
+            checked={selectedTransactionIds.size === displayedTransactions().length && displayedTransactions().length > 0}
+            onchange={() => {
+              if (selectedTransactionIds.size === displayedTransactions().length) {
+                deselectAll();
+              } else {
+                selectAll();
+              }
+            }}
+            class="w-4 h-4 cursor-pointer"
+          />
+        </TableHead>
         <TableHead class="w-[100px]">Type</TableHead>
         <TableHead class="w-[200px]">
           <button
@@ -712,6 +838,8 @@
             onDuplicate={() => handleDuplicate(transaction)}
             disabled={false}
             variant="card"
+            selected={selectedTransactionIds.has(transaction.id)}
+            onToggleSelect={() => toggleTransactionSelection(transaction.id)}
           />
         {/each}
       </div>
@@ -783,17 +911,21 @@
             {:else}
               <!-- View Mode -->
               <TableRow class="h-12">
-                <TransactionRow
-                  {transaction}
-                  {category}
-                  {currency}
-                  dateFormat={budget.dateFormat}
-                  onEdit={() => handleStartEdit(transaction)}
-                  onDelete={() => onDelete(transaction.id)}
-                  onDuplicate={() => handleDuplicate(transaction)}
-                  disabled={showNewTransactionRow}
-                  variant="table"
-                />
+                {#key `${transaction.id}-${transaction.categoryId}`}
+                  <TransactionRow
+                    {transaction}
+                    {category}
+                    {currency}
+                    dateFormat={budget.dateFormat}
+                    onEdit={() => handleStartEdit(transaction)}
+                    onDelete={() => onDelete(transaction.id)}
+                    onDuplicate={() => handleDuplicate(transaction)}
+                    disabled={showNewTransactionRow}
+                    variant="table"
+                    selected={selectedTransactionIds.has(transaction.id)}
+                    onToggleSelect={() => toggleTransactionSelection(transaction.id)}
+                  />
+                {/key}
               </TableRow>
             {/if}
           {/each}

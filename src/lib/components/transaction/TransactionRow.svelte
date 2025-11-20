@@ -18,6 +18,8 @@
     onDuplicate,
     disabled = false,
     variant = "table",
+    selected = false,
+    onToggleSelect,
   }: {
     transaction: Transaction;
     category: Category | undefined;
@@ -28,6 +30,8 @@
     onDuplicate: () => void;
     disabled?: boolean;
     variant?: "table" | "card";
+    selected?: boolean;
+    onToggleSelect?: () => void;
   } = $props();
 
   const Icon = category ? (LucideIcons as Record<string, IconComponent>)[category.icon] : null;
@@ -36,6 +40,14 @@
 
 {#if variant === "table"}
   <!-- Desktop Table Row: Type | Category | Date | Note | Amount | Actions -->
+  <td class="w-[50px] pl-4">
+    <input
+      type="checkbox"
+      checked={selected}
+      onchange={onToggleSelect}
+      class="w-4 h-4 cursor-pointer"
+    />
+  </td>
   <td class="w-[100px]">
     <span class="text-sm">
       {isIncome ? "Income" : "Expense"}
