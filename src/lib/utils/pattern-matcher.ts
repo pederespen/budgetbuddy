@@ -121,8 +121,10 @@ export function detectPatterns(
     }
   }
 
-  // Convert to array and sort by count (most frequent first)
-  return Array.from(patternMap.values()).sort((a, b) => b.count - a.count);
+  // Convert to array, filter out single transactions, and sort by count (most frequent first)
+  return Array.from(patternMap.values())
+    .filter((group) => group.count >= 2)
+    .sort((a, b) => b.count - a.count);
 }
 
 /**

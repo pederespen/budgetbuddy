@@ -6,21 +6,57 @@
   import {
     TrendingUp,
     TrendingDown,
-    HelpCircle,
     ChevronDown,
     ChevronUp,
+    ShoppingCart,
+    Car,
+    Tv,
+    ShoppingBag,
+    Receipt,
+    Heart,
+    Package,
+    Home,
+    Briefcase,
+    Gift,
+    Wallet,
+    DollarSign,
   } from "lucide-svelte";
   import type { PatternGroup } from "$lib/utils/pattern-matcher";
 
-  export let patternGroups: PatternGroup[];
-  export let categories: Category[];
-  export let patternCategoryMap: Map<string, Category | null>;
+  let {
+    patternGroups,
+    categories,
+    patternCategoryMap,
+  }: {
+    patternGroups: PatternGroup[];
+    categories: Category[];
+    patternCategoryMap: Map<string, Category | null>;
+  } = $props();
 
   const dispatch = createEventDispatcher<{
     patternCategoryChange: { pattern: string; category: Category | null };
   }>();
 
-  let expandedPatterns = new Set<string>();
+  let expandedPatterns = $state(new Set<string>());
+
+  const iconMap: Record<string, any> = {
+    ShoppingCart,
+    Car,
+    Tv,
+    ShoppingBag,
+    Receipt,
+    Heart,
+    Package,
+    Home,
+    Briefcase,
+    Gift,
+    Wallet,
+    DollarSign,
+  };
+
+  function getIconComponent(iconName: string) {
+    return iconMap[iconName] || Package;
+  }
 
   function handleCategoryChange(pattern: string, value: string | undefined) {
     if (!value) {
@@ -58,105 +94,116 @@
   </div>
 
   {#each patternGroups as group (group.pattern)}
-    <div class="border rounded-lg overflow-hidden">
-      <div class="bg-muted px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-3 flex-1 min-w-0">
-          <div
-            class="w-3 h-3 rounded-full flex-shrink-0"
-            style="background-color: {getCategoryColor(
-              patternCategoryMap.get(group.pattern)
-            )}"
-          ></div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <h3 class="font-medium truncate">{group.pattern}</h3>
-              {#if group.isIncome}
-                <TrendingUp class="w-4 h-4 text-green-600 flex-shrink-0" />
-              {:else}
-                <TrendingDown class="w-4 h-4 text-red-600 flex-shrink-0" />
-              {/if}
+    {@const selectedCategory = patternCategoryMap.get(group.pattern)}
+    {@const selectedCategoryId = selectedCategory?.id || ""}
+    {#key selectedCategoryId}
+      <div class="border rounded-lg overflow-hidden">
+        <div class="bg-muted px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <h3 class="font-medium truncate">{group.pattern}</h3>
+                {#if group.isIncome}
+                  <TrendingUp class="w-4 h-4 text-green-600 flex-shrink-0" />
+                {:else}
+                  <TrendingDown class="w-4 h-4 text-red-600 flex-shrink-0" />
+                {/if}
+              </div>
+              <div
+                class="flex items-center gap-3 text-xs text-muted-foreground mt-1"
+              >
+                <span
+                  >{group.count} transaction{group.count !== 1 ? "s" : ""}</span
+                >
+                <span>•</span>
+                <span>{formatCurrency(group.totalAmount, "NOK")}</span>
+              </div>
             </div>
-            <div
-              class="flex items-center gap-3 text-xs text-muted-foreground mt-1"
+            <button
+              onclick={() => toggleExpanded(group.pattern)}
+              class="p-1 hover:bg-background rounded"
+              type="button"
             >
-              <span
-                >{group.count} transaction{group.count !== 1 ? "s" : ""}</span
-              >
-              <span>•</span>
-              <span>{formatCurrency(group.totalAmount, "NOK")}</span>
-            </div>
+              {#if expandedPatterns.has(group.pattern)}
+                <ChevronUp class="w-4 h-4" />
+              {:else}
+                <ChevronDown class="w-4 h-4" />
+              {/if}
+            </button>
           </div>
-          <button
-            onclick={() => toggleExpanded(group.pattern)}
-            class="p-1 hover:bg-background rounded"
-            type="button"
-          >
-            {#if expandedPatterns.has(group.pattern)}
-              <ChevronUp class="w-4 h-4" />
-            {:else}
-              <ChevronDown class="w-4 h-4" />
-            {/if}
-          </button>
+          <div class="w-48 ml-4 flex-shrink-0">
+            <Select.Root
+              type="single"
+              value={selectedCategoryId}
+              onValueChange={(v: string | undefined) =>
+                handleCategoryChange(group.pattern, v)}
+            >
+              <Select.Trigger class="w-full">
+                <div class="flex items-center gap-2">
+                  {#if selectedCategory}
+                    {@const IconComponent = getIconComponent(
+                      selectedCategory.icon
+                    )}
+                    <IconComponent
+                      class="w-4 h-4"
+                      style="color: {selectedCategory.color}"
+                    />
+                  {/if}
+                  <span>{selectedCategory?.name || "Select category..."}</span>
+                </div>
+              </Select.Trigger>
+              <Select.Content>
+                {#if group.isIncome}
+                  <Select.Group>
+                    <Select.Label>Income</Select.Label>
+                    {#each categories.filter((c) => c.type === "income") as category}
+                      {@const IconComponent = getIconComponent(category.icon)}
+                      <Select.Item value={category.id}>
+                        <div class="flex items-center gap-2">
+                          <IconComponent
+                            class="w-4 h-4"
+                            style="color: {category.color}"
+                          />
+                          {category.name}
+                        </div>
+                      </Select.Item>
+                    {/each}
+                  </Select.Group>
+                {:else}
+                  <Select.Group>
+                    <Select.Label>Expenses</Select.Label>
+                    {#each categories.filter((c) => c.type === "expense") as category}
+                      {@const IconComponent = getIconComponent(category.icon)}
+                      <Select.Item value={category.id}>
+                        <div class="flex items-center gap-2">
+                          <IconComponent
+                            class="w-4 h-4"
+                            style="color: {category.color}"
+                          />
+                          {category.name}
+                        </div>
+                      </Select.Item>
+                    {/each}
+                  </Select.Group>
+                {/if}
+              </Select.Content>
+            </Select.Root>
+          </div>
         </div>
-        <div class="w-48 ml-4 flex-shrink-0">
-          <Select.Root
-            type="single"
-            value={patternCategoryMap.get(group.pattern)?.id || ""}
-            onValueChange={(v: string | undefined) =>
-              handleCategoryChange(group.pattern, v)}
-          >
-            <Select.Trigger class="w-full">
-              <span
-                >{patternCategoryMap.get(group.pattern)?.name ||
-                  "Select category..."}</span
-              >
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Group>
-                <Select.Label>Income</Select.Label>
-                {#each categories.filter((c) => c.type === "income") as category}
-                  <Select.Item value={category.id}>
-                    <div class="flex items-center gap-2">
-                      <div
-                        class="w-3 h-3 rounded-full"
-                        style="background-color: {category.color}"
-                      ></div>
-                      {category.name}
-                    </div>
-                  </Select.Item>
-                {/each}
-              </Select.Group>
-              <Select.Group>
-                <Select.Label>Expenses</Select.Label>
-                {#each categories.filter((c) => c.type === "expense") as category}
-                  <Select.Item value={category.id}>
-                    <div class="flex items-center gap-2">
-                      <div
-                        class="w-3 h-3 rounded-full"
-                        style="background-color: {category.color}"
-                      ></div>
-                      {category.name}
-                    </div>
-                  </Select.Item>
-                {/each}
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
-        </div>
-      </div>
 
-      {#if expandedPatterns.has(group.pattern)}
-        <div class="px-4 py-3 bg-background border-t space-y-2">
-          <p class="text-xs font-medium text-muted-foreground mb-2">
-            Example transactions:
-          </p>
-          {#each group.descriptions as description}
-            <div class="text-sm text-muted-foreground pl-4">
-              • {description}
-            </div>
-          {/each}
-        </div>
-      {/if}
-    </div>
+        {#if expandedPatterns.has(group.pattern)}
+          <div class="px-4 py-3 bg-background border-t space-y-2">
+            <p class="text-xs font-medium text-muted-foreground mb-2">
+              Example transactions:
+            </p>
+            {#each group.descriptions as description}
+              <div class="text-sm text-muted-foreground pl-4">
+                • {description}
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </div>
+    {/key}
   {/each}
 </div>

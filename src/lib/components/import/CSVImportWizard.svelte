@@ -2,6 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { Button } from "$lib/components/ui/button";
   import { Label } from "$lib/components/ui/label";
+  import * as Select from "$lib/components/ui/select";
   import {
     Card,
     CardContent,
@@ -29,6 +30,7 @@
   import type { Category, Transaction } from "$lib/types";
   import { generateId } from "$lib/utils/id";
   import PatternReview from "./PatternReview.svelte";
+  import CategoryManager from "$lib/components/budget/CategoryManager.svelte";
   import { formatCurrency } from "$lib/utils/format";
   import {
     TrendingUp,
@@ -38,7 +40,7 @@
     ChevronLeft,
   } from "lucide-svelte";
 
-  let { categories }: { categories: Category[] } = $props();
+  let { categories: initialCategories }: { categories: Category[] } = $props();
 
   const dispatch = createEventDispatcher<{
     cancel: void;
@@ -48,6 +50,7 @@
   type Step = "upload" | "preview" | "mapping" | "internal" | "review";
 
   let currentStep = $state<Step>("upload");
+  let categories = $state<Category[]>([...initialCategories]);
   let csvFiles = $state<File[]>([]);
   let allCsvData = $state<
     Array<{
@@ -63,6 +66,8 @@
   let previewTableContainer = $state<HTMLDivElement>();
   let canScrollLeft = $state(false);
   let canScrollRight = $state(false);
+  let selectedPreviewIndex = $state(0);
+  let showCategoryManager = $state(false);
   let parsedTransactions = $state<
     Array<{
       id: string;
@@ -106,15 +111,18 @@
         const preview = parseCSV(text);
         const mapping = detectColumnMapping(preview.headers);
 
-        if (!mapping) {
-          alert(
-            `Could not detect column mapping for ${file.name}. Please ensure it has the correct format.`
-          );
-          reset();
-          return;
-        }
-
-        allCsvData.push({ file, text, preview, mapping });
+        // Use detected mapping as initial suggestion, but allow user to change
+        allCsvData.push({
+          file,
+          text,
+          preview,
+          mapping: mapping || {
+            date: preview.headers[0] || "",
+            description: preview.headers[1] || "",
+            amountIn: preview.headers[2] || "",
+            amountOut: preview.headers[3] || "",
+          },
+        });
       } catch (error) {
         alert(`Error processing ${file.name}: ${error}`);
         reset();
@@ -307,8 +315,45 @@
     pattern: string,
     category: Category | null
   ) {
+    console.log("Pattern category change:", {
+      pattern,
+      category,
+      currentMap: patternCategoryMap,
+    });
     patternCategoryMap.set(pattern, category);
-    patternCategoryMap = patternCategoryMap; // Trigger reactivity
+    // Force reactivity by creating a new Map
+    patternCategoryMap = new Map(patternCategoryMap);
+    console.log("Updated map:", patternCategoryMap);
+  }
+
+  function handleAddCategory(category: Category) {
+    console.log("Adding category:", category);
+    categories = [...categories, category];
+    console.log("Categories after add:", categories);
+  }
+
+  function handleUpdateCategory(
+    categoryId: string,
+    updates: Partial<Category>
+  ) {
+    console.log("Updating category:", { categoryId, updates });
+    categories = categories.map((c) =>
+      c.id === categoryId ? { ...c, ...updates } : c
+    );
+    console.log("Categories after update:", categories);
+  }
+
+  function handleDeleteCategory(categoryId: string) {
+    console.log("Deleting category:", categoryId);
+    categories = categories.filter((c) => c.id !== categoryId);
+    // Clear any pattern mappings that used this category
+    patternCategoryMap.forEach((cat, pattern) => {
+      if (cat?.id === categoryId) {
+        patternCategoryMap.set(pattern, null);
+      }
+    });
+    patternCategoryMap = new Map(patternCategoryMap);
+    console.log("Categories after delete:", categories);
   }
 
   function handleImport() {
@@ -379,6 +424,27 @@
       checkScrollPosition();
     }
   });
+
+  // Sync column mapping changes to all CSV files
+  $effect(() => {
+    if (
+      columnMapping &&
+      columnMapping.date &&
+      columnMapping.description &&
+      columnMapping.amountIn &&
+      columnMapping.amountOut
+    ) {
+      const mapping = columnMapping;
+      allCsvData.forEach((csv) => {
+        csv.mapping = {
+          date: mapping.date,
+          description: mapping.description,
+          amountIn: mapping.amountIn,
+          amountOut: mapping.amountOut,
+        };
+      });
+    }
+  });
 </script>
 
 <div class="min-h-screen bg-background">
@@ -400,36 +466,22 @@
           <CardHeader>
             <CardTitle>Upload CSV File(s)</CardTitle>
             <CardDescription>
-              Select one or more Handelsbanken CSV export files. If you have
-              multiple accounts, upload all files at once and we'll combine
-              them.
+              Select one or more bank statement CSV files. If you have multiple
+              accounts, upload all files at once and we'll combine them.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div class="space-y-4">
-              <div>
-                <Label for="csv-file">CSV File</Label>
-                <input
-                  bind:this={fileInput}
-                  id="csv-file"
-                  type="file"
-                  accept=".csv"
-                  multiple
-                  onchange={handleFileSelect}
-                  class="mt-2 block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
-                />
-              </div>
-
-              <div class="text-sm text-muted-foreground">
-                <p class="font-medium mb-2">Expected format:</p>
-                <ul class="list-disc list-inside space-y-1">
-                  <li>Semicolon (;) separated values</li>
-                  <li>Column: Utført dato (Date)</li>
-                  <li>Column: Beskrivelse (Description)</li>
-                  <li>Column: Beløp inn (Amount In)</li>
-                  <li>Column: Beløp ut (Amount Out)</li>
-                </ul>
-              </div>
+            <div>
+              <Label for="csv-file">CSV File</Label>
+              <input
+                bind:this={fileInput}
+                id="csv-file"
+                type="file"
+                accept=".csv"
+                multiple
+                onchange={handleFileSelect}
+                class="mt-2 block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+              />
             </div>
           </CardContent>
         </Card>
@@ -442,31 +494,176 @@
           <CardHeader>
             <CardTitle>Preview & Confirm</CardTitle>
             <CardDescription>
-              Review the files and data structure. Showing preview from the
-              first file.
+              Review the files and data structure below.
             </CardDescription>
           </CardHeader>
           <CardContent class="space-y-3">
-            <div class="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <p class="text-muted-foreground">Files</p>
-                <p class="font-medium">
-                  {csvFiles.length} file{csvFiles.length !== 1 ? "s" : ""}
-                </p>
+            {#if allCsvData.length > 1}
+              <div
+                class="flex items-center justify-between gap-4 border-b pb-3"
+              >
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onclick={() => {
+                    selectedPreviewIndex = Math.max(
+                      0,
+                      selectedPreviewIndex - 1
+                    );
+                    if (previewTableContainer) {
+                      checkScrollPosition();
+                    }
+                  }}
+                  disabled={selectedPreviewIndex === 0}
+                >
+                  <ChevronLeft class="h-4 w-4" />
+                </Button>
+
+                <div class="text-center flex-1">
+                  <p class="text-sm font-medium">
+                    {allCsvData[selectedPreviewIndex].file.name}
+                  </p>
+                  <p class="text-xs text-muted-foreground">
+                    File {selectedPreviewIndex + 1} of {allCsvData.length}
+                  </p>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onclick={() => {
+                    selectedPreviewIndex = Math.min(
+                      allCsvData.length - 1,
+                      selectedPreviewIndex + 1
+                    );
+                    if (previewTableContainer) {
+                      checkScrollPosition();
+                    }
+                  }}
+                  disabled={selectedPreviewIndex === allCsvData.length - 1}
+                >
+                  <ChevronRight class="h-4 w-4" />
+                </Button>
               </div>
+            {/if}
+
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              {#if allCsvData.length === 1}
+                <div>
+                  <p class="text-muted-foreground">File</p>
+                  <p class="font-medium">
+                    {allCsvData[selectedPreviewIndex].file.name}
+                  </p>
+                </div>
+              {/if}
               <div>
-                <p class="text-muted-foreground">Total rows</p>
-                <p class="font-medium">{allCsvData[0].preview.totalRows}</p>
+                <p class="text-muted-foreground">
+                  Rows in {allCsvData.length > 1 ? "this" : ""} file
+                </p>
+                <p class="font-medium">
+                  {allCsvData[selectedPreviewIndex].preview.totalRows}
+                </p>
               </div>
             </div>
 
-            <div class="text-xs space-y-1">
-              <p class="text-muted-foreground font-medium">Detected columns:</p>
-              <div class="grid grid-cols-2 gap-1 text-muted-foreground">
-                <span>Date: {columnMapping.date}</span>
-                <span>Description: {columnMapping.description}</span>
-                <span>Amount In: {columnMapping.amountIn}</span>
-                <span>Amount Out: {columnMapping.amountOut}</span>
+            <div class="space-y-3 border rounded-lg p-4 bg-muted/50">
+              <p class="text-sm font-medium">Column Mapping</p>
+              <p class="text-xs text-muted-foreground">
+                Confirm which columns contain the required data:
+              </p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="space-y-1.5">
+                  <Label for="date-column" class="text-xs">Date Column *</Label>
+                  <Select.Root type="single" bind:value={columnMapping.date}>
+                    <Select.Trigger
+                      id="date-column"
+                      class="text-xs bg-background"
+                    >
+                      <span>{columnMapping.date || "Select column"}</span>
+                    </Select.Trigger>
+                    <Select.Content>
+                      {#each allCsvData[0].preview.headers as header}
+                        <Select.Item value={header} label={header}
+                          >{header}</Select.Item
+                        >
+                      {/each}
+                    </Select.Content>
+                  </Select.Root>
+                </div>
+
+                <div class="space-y-1.5">
+                  <Label for="description-column" class="text-xs"
+                    >Description Column *</Label
+                  >
+                  <Select.Root
+                    type="single"
+                    bind:value={columnMapping.description}
+                  >
+                    <Select.Trigger
+                      id="description-column"
+                      class="text-xs bg-background"
+                    >
+                      <span>{columnMapping.description || "Select column"}</span
+                      >
+                    </Select.Trigger>
+                    <Select.Content>
+                      {#each allCsvData[0].preview.headers as header}
+                        <Select.Item value={header} label={header}
+                          >{header}</Select.Item
+                        >
+                      {/each}
+                    </Select.Content>
+                  </Select.Root>
+                </div>
+
+                <div class="space-y-1.5">
+                  <Label for="amount-in-column" class="text-xs"
+                    >Amount In Column *</Label
+                  >
+                  <Select.Root
+                    type="single"
+                    bind:value={columnMapping.amountIn}
+                  >
+                    <Select.Trigger
+                      id="amount-in-column"
+                      class="text-xs bg-background"
+                    >
+                      <span>{columnMapping.amountIn || "Select column"}</span>
+                    </Select.Trigger>
+                    <Select.Content>
+                      {#each allCsvData[0].preview.headers as header}
+                        <Select.Item value={header} label={header}
+                          >{header}</Select.Item
+                        >
+                      {/each}
+                    </Select.Content>
+                  </Select.Root>
+                </div>
+
+                <div class="space-y-1.5">
+                  <Label for="amount-out-column" class="text-xs"
+                    >Amount Out Column *</Label
+                  >
+                  <Select.Root
+                    type="single"
+                    bind:value={columnMapping.amountOut}
+                  >
+                    <Select.Trigger
+                      id="amount-out-column"
+                      class="text-xs bg-background"
+                    >
+                      <span>{columnMapping.amountOut || "Select column"}</span>
+                    </Select.Trigger>
+                    <Select.Content>
+                      {#each allCsvData[0].preview.headers as header}
+                        <Select.Item value={header} label={header}
+                          >{header}</Select.Item
+                        >
+                      {/each}
+                    </Select.Content>
+                  </Select.Root>
+                </div>
               </div>
             </div>
 
@@ -493,7 +690,7 @@
                 <table class="w-full text-sm">
                   <thead class="bg-muted">
                     <tr>
-                      {#each allCsvData[0].preview.headers as header}
+                      {#each allCsvData[selectedPreviewIndex].preview.headers as header}
                         <th
                           class="px-4 py-2 text-left font-medium text-xs whitespace-nowrap"
                           >{header}</th
@@ -502,9 +699,9 @@
                     </tr>
                   </thead>
                   <tbody>
-                    {#each getCSVPreview(allCsvData[0].preview, 5).rows as row}
+                    {#each getCSVPreview(allCsvData[selectedPreviewIndex].preview, 5).rows as row}
                       <tr class="border-t">
-                        {#each allCsvData[0].preview.headers as header}
+                        {#each allCsvData[selectedPreviewIndex].preview.headers as header}
                           <td class="px-4 py-2 text-xs whitespace-nowrap"
                             >{row[header] || ""}</td
                           >
@@ -595,14 +792,24 @@
       <div class="space-y-4">
         <Card>
           <CardHeader>
-            <CardTitle>Review & Categorize Patterns</CardTitle>
-            <CardDescription>
-              {totalTransactions} transactions found in {patternGroups.length} unique
-              patterns
-              {#if dateRange}
-                from {dateRange.start} to {dateRange.end}
-              {/if}
-            </CardDescription>
+            <div class="flex items-start justify-between">
+              <div>
+                <CardTitle>Review & Categorize Patterns</CardTitle>
+                <CardDescription>
+                  {totalTransactions} transactions found in {patternGroups.length}
+                  unique patterns
+                  {#if dateRange}
+                    from {dateRange.start} to {dateRange.end}
+                  {/if}
+                </CardDescription>
+              </div>
+              <Button
+                variant="outline"
+                onclick={() => (showCategoryManager = true)}
+              >
+                Manage Categories
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div class="space-y-4">
@@ -663,3 +870,13 @@
     {/if}
   </div>
 </div>
+
+<!-- Category Manager Dialog -->
+<CategoryManager
+  {categories}
+  transactions={[]}
+  bind:open={showCategoryManager}
+  onAdd={handleAddCategory}
+  onUpdate={handleUpdateCategory}
+  onDelete={handleDeleteCategory}
+/>
