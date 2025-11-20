@@ -24,7 +24,6 @@
     shouldSkipTransaction,
     cleanNote,
     detectPatterns,
-    getSuggestedCategoryName,
     type PatternGroup,
   } from "$lib/utils/pattern-matcher";
   import type { Category, Transaction } from "$lib/types";
@@ -252,17 +251,10 @@
     // Detect patterns from transactions
     patternGroups = detectPatterns(tempTransactions);
 
-    // Initialize pattern-category map with suggestions
+    // Initialize pattern-category map (empty - user must assign categories)
     patternCategoryMap = new Map();
     for (const group of patternGroups) {
-      const suggestedName = getSuggestedCategoryName(
-        group.pattern,
-        group.isIncome
-      );
-      const suggestedCategory = suggestedName
-        ? categories.find((c) => c.name === suggestedName) || null
-        : null;
-      patternCategoryMap.set(group.pattern, suggestedCategory);
+      patternCategoryMap.set(group.pattern, null);
     }
 
     // Store full transaction data
