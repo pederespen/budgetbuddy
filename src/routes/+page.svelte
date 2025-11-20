@@ -113,12 +113,23 @@
     showCSVImport = false;
     showCreateForm = false;
   }
+
+  function handleCSVCancel() {
+    showCSVImport = false;
+  }
 </script>
 
 <div class="h-full flex flex-col bg-background">
   <div class="flex-1 overflow-y-auto">
     <div class="max-w-6xl mx-auto px-4 py-4">
-      {#if !activeBudget}
+      {#if showCSVImport}
+        <!-- CSV Import Wizard (Full Page) -->
+        <CSVImportWizard
+          categories={getDefaultCategories()}
+          on:import={handleCSVImport}
+          on:cancel={handleCSVCancel}
+        />
+      {:else if !activeBudget}
         {#if showCreateForm}
           <!-- Create Budget Form -->
           <div class="flex min-h-[80vh] items-center justify-center">
@@ -182,11 +193,3 @@
     </div>
   </div>
 </div>
-
-<!-- CSV Import Wizard -->
-<CSVImportWizard
-  bind:open={showCSVImport}
-  categories={getDefaultCategories()}
-  on:import={handleCSVImport}
-  on:close={() => (showCSVImport = false)}
-/>

@@ -1,11 +1,5 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-  } from "$lib/components/ui/dialog";
   import { Button } from "$lib/components/ui/button";
   import { Label } from "$lib/components/ui/label";
   import {
@@ -36,48 +30,62 @@
   import { generateId } from "$lib/utils/id";
   import PatternReview from "./PatternReview.svelte";
   import { formatCurrency } from "$lib/utils/format";
-  import { TrendingUp, TrendingDown } from "lucide-svelte";
+  import {
+    TrendingUp,
+    TrendingDown,
+    ArrowLeft,
+    ChevronRight,
+    ChevronLeft,
+  } from "lucide-svelte";
 
-  export let open = false;
-  export let categories: Category[];
+  let { categories }: { categories: Category[] } = $props();
 
   const dispatch = createEventDispatcher<{
-    close: void;
+    cancel: void;
     import: { transactions: Transaction[] };
   }>();
 
   type Step = "upload" | "preview" | "mapping" | "internal" | "review";
 
-  let currentStep: Step = "upload";
-  let csvFiles: File[] = [];
-  let allCsvData: Array<{
-    file: File;
-    text: string;
-    preview: CSVPreview;
-    mapping: ColumnMapping;
-  }> = [];
-  let columnMapping: ColumnMapping | null = null;
-  let patternGroups: PatternGroup[] = [];
-  let patternCategoryMap: Map<string, Category | null> = new Map();
-  let parsedTransactions: Array<{
-    id: string;
-    date: string;
-    description: string;
-    amountIn: number | null;
-    amountOut: number | null;
-    amount: number;
-    isIncome: boolean;
-    pattern: string;
-    note: string;
-    sourceFile: string;
-  }> = [];
-  let potentialInternalTransfers: Array<{
-    id: string;
-    transactions: typeof parsedTransactions;
-    shouldRemove: boolean;
-  }> = [];
-  let dateRange: { start: string; end: string } | null = null;
-  let fileInput: HTMLInputElement;
+  let currentStep = $state<Step>("upload");
+  let csvFiles = $state<File[]>([]);
+  let allCsvData = $state<
+    Array<{
+      file: File;
+      text: string;
+      preview: CSVPreview;
+      mapping: ColumnMapping;
+    }>
+  >([]);
+  let columnMapping = $state<ColumnMapping | null>(null);
+  let patternGroups = $state<PatternGroup[]>([]);
+  let patternCategoryMap = $state<Map<string, Category | null>>(new Map());
+  let previewTableContainer = $state<HTMLDivElement>();
+  let canScrollLeft = $state(false);
+  let canScrollRight = $state(false);
+  let parsedTransactions = $state<
+    Array<{
+      id: string;
+      date: string;
+      description: string;
+      amountIn: number | null;
+      amountOut: number | null;
+      amount: number;
+      isIncome: boolean;
+      pattern: string;
+      note: string;
+      sourceFile: string;
+    }>
+  >([]);
+  let potentialInternalTransfers = $state<
+    Array<{
+      id: string;
+      transactions: typeof parsedTransactions;
+      shouldRemove: boolean;
+    }>
+  >([]);
+  let dateRange = $state<{ start: string; end: string } | null>(null);
+  let fileInput = $state<HTMLInputElement>();
 
   function handleFileSelect(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -133,19 +141,12 @@
 
     // Parse all transactions from all CSV files
     const tempTransactions = [];
-    const skippedCount = { count: 0 };
 
     for (const csvData of allCsvData) {
       for (const row of csvData.preview.rows) {
         const description = row[csvData.mapping.description]?.trim() || "";
 
         if (!description) continue;
-
-        // Skip internal transfers based on patterns
-        if (shouldSkipTransaction(description)) {
-          skippedCount.count++;
-          continue;
-        }
 
         const amountIn = parseAmount(row[csvData.mapping.amountIn] || "");
         const amountOut = parseAmount(row[csvData.mapping.amountOut] || "");
@@ -169,7 +170,7 @@
       }
     }
 
-    // Detect potential internal transfers (same amount, same date, opposite directions)
+    // Detect potential internal transfers (same amount, same date)
     detectInternalTransfers(tempTransactions);
 
     // If potential internal transfers found, show them first
@@ -218,6 +219,7 @@
         const hasIncome = group.some((t) => t.isIncome);
         const hasExpense = group.some((t) => !t.isIncome);
 
+        // Only flag as internal transfer if it has both income and expense
         if (hasIncome && hasExpense) {
           potentialInternalTransfers.push({
             id: key,
@@ -350,31 +352,48 @@
     if (fileInput) fileInput.value = "";
   }
 
-  function handleClose() {
-    reset();
-    dispatch("close");
+  function checkScrollPosition() {
+    if (!previewTableContainer) return;
+    const { scrollLeft, scrollWidth, clientWidth } = previewTableContainer;
+    canScrollLeft = scrollLeft > 0;
+    canScrollRight = scrollLeft < scrollWidth - clientWidth - 1;
   }
 
-  $: categorizedCount = patternGroups.filter(
-    (g) =>
-      patternCategoryMap.get(g.pattern) !== null &&
-      patternCategoryMap.get(g.pattern) !== undefined
-  ).length;
-  $: uncategorizedCount = patternGroups.length - categorizedCount;
-  $: totalTransactions = parsedTransactions.length;
+  function handleClose() {
+    reset();
+    dispatch("cancel");
+  }
+
+  let categorizedCount = $derived(
+    patternGroups.filter(
+      (g) =>
+        patternCategoryMap.get(g.pattern) !== null &&
+        patternCategoryMap.get(g.pattern) !== undefined
+    ).length
+  );
+  let uncategorizedCount = $derived(patternGroups.length - categorizedCount);
+  let totalTransactions = $derived(parsedTransactions.length);
+
+  $effect(() => {
+    if (previewTableContainer) {
+      checkScrollPosition();
+    }
+  });
 </script>
 
-<Dialog
-  bind:open
-  onOpenChange={(o) => {
-    if (!o) handleClose();
-  }}
->
-  <DialogContent class="max-w-4xl max-h-[90vh] overflow-y-auto">
-    <DialogHeader>
-      <DialogTitle>Import Transactions from CSV</DialogTitle>
-    </DialogHeader>
+<div class="min-h-screen bg-background">
+  <div class="border-b">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onclick={handleClose}>
+          <ArrowLeft class="h-5 w-5" />
+        </Button>
+        <h1 class="text-2xl font-bold">Import Transactions from CSV</h1>
+      </div>
+    </div>
+  </div>
 
+  <div class="container mx-auto px-4 py-8">
     {#if currentStep === "upload"}
       <div class="space-y-4">
         <Card>
@@ -396,7 +415,7 @@
                   type="file"
                   accept=".csv"
                   multiple
-                  on:change={handleFileSelect}
+                  onchange={handleFileSelect}
                   class="mt-2 block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
                 />
               </div>
@@ -427,44 +446,74 @@
               first file.
             </CardDescription>
           </CardHeader>
-          <CardContent class="space-y-4">
-            <div class="text-sm">
-              <p>
-                <strong>Files:</strong>
-                {csvFiles.length} ({csvFiles.map((f) => f.name).join(", ")})
-              </p>
-              <p>
-                <strong>Total rows (first file):</strong>
-                {allCsvData[0].preview.totalRows}
-              </p>
-              <p><strong>Detected columns:</strong></p>
-              <ul class="list-disc list-inside ml-4 text-muted-foreground">
-                <li>Date: {columnMapping.date}</li>
-                <li>Description: {columnMapping.description}</li>
-                <li>Amount In: {columnMapping.amountIn}</li>
-                <li>Amount Out: {columnMapping.amountOut}</li>
-              </ul>
+          <CardContent class="space-y-3">
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p class="text-muted-foreground">Files</p>
+                <p class="font-medium">
+                  {csvFiles.length} file{csvFiles.length !== 1 ? "s" : ""}
+                </p>
+              </div>
+              <div>
+                <p class="text-muted-foreground">Total rows</p>
+                <p class="font-medium">{allCsvData[0].preview.totalRows}</p>
+              </div>
             </div>
 
-            <div class="overflow-x-auto border rounded-lg">
-              <table class="w-full text-sm">
-                <thead class="bg-muted">
-                  <tr>
-                    {#each allCsvData[0].preview.headers as header}
-                      <th class="px-4 py-2 text-left font-medium">{header}</th>
-                    {/each}
-                  </tr>
-                </thead>
-                <tbody>
-                  {#each getCSVPreview(allCsvData[0].preview, 5).rows as row}
-                    <tr class="border-t">
+            <div class="text-xs space-y-1">
+              <p class="text-muted-foreground font-medium">Detected columns:</p>
+              <div class="grid grid-cols-2 gap-1 text-muted-foreground">
+                <span>Date: {columnMapping.date}</span>
+                <span>Description: {columnMapping.description}</span>
+                <span>Amount In: {columnMapping.amountIn}</span>
+                <span>Amount Out: {columnMapping.amountOut}</span>
+              </div>
+            </div>
+
+            <div class="relative">
+              {#if canScrollLeft}
+                <div
+                  class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 flex items-center justify-start pointer-events-none"
+                >
+                  <ChevronLeft class="h-5 w-5 text-muted-foreground" />
+                </div>
+              {/if}
+              {#if canScrollRight}
+                <div
+                  class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 flex items-center justify-end pointer-events-none"
+                >
+                  <ChevronRight class="h-5 w-5 text-muted-foreground" />
+                </div>
+              {/if}
+              <div
+                bind:this={previewTableContainer}
+                onscroll={checkScrollPosition}
+                class="overflow-x-auto border rounded-lg"
+              >
+                <table class="w-full text-sm">
+                  <thead class="bg-muted">
+                    <tr>
                       {#each allCsvData[0].preview.headers as header}
-                        <td class="px-4 py-2">{row[header] || ""}</td>
+                        <th
+                          class="px-4 py-2 text-left font-medium text-xs whitespace-nowrap"
+                          >{header}</th
+                        >
                       {/each}
                     </tr>
-                  {/each}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {#each getCSVPreview(allCsvData[0].preview, 5).rows as row}
+                      <tr class="border-t">
+                        {#each allCsvData[0].preview.headers as header}
+                          <td class="px-4 py-2 text-xs whitespace-nowrap"
+                            >{row[header] || ""}</td
+                          >
+                        {/each}
+                      </tr>
+                    {/each}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <div class="flex justify-end gap-2">
@@ -612,5 +661,5 @@
         </Card>
       </div>
     {/if}
-  </DialogContent>
-</Dialog>
+  </div>
+</div>
