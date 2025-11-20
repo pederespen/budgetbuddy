@@ -122,75 +122,77 @@
 
 <div class="h-full flex flex-col bg-background">
   <div class="flex-1 overflow-y-auto">
-    <div class="max-w-6xl mx-auto px-4 py-4">
-      {#if showCSVImport}
-        <!-- CSV Import Wizard (Full Page) -->
-        <CSVImportWizard
-          categories={getDefaultCategories()}
-          on:import={handleCSVImport}
-          on:cancel={handleCSVCancel}
-        />
-      {:else if !activeBudget}
-        {#if showCreateForm}
-          <!-- Create Budget Form -->
-          <div class="flex min-h-[80vh] items-center justify-center">
-            <Card class="w-full max-w-md">
-              <CardHeader>
-                <CardTitle>Create New Budget</CardTitle>
-                <CardDescription>
-                  Set up your budget with a name, currency, period, and optional
-                  spending limit.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <BudgetSetupForm
-                  onsubmit={handleCreateBudget}
-                  oncancel={() => (showCreateForm = false)}
-                  onImportCSV={() => (showCSVImport = true)}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        {:else}
-          <!-- Welcome Screen -->
-          <div class="flex min-h-[80vh] items-center justify-center">
-            <Card class="w-full max-w-md">
-              <CardHeader class="text-center">
-                <CardTitle class="text-3xl">Welcome to BudgetBuddy</CardTitle>
-                <CardDescription>
-                  Your privacy-focused budget tracker. All data stays on your
-                  device.
-                </CardDescription>
-              </CardHeader>
-              <CardContent class="space-y-4">
-                <Button
-                  onclick={() => (showCreateForm = true)}
-                  class="w-full"
-                  size="lg"
-                >
-                  Create New Budget
-                </Button>
-                <Button
-                  variant="outline"
-                  class="w-full"
-                  onclick={handleImportFile}>Import from File (JSON)</Button
-                >
-                <div class="pt-2">
-                  <div class="w-full border-t mb-4"></div>
+    {#if showCSVImport}
+      <!-- CSV Import Wizard (Full Page) -->
+      <CSVImportWizard
+        categories={getDefaultCategories()}
+        on:import={handleCSVImport}
+        on:cancel={handleCSVCancel}
+      />
+    {:else}
+      <div class="max-w-6xl mx-auto px-4 py-4">
+        {#if !activeBudget}
+          {#if showCreateForm}
+            <!-- Create Budget Form -->
+            <div class="flex min-h-[80vh] items-center justify-center">
+              <Card class="w-full max-w-md">
+                <CardHeader>
+                  <CardTitle>Create New Budget</CardTitle>
+                  <CardDescription>
+                    Set up your budget with a name, currency, period, and
+                    optional spending limit.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <BudgetSetupForm
+                    onsubmit={handleCreateBudget}
+                    oncancel={() => (showCreateForm = false)}
+                    onImportCSV={() => (showCSVImport = true)}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          {:else}
+            <!-- Welcome Screen -->
+            <div class="flex min-h-[80vh] items-center justify-center">
+              <Card class="w-full max-w-md">
+                <CardHeader class="text-center">
+                  <CardTitle class="text-3xl">Welcome to BudgetBuddy</CardTitle>
+                  <CardDescription>
+                    Your privacy-focused budget tracker. All data stays on your
+                    device.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent class="space-y-4">
+                  <Button
+                    onclick={() => (showCreateForm = true)}
+                    class="w-full"
+                    size="lg"
+                  >
+                    Create New Budget
+                  </Button>
                   <Button
                     variant="outline"
                     class="w-full"
-                    onclick={handleLoadDemo}>Load Demo Data</Button
+                    onclick={handleImportFile}>Import from File (JSON)</Button
                   >
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                  <div class="pt-2">
+                    <div class="w-full border-t mb-4"></div>
+                    <Button
+                      variant="outline"
+                      class="w-full"
+                      onclick={handleLoadDemo}>Load Demo Data</Button
+                    >
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          {/if}
+        {:else}
+          <!-- Main App -->
+          <Dashboard budget={activeBudget} />
         {/if}
-      {:else}
-        <!-- Main App -->
-        <Dashboard budget={activeBudget} />
-      {/if}
-    </div>
+      </div>
+    {/if}
   </div>
 </div>

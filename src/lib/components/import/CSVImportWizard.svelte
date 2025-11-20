@@ -451,17 +451,17 @@
   });
 </script>
 
-<div class="h-screen bg-background flex flex-col overflow-hidden">
+<div class="bg-background flex flex-col" style="height: calc(100vh - 4rem);">
   <div class="border-b flex-shrink-0">
     <div class="container mx-auto px-4 py-2">
       <h1 class="text-xl font-bold">Import Transactions from CSV</h1>
     </div>
   </div>
 
-  <div class="container mx-auto px-4 py-4 flex-1 overflow-y-auto">
+  <div class="container mx-auto px-4 py-4 flex-1 flex flex-col overflow-hidden">
     {#if currentStep === "upload"}
-      <div class="space-y-4">
-        <Card>
+      <div class="flex-1 flex items-center justify-center">
+        <Card class="w-full max-w-2xl">
           <CardHeader>
             <CardTitle>Upload CSV File(s)</CardTitle>
             <CardDescription>
@@ -506,15 +506,15 @@
     {/if}
 
     {#if currentStep === "preview" && allCsvData.length > 0 && columnMapping}
-      <div class="space-y-3">
-        <Card>
-          <CardHeader class="pb-3">
+      <div class="flex-1 flex flex-col min-h-0">
+        <Card class="flex-1 flex flex-col overflow-hidden">
+          <CardHeader class="pb-3 flex-shrink-0">
             <CardTitle class="text-lg">Preview & Confirm</CardTitle>
             <CardDescription class="text-sm">
               Review the files and data structure below.
             </CardDescription>
           </CardHeader>
-          <CardContent class="space-y-2">
+          <CardContent class="space-y-2 flex-1 flex flex-col overflow-hidden">
             {#if allCsvData.length > 1}
               <div
                 class="flex items-center justify-between gap-4 border-b pb-2"
@@ -684,7 +684,7 @@
               </div>
             </div>
 
-            <div class="relative">
+            <div class="relative flex-1 min-h-0">
               {#if canScrollLeft}
                 <div
                   class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 flex items-center justify-start pointer-events-none"
@@ -702,7 +702,7 @@
               <div
                 bind:this={previewTableContainer}
                 onscroll={checkScrollPosition}
-                class="overflow-x-auto border rounded-lg"
+                class="overflow-x-auto overflow-y-auto border rounded-lg h-full"
               >
                 <table class="w-full text-sm">
                   <thead class="bg-muted">
@@ -716,7 +716,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    {#each getCSVPreview(allCsvData[selectedPreviewIndex].preview, 5).rows as row}
+                    {#each getCSVPreview(allCsvData[selectedPreviewIndex].preview, 8).rows as row}
                       <tr class="border-t">
                         {#each allCsvData[selectedPreviewIndex].preview.headers as header}
                           <td class="px-3 py-1.5 text-xs whitespace-nowrap"
@@ -729,7 +729,8 @@
                 </table>
               </div>
             </div>
-
+          </CardContent>
+          <div class="border-t px-4 pt-4 flex-shrink-0">
             <div class="flex justify-between gap-2">
               <Button variant="ghost" onclick={goBack} class="gap-2">
                 <svg
@@ -749,14 +750,14 @@
               </Button>
               <Button onclick={confirmPreview}>Continue</Button>
             </div>
-          </CardContent>
+          </div>
         </Card>
       </div>
     {/if}
 
     {#if currentStep === "internal"}
-      <div class="flex flex-col max-h-[600px]">
-        <Card class="flex flex-col h-full overflow-hidden">
+      <div class="flex-1 flex flex-col min-h-0">
+        <Card class="flex flex-col flex-1 overflow-hidden">
           <CardHeader class="pb-3 flex-shrink-0">
             <CardTitle>Review Internal Transfers</CardTitle>
             <CardDescription>
@@ -765,8 +766,8 @@
               amounts on the same date). Select which ones to exclude from your budget.
             </CardDescription>
           </CardHeader>
-          <CardContent class="flex-1 overflow-y-auto">
-            <div class="space-y-3">
+          <CardContent class="flex-1 overflow-y-auto overflow-hidden">
+            <div class="space-y-3 h-full overflow-y-auto">
               {#each potentialInternalTransfers as group}
                 <div class="border rounded-lg p-4">
                   <div class="flex items-start gap-3">
@@ -807,7 +808,7 @@
               {/each}
             </div>
           </CardContent>
-          <div class="border-t p-4 flex-shrink-0">
+          <div class="border-t px-4 pt-4 flex-shrink-0">
             <div class="flex justify-between gap-2">
               <Button variant="ghost" onclick={goBack} class="gap-2">
                 <svg
@@ -837,8 +838,8 @@
     {/if}
 
     {#if currentStep === "review"}
-      <div class="flex flex-col max-h-[600px]">
-        <Card class="flex flex-col h-full overflow-hidden">
+      <div class="flex-1 flex flex-col min-h-0">
+        <Card class="flex flex-col flex-1 overflow-hidden">
           <CardHeader class="pb-3 flex-shrink-0">
             <div class="flex items-start justify-between">
               <div>
@@ -859,41 +860,39 @@
               </Button>
             </div>
           </CardHeader>
-          <CardContent class="flex-1 overflow-y-auto">
-            <div class="space-y-3">
-              <div class="flex gap-3 text-sm">
-                <div
-                  class="flex-1 p-3 bg-green-50 dark:bg-green-950 rounded-lg"
+          <CardContent class="flex-1 overflow-hidden flex flex-col space-y-3">
+            <div class="flex gap-3 text-sm flex-shrink-0">
+              <div class="flex-1 p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+                <p class="font-medium text-green-900 dark:text-green-100">
+                  Categorized
+                </p>
+                <p
+                  class="text-2xl font-bold text-green-600 dark:text-green-400"
                 >
-                  <p class="font-medium text-green-900 dark:text-green-100">
-                    Categorized
-                  </p>
-                  <p
-                    class="text-2xl font-bold text-green-600 dark:text-green-400"
-                  >
-                    {categorizedCount}
-                  </p>
-                  <p class="text-xs text-green-700 dark:text-green-300">
-                    patterns assigned
-                  </p>
-                </div>
-                <div
-                  class="flex-1 p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg"
-                >
-                  <p class="font-medium text-yellow-900 dark:text-yellow-100">
-                    Uncategorized
-                  </p>
-                  <p
-                    class="text-2xl font-bold text-yellow-600 dark:text-yellow-400"
-                  >
-                    {uncategorizedCount}
-                  </p>
-                  <p class="text-xs text-yellow-700 dark:text-yellow-300">
-                    patterns remaining
-                  </p>
-                </div>
+                  {categorizedCount}
+                </p>
+                <p class="text-xs text-green-700 dark:text-green-300">
+                  patterns assigned
+                </p>
               </div>
+              <div
+                class="flex-1 p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg"
+              >
+                <p class="font-medium text-yellow-900 dark:text-yellow-100">
+                  Uncategorized
+                </p>
+                <p
+                  class="text-2xl font-bold text-yellow-600 dark:text-yellow-400"
+                >
+                  {uncategorizedCount}
+                </p>
+                <p class="text-xs text-yellow-700 dark:text-yellow-300">
+                  patterns remaining
+                </p>
+              </div>
+            </div>
 
+            <div class="flex-1 overflow-y-auto min-h-0">
               <PatternReview
                 {patternGroups}
                 {categories}
@@ -906,7 +905,7 @@
               />
             </div>
           </CardContent>
-          <div class="border-t p-4 flex-shrink-0">
+          <div class="border-t px-4 pt-4 flex-shrink-0">
             <div class="flex justify-between gap-2">
               <Button variant="ghost" onclick={goBack} class="gap-2">
                 <svg
