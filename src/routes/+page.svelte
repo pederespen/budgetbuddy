@@ -14,7 +14,7 @@
   import Dashboard from "$lib/components/budget/Dashboard.svelte";
   import BudgetSetupForm from "$lib/components/forms/BudgetSetupForm.svelte";
   import CSVImportWizard from "$lib/components/import/CSVImportWizard.svelte";
-  import type { Currency, Budget, Transaction } from "$lib/types";
+  import type { Currency, Budget, Transaction, Category } from "$lib/types";
   import { Upload, FileJson } from "lucide-svelte";
 
   let showCreateForm = $state(false);
@@ -79,19 +79,20 @@
   }
 
   function handleCSVImport(
-    event: CustomEvent<{ transactions: Transaction[] }>
+    event: CustomEvent<{ transactions: Transaction[]; categories: Category[] }>
   ) {
-    const { transactions } = event.detail;
+    const { transactions, categories } = event.detail;
 
     // If no active budget, create one first
     if (!activeBudget) {
       const now = getCurrentTimestamp();
+      // Use the categories from the import wizard (which have the correct IDs)
       const newBudget = {
         id: generateId(),
         name: "My Budget",
         currency: "NOK" as Currency,
         dateFormat: "DD/MM/YYYY" as const,
-        categories: getDefaultCategories(),
+        categories: categories,
         entries: [],
         budgetLimits: {},
         createdAt: now,

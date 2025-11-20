@@ -44,7 +44,7 @@
 
   const dispatch = createEventDispatcher<{
     cancel: void;
-    import: { transactions: Transaction[] };
+    import: { transactions: Transaction[]; categories: Category[] };
   }>();
 
   type Step = "upload" | "preview" | "mapping" | "internal" | "review";
@@ -357,30 +357,36 @@
   }
 
   function handleImport() {
-    // Find uncategorized category
-    const uncategorizedCategory = categories.find(
-      (c) =>
-        c.name === "Ukategoriseret" ||
-        c.name === "Ukategorisert" ||
-        c.name.toLowerCase().includes("uncategorized")
-    );
-
     // Convert to Transaction format
     const transactions: Transaction[] = parsedTransactions.map((t) => {
       const assignedCategory = patternCategoryMap.get(t.pattern);
 
+      // If no category assigned, find Uncategorized for the correct type
+      let categoryId = assignedCategory?.id;
+      if (!categoryId) {
+        const uncategorized = categories.find(
+          (c) =>
+            c.name === "Uncategorized" &&
+            c.type === (t.isIncome ? "income" : "expense")
+        );
+        categoryId =
+          uncategorized?.id ||
+          categories.find((c) => c.type === (t.isIncome ? "income" : "expense"))
+            ?.id ||
+          categories[0].id;
+      }
+
       return {
         id: t.id,
         date: t.date,
-        categoryId:
-          assignedCategory?.id || uncategorizedCategory?.id || categories[0].id,
+        categoryId,
         amount: t.amount,
         note: t.note,
         type: t.isIncome ? "income" : "expense",
       };
     });
 
-    dispatch("import", { transactions });
+    dispatch("import", { transactions, categories });
     reset();
   }
 
