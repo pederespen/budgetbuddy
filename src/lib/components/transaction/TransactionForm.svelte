@@ -92,7 +92,10 @@
 </script>
 
 {#if variant === "table"}
-  <!-- Table Row Variant: Type | Category | Date | Note | Amount | Actions -->
+  <!-- Table Row Variant: Checkbox | Type | Category | Date | Note | Amount | Actions -->
+  <td class="w-[50px] pl-4">
+    <!-- Empty space for checkbox alignment -->
+  </td>
   <td class="w-[100px]">
     <Select.Root type="single" bind:value={transactionType}>
       <Select.Trigger
@@ -132,7 +135,7 @@
           <span>Select</span>
         {/if}
       </Select.Trigger>
-      <Select.Content class="max-h-[200px]">
+      <Select.Content class="max-h-[300px]">
         {#each filteredCategories as category (category.id)}
           {@const Icon = (
             LucideIcons as unknown as Record<string, IconComponent>

@@ -13,14 +13,10 @@
     FileJson,
     FileText,
     FileSpreadsheet,
-    Upload,
   } from "lucide-svelte";
   import { exportAsJSON, exportAsCSV, exportAsXLSX } from "$lib/utils/export";
-  import CSVImportWizard from "../import/CSVImportWizard.svelte";
 
   let { budget }: { budget: Budget } = $props();
-
-  let showCSVImport = $state(false);
 
   let selectedCurrency = $state<Currency>(budget.currency);
   let selectedDateFormat = $state<DateFormat>(budget.dateFormat);
@@ -103,19 +99,6 @@
     isEditingName = false;
     editedName = budget.name;
   }
-
-  function handleCSVImport(
-    event: CustomEvent<{ transactions: Transaction[] }>
-  ) {
-    const { transactions } = event.detail;
-
-    // Add all transactions to the budget
-    transactions.forEach((transaction) => {
-      budgetStore.addTransaction(budget.id, transaction);
-    });
-
-    showCSVImport = false;
-  }
 </script>
 
 <div class="space-y-8">
@@ -166,34 +149,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Divider -->
-  <div class="border-t"></div>
-
-  <!-- Import Section -->
-  <div class="space-y-3">
-    <h3
-      class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
-    >
-      Import Data
-    </h3>
-    <div class="space-y-2">
-      <p class="text-sm text-muted-foreground">
-        Import transactions from your bank's CSV export
-      </p>
-      <Button
-        variant="outline"
-        onclick={() => (showCSVImport = true)}
-        class="max-w-xs justify-start bg-card"
-      >
-        <Upload class="mr-2 h-4 w-4" />
-        Import from CSV
-      </Button>
-    </div>
-  </div>
-
-  <!-- Divider -->
-  <div class="border-t"></div>
 
   <!-- Display Settings Section -->
   <div class="space-y-4">
@@ -305,11 +260,3 @@
     </div>
   </div>
 </div>
-
-<!-- CSV Import Wizard -->
-<CSVImportWizard
-  bind:open={showCSVImport}
-  categories={budget.categories}
-  on:import={handleCSVImport}
-  on:close={() => (showCSVImport = false)}
-/>
