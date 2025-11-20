@@ -5,13 +5,15 @@
   import * as Select from "$lib/components/ui/select";
   import type { Currency } from "$lib/types";
   import { currencyLabels } from "$lib/utils/format";
+  import { Upload } from "lucide-svelte";
 
   interface Props {
     onsubmit: (data: { name: string; currency: Currency }) => void;
     oncancel?: () => void;
+    onImportCSV?: () => void;
   }
 
-  let { onsubmit, oncancel }: Props = $props();
+  let { onsubmit, oncancel, onImportCSV }: Props = $props();
 
   let name = $state("My Budget");
   let currency = $state<Currency>("NOK");
@@ -61,6 +63,24 @@
       </Select.Content>
     </Select.Root>
   </div>
+
+  {#if onImportCSV}
+    <div class="pt-2">
+      <div class="border-t mb-4"></div>
+      <p class="text-sm text-muted-foreground mb-3">
+        Or start by importing transactions from your bank
+      </p>
+      <Button
+        type="button"
+        variant="outline"
+        onclick={onImportCSV}
+        class="w-full"
+      >
+        <Upload class="mr-2 h-4 w-4" />
+        Import from CSV
+      </Button>
+    </div>
+  {/if}
 
   <div class="flex gap-3 items-center">
     {#if oncancel}

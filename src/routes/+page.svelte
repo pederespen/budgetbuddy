@@ -13,9 +13,12 @@
   } from "$lib/components/ui/card";
   import Dashboard from "$lib/components/budget/Dashboard.svelte";
   import BudgetSetupForm from "$lib/components/forms/BudgetSetupForm.svelte";
-  import type { Currency, Budget } from "$lib/types";
+  import CSVImportWizard from "$lib/components/import/CSVImportWizard.svelte";
+  import type { Currency, Budget, Transaction } from "$lib/types";
+  import { Upload, FileJson } from "lucide-svelte";
 
   let showCreateForm = $state(false);
+  let showCSVImport = $state(false);
 
   let activeBudget: Budget | undefined = $derived(
     $budgetStore.budgets.find(
@@ -74,6 +77,42 @@
     };
     input.click();
   }
+
+  function handleCSVImport(
+    event: CustomEvent<{ transactions: Transaction[] }>
+  ) {
+    const { transactions } = event.detail;
+
+    // If no active budget, create one first
+    if (!activeBudget) {
+      const now = getCurrentTimestamp();
+      const newBudget = {
+        id: generateId(),
+        name: "My Budget",
+        currency: "NOK" as Currency,
+        dateFormat: "DD/MM/YYYY" as const,
+        categories: getDefaultCategories(),
+        entries: [],
+        budgetLimits: {},
+        createdAt: now,
+        updatedAt: now,
+      };
+      budgetStore.addBudget(newBudget);
+
+      // Add transactions to the new budget
+      transactions.forEach((transaction) => {
+        budgetStore.addTransaction(newBudget.id, transaction);
+      });
+    } else {
+      // Add all transactions to the active budget
+      transactions.forEach((transaction) => {
+        budgetStore.addTransaction(activeBudget.id, transaction);
+      });
+    }
+
+    showCSVImport = false;
+    showCreateForm = false;
+  }
 </script>
 
 <div class="h-full flex flex-col bg-background">
@@ -95,6 +134,7 @@
                 <BudgetSetupForm
                   onsubmit={handleCreateBudget}
                   oncancel={() => (showCreateForm = false)}
+                  onImportCSV={() => (showCSVImport = true)}
                 />
               </CardContent>
             </Card>
@@ -142,3 +182,11 @@
     </div>
   </div>
 </div>
+
+<!-- CSV Import Wizard -->
+<CSVImportWizard
+  bind:open={showCSVImport}
+  categories={getDefaultCategories()}
+  on:import={handleCSVImport}
+  on:close={() => (showCSVImport = false)}
+/>
