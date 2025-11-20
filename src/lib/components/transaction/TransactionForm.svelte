@@ -15,8 +15,9 @@
     getLocalTimeZone,
   } from "@internationalized/date";
   import { currencySymbols } from "$lib/utils/format";
+  import type { Component } from "svelte";
 
-  type IconComponent = (typeof LucideIcons)[keyof typeof LucideIcons];
+  type IconComponent = Component;
 
   let {
     categories,
@@ -115,7 +116,9 @@
         {#if categoryId}
           {@const cat = getCategoryById(categories, categoryId)}
           {@const Icon = cat
-            ? (LucideIcons as Record<string, IconComponent>)[cat.icon]
+            ? ((LucideIcons as unknown as Record<string, IconComponent>)[
+                cat.icon
+              ] as IconComponent)
             : null}
           {#if cat}
             <div class="flex items-center gap-1.5">
@@ -131,9 +134,9 @@
       </Select.Trigger>
       <Select.Content class="max-h-[200px]">
         {#each filteredCategories as category (category.id)}
-          {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-            category.icon
-          ]}
+          {@const Icon = (
+            LucideIcons as unknown as Record<string, IconComponent>
+          )[category.icon] as IconComponent}
           <Select.Item value={category.id} label={category.name}>
             <div class="flex items-center gap-2">
               <Icon class="w-4 h-4" style="color: {category.color}" />
@@ -225,7 +228,9 @@
             {#if categoryId}
               {@const cat = getCategoryById(categories, categoryId)}
               {@const Icon = cat
-                ? (LucideIcons as Record<string, IconComponent>)[cat.icon]
+                ? ((LucideIcons as unknown as Record<string, IconComponent>)[
+                    cat.icon
+                  ] as IconComponent)
                 : null}
               {#if cat}
                 <div class="flex items-center gap-2">
@@ -241,9 +246,9 @@
           </Select.Trigger>
           <Select.Content class="max-h-[200px]">
             {#each filteredCategories as category (category.id)}
-              {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-                category.icon
-              ]}
+              {@const Icon = (
+                LucideIcons as unknown as Record<string, IconComponent>
+              )[category.icon] as IconComponent}
               <Select.Item value={category.id} label={category.name}>
                 <div class="flex items-center gap-2">
                   <Icon class="w-4 h-4" style="color: {category.color}" />

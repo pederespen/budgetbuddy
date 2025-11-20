@@ -38,8 +38,9 @@
   import CategoryManager from "../budget/CategoryManager.svelte";
   import type { Budget } from "$lib/types";
   import { debounce } from "$lib/utils/performance";
+  import type { Component } from "svelte";
 
-  type IconComponent = (typeof LucideIcons)[keyof typeof LucideIcons];
+  type IconComponent = Component;
 
   let {
     budget,
@@ -83,8 +84,8 @@
   let filterTransactionType = $state<"all" | TransactionType>("all");
   let showFilters = $state(false);
 
-  const updateDebouncedSearch = debounce((value: string) => {
-    debouncedSearchQuery = value;
+  const updateDebouncedSearch = debounce((value: unknown) => {
+    debouncedSearchQuery = value as string;
   }, 300);
 
   $effect(() => {
@@ -407,7 +408,6 @@
     <div class="py-4">
       {#if mobileDialogMode === "new"}
         <TransactionForm
-          mode="new"
           {categories}
           {currency}
           bind:date={newTransactionDate}
@@ -421,7 +421,6 @@
         />
       {:else}
         <TransactionForm
-          mode="edit"
           {categories}
           {currency}
           bind:date={editTransactionDate}
@@ -498,8 +497,8 @@
                     )}
                     {#if selectedCat}
                       {@const Icon = (
-                        LucideIcons as Record<string, IconComponent>
-                      )[selectedCat.icon]}
+                        LucideIcons as unknown as Record<string, IconComponent>
+                      )[selectedCat.icon] as IconComponent}
                       {#if Icon}
                         <Icon
                           class="h-3.5 w-3.5"
@@ -518,9 +517,9 @@
                   >All Categories</Select.Item
                 >
                 {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
-                  {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-                    category.icon
-                  ]}
+                  {@const Icon = (
+                    LucideIcons as unknown as Record<string, IconComponent>
+                  )[category.icon] as IconComponent}
                   <Select.Item value={category.id} label={category.name}>
                     <div class="flex items-center gap-2">
                       {#if Icon}
@@ -606,9 +605,9 @@
           </Select.Trigger>
           <Select.Content>
             {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
-              {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-                category.icon
-              ]}
+              {@const Icon = (
+                LucideIcons as unknown as Record<string, IconComponent>
+              )[category.icon] as IconComponent}
               <Select.Item value={category.id} label={category.name}>
                 <div class="flex items-center gap-2">
                   {#if Icon}
@@ -682,9 +681,9 @@
             {:else}
               {@const selectedCat = getCategoryById(categories, filterCategory)}
               {#if selectedCat}
-                {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-                  selectedCat.icon
-                ]}
+                {@const Icon = (
+                  LucideIcons as unknown as Record<string, IconComponent>
+                )[selectedCat.icon] as IconComponent}
                 {#if Icon}
                   <Icon class="h-4 w-4" style="color: {selectedCat.color}" />
                 {/if}
@@ -700,9 +699,9 @@
             >All Categories</Select.Item
           >
           {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
-            {@const Icon = (LucideIcons as Record<string, IconComponent>)[
-              category.icon
-            ]}
+            {@const Icon = (
+              LucideIcons as unknown as Record<string, IconComponent>
+            )[category.icon] as IconComponent}
             <Select.Item value={category.id} label={category.name}>
               <div class="flex items-center gap-2">
                 {#if Icon}
@@ -881,7 +880,6 @@
           {#if showNewTransactionRow}
             <TableRow class="bg-muted/30">
               <TransactionForm
-                mode="new"
                 {categories}
                 {currency}
                 bind:date={newTransactionDate}
@@ -907,7 +905,6 @@
               <!-- Edit Mode -->
               <TableRow class="bg-muted/30">
                 <TransactionForm
-                  mode="edit"
                   {categories}
                   {currency}
                   bind:date={editTransactionDate}

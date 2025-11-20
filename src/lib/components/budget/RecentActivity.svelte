@@ -12,8 +12,9 @@
   import { formatDate } from "$lib/utils/format";
   import { getCategoryById } from "$lib/utils/categories";
   import type { Transaction, Category, Currency, DateFormat } from "$lib/types";
+  import type { Component } from "svelte";
 
-  type IconComponent = (typeof LucideIcons)[keyof typeof LucideIcons];
+  type IconComponent = Component;
 
   let {
     transactions,
@@ -58,7 +59,9 @@
             transaction.categoryId
           )}
           {@const Icon = category
-            ? (LucideIcons as Record<string, IconComponent>)[category.icon]
+            ? ((LucideIcons as unknown as Record<string, IconComponent>)[
+                category.icon
+              ] as IconComponent)
             : null}
           <div
             class="flex items-center justify-between py-1.5 border-b last:border-0"

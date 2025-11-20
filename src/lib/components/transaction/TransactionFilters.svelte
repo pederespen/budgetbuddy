@@ -5,8 +5,9 @@
   import { Search } from "lucide-svelte";
   import * as LucideIcons from "lucide-svelte";
   import { getCategoryById } from "$lib/utils/categories";
+  import type { Component } from "svelte";
 
-  type IconComponent = (typeof LucideIcons)[keyof typeof LucideIcons];
+  type IconComponent = Component;
 
   let {
     categories,
@@ -69,9 +70,14 @@
             {:else}
               {@const selectedCat = getCategoryById(categories, filterCategory)}
               {#if selectedCat}
-                {@const Icon = (LucideIcons as Record<string, IconComponent>)[selectedCat.icon]}
+                {@const Icon = (
+                  LucideIcons as unknown as Record<string, IconComponent>
+                )[selectedCat.icon] as IconComponent}
                 {#if Icon}
-                  <Icon class="h-3.5 w-3.5" style="color: {selectedCat.color}" />
+                  <Icon
+                    class="h-3.5 w-3.5"
+                    style="color: {selectedCat.color}"
+                  />
                 {/if}
                 {selectedCat.name}
               {:else}
@@ -81,9 +87,13 @@
           </span>
         </Select.Trigger>
         <Select.Content>
-          <Select.Item value="all" label="All Categories">All Categories</Select.Item>
+          <Select.Item value="all" label="All Categories"
+            >All Categories</Select.Item
+          >
           {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
-            {@const Icon = (LucideIcons as Record<string, IconComponent>)[category.icon]}
+            {@const Icon = (
+              LucideIcons as unknown as Record<string, IconComponent>
+            )[category.icon] as IconComponent}
             <Select.Item value={category.id} label={category.name}>
               <div class="flex items-center gap-2">
                 {#if Icon}
@@ -140,7 +150,9 @@
           {:else}
             {@const selectedCat = getCategoryById(categories, filterCategory)}
             {#if selectedCat}
-              {@const Icon = (LucideIcons as Record<string, IconComponent>)[selectedCat.icon]}
+              {@const Icon = (
+                LucideIcons as unknown as Record<string, IconComponent>
+              )[selectedCat.icon] as IconComponent}
               {#if Icon}
                 <Icon class="h-4 w-4" style="color: {selectedCat.color}" />
               {/if}
@@ -152,9 +164,13 @@
         </span>
       </Select.Trigger>
       <Select.Content>
-        <Select.Item value="all" label="All Categories">All Categories</Select.Item>
+        <Select.Item value="all" label="All Categories"
+          >All Categories</Select.Item
+        >
         {#each [...categories].sort( (a, b) => a.name.localeCompare(b.name) ) as category (category.id)}
-          {@const Icon = (LucideIcons as Record<string, IconComponent>)[category.icon]}
+          {@const Icon = (
+            LucideIcons as unknown as Record<string, IconComponent>
+          )[category.icon] as IconComponent}
           <Select.Item value={category.id} label={category.name}>
             <div class="flex items-center gap-2">
               {#if Icon}

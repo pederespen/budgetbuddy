@@ -138,7 +138,7 @@
                 class="mt-2 grid grid-cols-8 sm:grid-cols-10 gap-2 max-h-48 overflow-y-auto p-1"
               >
                 {#each POPULAR_ICONS as iconName (iconName)}
-                  {@const IconComponent = getIconComponent(iconName)}
+                  {@const Icon = getIconComponent(iconName)}
                   <button
                     type="button"
                     class="aspect-square p-2 rounded border hover:bg-accent transition-colors flex items-center justify-center"
@@ -146,7 +146,7 @@
                     class:border-primary={newIcon === iconName}
                     onclick={() => (newIcon = iconName)}
                   >
-                    <IconComponent class="h-5 w-5 flex-shrink-0" />
+                    <Icon class="h-5 w-5 flex-shrink-0" />
                   </button>
                 {/each}
               </div>
@@ -208,7 +208,7 @@
                     class="mt-2 grid grid-cols-8 sm:grid-cols-10 gap-2 max-h-48 overflow-y-auto p-1"
                   >
                     {#each POPULAR_ICONS as iconName (iconName)}
-                      {@const IconComponent = getIconComponent(iconName)}
+                      {@const Icon = getIconComponent(iconName)}
                       <button
                         type="button"
                         class="aspect-square p-2 rounded border hover:bg-accent transition-colors flex items-center justify-center"
@@ -216,7 +216,7 @@
                         class:border-primary={editIcon === iconName}
                         onclick={() => (editIcon = iconName)}
                       >
-                        <IconComponent class="h-5 w-5 flex-shrink-0" />
+                        <Icon class="h-5 w-5 flex-shrink-0" />
                       </button>
                     {/each}
                   </div>
@@ -257,7 +257,7 @@
             </div>
           {:else}
             <!-- View Mode -->
-            {@const IconComponent = getIconComponent(category.icon)}
+            {@const Icon = getIconComponent(category.icon)}
             {@const transactionCount = getCategoryTransactionCount(category.id)}
             <div
               class="flex items-center justify-between p-3 border rounded-lg transition-colors"
@@ -267,10 +267,7 @@
                   class="w-10 h-10 rounded-full flex items-center justify-center"
                   style="background-color: {category.color}20"
                 >
-                  <IconComponent
-                    class="h-5 w-5"
-                    style="color: {category.color}"
-                  />
+                  <Icon class="h-5 w-5" style="color: {category.color}" />
                 </div>
                 <div>
                   <div class="font-medium">{category.name}</div>

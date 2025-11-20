@@ -1,20 +1,19 @@
 import type { Category } from "../types";
 import * as LucideIcons from "lucide-svelte";
+import type { Component } from "svelte";
 
-type IconComponent = (typeof LucideIcons)[keyof typeof LucideIcons];
+type IconComponent = Component;
 
 export function getCategoryById(
   categories: Category[],
-  categoryId: string,
+  categoryId: string
 ): Category | undefined {
   return categories.find((c) => c.id === categoryId);
 }
 
 export function getIconComponent(iconName: string): IconComponent {
-  return (
-    (LucideIcons as Record<string, IconComponent>)[iconName] ||
-    LucideIcons.HelpCircle
-  );
+  return (LucideIcons[iconName as keyof typeof LucideIcons] ||
+    LucideIcons.HelpCircle) as unknown as IconComponent;
 }
 
 // Popular icon options for categories

@@ -5,8 +5,9 @@
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
   import { Pencil, Trash2, MoreHorizontal, Copy } from "lucide-svelte";
   import * as LucideIcons from "lucide-svelte";
+  import type { Component } from "svelte";
 
-  type IconComponent = (typeof LucideIcons)[keyof typeof LucideIcons];
+  type IconComponent = Component;
 
   let {
     transaction,
@@ -35,7 +36,9 @@
   } = $props();
 
   const Icon = category
-    ? (LucideIcons as Record<string, IconComponent>)[category.icon]
+    ? ((LucideIcons as unknown as Record<string, IconComponent>)[
+        category.icon
+      ] as IconComponent)
     : null;
   const isIncome = transaction.type === "income";
 </script>
