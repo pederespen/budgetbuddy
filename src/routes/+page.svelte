@@ -98,6 +98,7 @@
         createdAt: now,
         updatedAt: now,
       };
+
       budgetStore.addBudget(newBudget);
 
       // Add transactions to the new budget
@@ -105,6 +106,20 @@
         budgetStore.addTransaction(newBudget.id, transaction);
       });
     } else {
+      // Merge categories: keep existing, add new ones that don't exist
+      const existingCategoryIds = new Set(
+        activeBudget.categories.map((c) => c.id)
+      );
+      const newCategories = categories.filter(
+        (c) => !existingCategoryIds.has(c.id)
+      );
+
+      if (newCategories.length > 0) {
+        budgetStore.updateBudget(activeBudget.id, {
+          categories: [...activeBudget.categories, ...newCategories],
+        });
+      }
+
       // Add all transactions to the active budget
       transactions.forEach((transaction) => {
         budgetStore.addTransaction(activeBudget.id, transaction);

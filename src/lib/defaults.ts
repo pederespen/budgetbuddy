@@ -54,13 +54,6 @@ export function getDefaultCategories(): Category[] {
     },
     {
       id: generateId(),
-      name: "Uncategorized",
-      icon: "HelpCircle",
-      color: "#95a5a6",
-      type: "expense",
-    },
-    {
-      id: generateId(),
       name: "Salary",
       icon: "Briefcase",
       color: "#10b981",
@@ -99,7 +92,7 @@ export function getDefaultCategories(): Category[] {
       name: "Uncategorized",
       icon: "HelpCircle",
       color: "#95a5a6",
-      type: "income",
+      type: "expense",
     },
   ];
 }

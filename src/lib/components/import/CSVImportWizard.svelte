@@ -341,13 +341,11 @@
     const transactions: Transaction[] = parsedTransactions.map((t) => {
       const assignedCategory = patternCategoryMap.get(t.pattern);
 
-      // If no category assigned, find Uncategorized for the correct type
+      // If no category assigned, find Uncategorized (works for both income and expense)
       let categoryId = assignedCategory?.id;
       if (!categoryId) {
         const uncategorized = categories.find(
-          (c) =>
-            c.name === "Uncategorized" &&
-            c.type === (t.isIncome ? "income" : "expense")
+          (c) => c.name === "Uncategorized"
         );
         categoryId =
           uncategorized?.id ||
@@ -366,7 +364,18 @@
       };
     });
 
-    dispatch("import", { transactions, categories });
+    // Remove duplicate categories (same name + type)
+    const uniqueCategories = categories.reduce((acc, category) => {
+      const isDuplicate = acc.some(
+        (c) => c.name === category.name && c.type === category.type
+      );
+      if (!isDuplicate) {
+        acc.push(category);
+      }
+      return acc;
+    }, [] as Category[]);
+
+    dispatch("import", { transactions, categories: uniqueCategories });
     reset();
   }
 
