@@ -832,36 +832,40 @@
           <CardContent class="flex-1 overflow-y-auto overflow-hidden">
             <div class="space-y-3 h-full overflow-y-auto">
               {#each potentialInternalTransfers as group}
-                <div class="border rounded-lg p-4">
-                  <div class="flex items-start gap-3">
+                <div class="border rounded-lg p-3 sm:p-4">
+                  <div class="flex items-start gap-2 sm:gap-3">
                     <input
                       type="checkbox"
                       bind:checked={group.shouldRemove}
-                      class="mt-1"
+                      class="cursor-pointer mt-1 flex-shrink-0"
                       id="transfer-{group.id}"
                     />
                     <label
                       for="transfer-{group.id}"
-                      class="flex-1 cursor-pointer"
+                      class="flex-1 cursor-pointer min-w-0"
                     >
-                      <div class="font-medium mb-2">
+                      <div class="font-medium mb-2 text-sm sm:text-base">
                         {formatCurrency(group.transactions[0].amount, "NOK")} on
                         {group.transactions[0].date}
                       </div>
-                      <div class="space-y-1 text-sm text-muted-foreground">
+                      <div
+                        class="space-y-1 text-xs sm:text-sm text-muted-foreground"
+                      >
                         {#each group.transactions as transaction}
-                          <div class="flex items-center gap-2">
-                            {#if transaction.isIncome}
-                              <TrendingUp class="w-4 h-4 text-green-600" />
-                              <span class="text-green-600">Income:</span>
-                            {:else}
-                              <TrendingDown class="w-4 h-4 text-red-600" />
-                              <span class="text-red-600">Expense:</span>
-                            {/if}
-                            <span>{transaction.description}</span>
-                            <span class="text-xs"
-                              >({transaction.sourceFile})</span
+                          <div class="flex items-start gap-2">
+                            <span
+                              class="text-base sm:text-lg font-semibold flex-shrink-0 leading-tight"
+                              class:text-green-600={transaction.isIncome}
+                              class:text-red-600={!transaction.isIncome}
                             >
+                              {transaction.isIncome ? "+" : "−"}
+                            </span>
+                            <div class="break-words flex-1 min-w-0">
+                              <span>{transaction.description}</span>
+                              <span class="text-xs block sm:inline sm:ml-1"
+                                >({transaction.sourceFile})</span
+                              >
+                            </div>
                           </div>
                         {/each}
                       </div>
