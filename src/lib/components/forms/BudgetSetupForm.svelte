@@ -34,29 +34,32 @@
   let isFormValid = $derived(name.trim().length > 0 && currency !== "");
 </script>
 
-<form onsubmit={handleSubmit} class="space-y-6">
+<form onsubmit={handleSubmit} class="space-y-4">
   <Tabs.Root bind:value={activeTab} class="w-full">
     <Tabs.List class="grid w-full grid-cols-2">
-      <Tabs.Trigger value="create">
-        <Plus class="mr-2 h-4 w-4" />
-        Create New
+      <Tabs.Trigger value="create" class="text-sm sm:text-base gap-1 sm:gap-2">
+        <Plus class="h-3 w-3 sm:h-4 sm:w-4" />
+        <span class="hidden sm:inline">Create New</span>
+        <span class="sm:hidden">Create</span>
       </Tabs.Trigger>
-      <Tabs.Trigger value="import">
-        <Upload class="mr-2 h-4 w-4" />
-        Import from Bank
+      <Tabs.Trigger value="import" class="text-sm sm:text-base gap-1 sm:gap-2">
+        <Upload class="h-3 w-3 sm:h-4 sm:w-4" />
+        <span class="hidden sm:inline">Import from Bank</span>
+        <span class="sm:hidden">Import</span>
       </Tabs.Trigger>
     </Tabs.List>
-    <Tabs.Content value="create" class="space-y-4 mt-4">
-      <p class="text-sm text-muted-foreground">
+    <Tabs.Content value="create" class="mt-3 sm:mt-4">
+      <p class="text-xs sm:text-sm text-muted-foreground">
         Start with an empty budget and add transactions manually
       </p>
     </Tabs.Content>
-    <Tabs.Content value="import" class="space-y-4 mt-4">
-      <p class="text-sm text-muted-foreground">
+    <Tabs.Content value="import" class="mt-3 sm:mt-4">
+      <p class="text-xs sm:text-sm text-muted-foreground">
         Import transactions from your bank's CSV export file
       </p>
     </Tabs.Content>
   </Tabs.Root>
+
   <div class="space-y-2">
     <Label for="budget-name">Budget Name</Label>
     <Input

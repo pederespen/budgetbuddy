@@ -511,223 +511,285 @@
         <Card class="flex-1 flex flex-col overflow-hidden">
           <CardHeader class="pb-3 flex-shrink-0">
             <CardTitle class="text-lg">Preview & Confirm</CardTitle>
-            <CardDescription class="text-sm">
-              Review the files and data structure below.
-            </CardDescription>
           </CardHeader>
-          <CardContent class="space-y-2 flex-1 flex flex-col overflow-hidden">
-            {#if allCsvData.length > 1}
-              <div
-                class="flex items-center justify-between gap-4 border-b pb-2"
-              >
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onclick={() => {
-                    selectedPreviewIndex = Math.max(
-                      0,
-                      selectedPreviewIndex - 1
-                    );
-                    if (previewTableContainer) {
-                      checkScrollPosition();
-                    }
-                  }}
-                  disabled={selectedPreviewIndex === 0}
-                >
-                  <ChevronLeft class="h-4 w-4" />
-                </Button>
-
-                <div class="text-center flex-1">
-                  <p class="text-sm font-medium">
-                    {allCsvData[selectedPreviewIndex].file.name}
-                  </p>
-                  <p class="text-xs text-muted-foreground">
-                    File {selectedPreviewIndex + 1} of {allCsvData.length}
-                  </p>
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onclick={() => {
-                    selectedPreviewIndex = Math.min(
-                      allCsvData.length - 1,
-                      selectedPreviewIndex + 1
-                    );
-                    if (previewTableContainer) {
-                      checkScrollPosition();
-                    }
-                  }}
-                  disabled={selectedPreviewIndex === allCsvData.length - 1}
-                >
-                  <ChevronRight class="h-4 w-4" />
-                </Button>
-              </div>
-            {/if}
-
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              {#if allCsvData.length === 1}
-                <div>
-                  <p class="text-muted-foreground">File</p>
-                  <p class="font-medium">
-                    {allCsvData[selectedPreviewIndex].file.name}
-                  </p>
-                </div>
-              {/if}
-              <div>
-                <p class="text-muted-foreground">
-                  Rows in {allCsvData.length > 1 ? "this" : ""} file
+          <CardContent
+            class="flex-1 flex flex-col overflow-hidden sm:overflow-hidden overflow-y-auto sm:overflow-y-hidden"
+          >
+            <div
+              class="flex-shrink-0 space-y-2 sm:overflow-y-auto sm:max-h-[30vh] lg:max-h-none"
+            >
+              <div class="space-y-2 border rounded-lg p-3 bg-muted/50">
+                <p class="text-xs font-medium">Column Mapping</p>
+                <p class="text-xs text-muted-foreground">
+                  Confirm which columns contain the required data:
                 </p>
-                <p class="font-medium">
-                  {allCsvData[selectedPreviewIndex].preview.totalRows}
-                </p>
-              </div>
-            </div>
 
-            <div class="space-y-2 border rounded-lg p-3 bg-muted/50">
-              <p class="text-xs font-medium">Column Mapping</p>
-              <p class="text-xs text-muted-foreground">
-                Confirm which columns contain the required data:
-              </p>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-                <div class="space-y-1">
-                  <Label for="date-column" class="text-xs">Date Column *</Label>
-                  <Select.Root type="single" bind:value={columnMapping.date}>
-                    <Select.Trigger
-                      id="date-column"
-                      class="text-xs bg-background h-8"
+                <div
+                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2"
+                >
+                  <div class="space-y-1">
+                    <Label for="date-column" class="text-xs"
+                      >Date Column *</Label
                     >
-                      <span>{columnMapping.date || "Select column"}</span>
-                    </Select.Trigger>
-                    <Select.Content>
-                      {#each allCsvData[0].preview.headers as header}
-                        <Select.Item value={header} label={header}
-                          >{header}</Select.Item
-                        >
-                      {/each}
-                    </Select.Content>
-                  </Select.Root>
-                </div>
-
-                <div class="space-y-1">
-                  <Label for="description-column" class="text-xs"
-                    >Description Column *</Label
-                  >
-                  <Select.Root
-                    type="single"
-                    bind:value={columnMapping.description}
-                  >
-                    <Select.Trigger
-                      id="description-column"
-                      class="text-xs bg-background h-8"
-                    >
-                      <span>{columnMapping.description || "Select column"}</span
+                    <Select.Root type="single" bind:value={columnMapping.date}>
+                      <Select.Trigger
+                        id="date-column"
+                        class="text-xs bg-background h-8"
                       >
-                    </Select.Trigger>
-                    <Select.Content>
-                      {#each allCsvData[0].preview.headers as header}
-                        <Select.Item value={header} label={header}
-                          >{header}</Select.Item
-                        >
-                      {/each}
-                    </Select.Content>
-                  </Select.Root>
-                </div>
+                        <span>{columnMapping.date || "Select column"}</span>
+                      </Select.Trigger>
+                      <Select.Content>
+                        {#each allCsvData[0].preview.headers as header}
+                          <Select.Item value={header} label={header}
+                            >{header}</Select.Item
+                          >
+                        {/each}
+                      </Select.Content>
+                    </Select.Root>
+                  </div>
 
-                <div class="space-y-1">
-                  <Label for="amount-in-column" class="text-xs"
-                    >Amount In Column *</Label
-                  >
-                  <Select.Root
-                    type="single"
-                    bind:value={columnMapping.amountIn}
-                  >
-                    <Select.Trigger
-                      id="amount-in-column"
-                      class="text-xs bg-background h-8"
+                  <div class="space-y-1">
+                    <Label for="description-column" class="text-xs"
+                      >Description Column *</Label
                     >
-                      <span>{columnMapping.amountIn || "Select column"}</span>
-                    </Select.Trigger>
-                    <Select.Content>
-                      {#each allCsvData[0].preview.headers as header}
-                        <Select.Item value={header} label={header}
-                          >{header}</Select.Item
+                    <Select.Root
+                      type="single"
+                      bind:value={columnMapping.description}
+                    >
+                      <Select.Trigger
+                        id="description-column"
+                        class="text-xs bg-background h-8"
+                      >
+                        <span
+                          >{columnMapping.description || "Select column"}</span
                         >
-                      {/each}
-                    </Select.Content>
-                  </Select.Root>
-                </div>
+                      </Select.Trigger>
+                      <Select.Content>
+                        {#each allCsvData[0].preview.headers as header}
+                          <Select.Item value={header} label={header}
+                            >{header}</Select.Item
+                          >
+                        {/each}
+                      </Select.Content>
+                    </Select.Root>
+                  </div>
 
-                <div class="space-y-1">
-                  <Label for="amount-out-column" class="text-xs"
-                    >Amount Out Column *</Label
-                  >
-                  <Select.Root
-                    type="single"
-                    bind:value={columnMapping.amountOut}
-                  >
-                    <Select.Trigger
-                      id="amount-out-column"
-                      class="text-xs bg-background h-8"
+                  <div class="space-y-1">
+                    <Label for="amount-in-column" class="text-xs"
+                      >Amount In Column *</Label
                     >
-                      <span>{columnMapping.amountOut || "Select column"}</span>
-                    </Select.Trigger>
-                    <Select.Content>
-                      {#each allCsvData[0].preview.headers as header}
-                        <Select.Item value={header} label={header}
-                          >{header}</Select.Item
+                    <Select.Root
+                      type="single"
+                      bind:value={columnMapping.amountIn}
+                    >
+                      <Select.Trigger
+                        id="amount-in-column"
+                        class="text-xs bg-background h-8"
+                      >
+                        <span>{columnMapping.amountIn || "Select column"}</span>
+                      </Select.Trigger>
+                      <Select.Content>
+                        {#each allCsvData[0].preview.headers as header}
+                          <Select.Item value={header} label={header}
+                            >{header}</Select.Item
+                          >
+                        {/each}
+                      </Select.Content>
+                    </Select.Root>
+                  </div>
+
+                  <div class="space-y-1">
+                    <Label for="amount-out-column" class="text-xs"
+                      >Amount Out Column *</Label
+                    >
+                    <Select.Root
+                      type="single"
+                      bind:value={columnMapping.amountOut}
+                    >
+                      <Select.Trigger
+                        id="amount-out-column"
+                        class="text-xs bg-background h-8"
+                      >
+                        <span>{columnMapping.amountOut || "Select column"}</span
                         >
-                      {/each}
-                    </Select.Content>
-                  </Select.Root>
+                      </Select.Trigger>
+                      <Select.Content>
+                        {#each allCsvData[0].preview.headers as header}
+                          <Select.Item value={header} label={header}
+                            >{header}</Select.Item
+                          >
+                        {/each}
+                      </Select.Content>
+                    </Select.Root>
+                  </div>
+                </div>
+              </div>
+
+              {#if allCsvData.length > 1}
+                <div
+                  class="flex items-center justify-between gap-4 border-b pb-2 pt-2"
+                >
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onclick={() => {
+                      selectedPreviewIndex = Math.max(
+                        0,
+                        selectedPreviewIndex - 1
+                      );
+                      if (previewTableContainer) {
+                        checkScrollPosition();
+                      }
+                    }}
+                    disabled={selectedPreviewIndex === 0}
+                  >
+                    <ChevronLeft class="h-4 w-4" />
+                  </Button>
+
+                  <div class="text-center flex-1">
+                    <p class="text-sm font-medium">
+                      {allCsvData[selectedPreviewIndex].file.name}
+                    </p>
+                    <p class="text-xs text-muted-foreground">
+                      File {selectedPreviewIndex + 1} of {allCsvData.length}
+                    </p>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onclick={() => {
+                      selectedPreviewIndex = Math.min(
+                        allCsvData.length - 1,
+                        selectedPreviewIndex + 1
+                      );
+                      if (previewTableContainer) {
+                        checkScrollPosition();
+                      }
+                    }}
+                    disabled={selectedPreviewIndex === allCsvData.length - 1}
+                  >
+                    <ChevronRight class="h-4 w-4" />
+                  </Button>
+                </div>
+              {/if}
+
+              <div class="grid grid-cols-2 gap-2 text-xs pt-2">
+                {#if allCsvData.length === 1}
+                  <div>
+                    <p class="text-muted-foreground">File</p>
+                    <p class="font-medium">
+                      {allCsvData[selectedPreviewIndex].file.name}
+                    </p>
+                  </div>
+                {/if}
+                <div>
+                  <p class="text-muted-foreground">
+                    Showing first 8 of {allCsvData[selectedPreviewIndex].preview
+                      .totalRows} rows
+                    {#if allCsvData.length === 1}in file{/if}
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div class="relative flex-1 min-h-0">
-              {#if canScrollLeft}
-                <div
-                  class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 flex items-center justify-start pointer-events-none"
-                >
-                  <ChevronLeft class="h-5 w-5 text-muted-foreground" />
+            <!-- Mobile: Single scrollable section with table -->
+            <div class="block sm:hidden space-y-3">
+              <div class="pt-3">
+                <div class="relative">
+                  {#if canScrollLeft}
+                    <div
+                      class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 flex items-center justify-start pointer-events-none"
+                    >
+                      <ChevronLeft class="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  {/if}
+                  {#if canScrollRight}
+                    <div
+                      class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 flex items-center justify-end pointer-events-none"
+                    >
+                      <ChevronRight class="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  {/if}
+                  <div
+                    bind:this={previewTableContainer}
+                    onscroll={checkScrollPosition}
+                    class="overflow-x-auto border rounded-lg"
+                  >
+                    <table class="w-full text-sm">
+                      <thead class="bg-muted">
+                        <tr>
+                          {#each allCsvData[selectedPreviewIndex].preview.headers as header}
+                            <th
+                              class="px-3 py-1.5 text-left font-medium text-xs whitespace-nowrap"
+                              >{header}</th
+                            >
+                          {/each}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {#each getCSVPreview(allCsvData[selectedPreviewIndex].preview, 8).rows as row}
+                          <tr class="border-t">
+                            {#each allCsvData[selectedPreviewIndex].preview.headers as header}
+                              <td class="px-3 py-1.5 text-xs whitespace-nowrap"
+                                >{row[header] || ""}</td
+                              >
+                            {/each}
+                          </tr>
+                        {/each}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              {/if}
-              {#if canScrollRight}
+              </div>
+            </div>
+
+            <!-- Desktop: Separate scrollable table section -->
+            <div class="relative flex-1 min-h-0 hidden sm:block">
+              <div class="relative h-full">
+                {#if canScrollLeft}
+                  <div
+                    class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 flex items-center justify-start pointer-events-none"
+                  >
+                    <ChevronLeft class="h-5 w-5 text-muted-foreground" />
+                  </div>
+                {/if}
+                {#if canScrollRight}
+                  <div
+                    class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 flex items-center justify-end pointer-events-none"
+                  >
+                    <ChevronRight class="h-5 w-5 text-muted-foreground" />
+                  </div>
+                {/if}
                 <div
-                  class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 flex items-center justify-end pointer-events-none"
+                  bind:this={previewTableContainer}
+                  onscroll={checkScrollPosition}
+                  class="overflow-x-auto overflow-y-auto border rounded-lg h-full"
                 >
-                  <ChevronRight class="h-5 w-5 text-muted-foreground" />
-                </div>
-              {/if}
-              <div
-                bind:this={previewTableContainer}
-                onscroll={checkScrollPosition}
-                class="overflow-x-auto overflow-y-auto border rounded-lg h-full"
-              >
-                <table class="w-full text-sm">
-                  <thead class="bg-muted">
-                    <tr>
-                      {#each allCsvData[selectedPreviewIndex].preview.headers as header}
-                        <th
-                          class="px-3 py-1.5 text-left font-medium text-xs whitespace-nowrap"
-                          >{header}</th
-                        >
-                      {/each}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {#each getCSVPreview(allCsvData[selectedPreviewIndex].preview, 8).rows as row}
-                      <tr class="border-t">
+                  <table class="w-full text-sm">
+                    <thead class="bg-muted">
+                      <tr>
                         {#each allCsvData[selectedPreviewIndex].preview.headers as header}
-                          <td class="px-3 py-1.5 text-xs whitespace-nowrap"
-                            >{row[header] || ""}</td
+                          <th
+                            class="px-3 py-1.5 text-left font-medium text-xs whitespace-nowrap"
+                            >{header}</th
                           >
                         {/each}
                       </tr>
-                    {/each}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {#each getCSVPreview(allCsvData[selectedPreviewIndex].preview, 8).rows as row}
+                        <tr class="border-t">
+                          {#each allCsvData[selectedPreviewIndex].preview.headers as header}
+                            <td class="px-3 py-1.5 text-xs whitespace-nowrap"
+                              >{row[header] || ""}</td
+                            >
+                          {/each}
+                        </tr>
+                      {/each}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </CardContent>
