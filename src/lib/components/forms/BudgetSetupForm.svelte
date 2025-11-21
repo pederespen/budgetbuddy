@@ -3,28 +3,60 @@
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import * as Select from "$lib/components/ui/select";
+  import * as Tabs from "$lib/components/ui/tabs";
   import type { Currency } from "$lib/types";
   import { currencyLabels } from "$lib/utils/format";
-  import { Upload } from "lucide-svelte";
+  import { Upload, Plus } from "lucide-svelte";
 
   interface Props {
     onsubmit: (data: { name: string; currency: Currency }) => void;
     oncancel?: () => void;
-    onImportCSV?: () => void;
+    onImportCSV?: (data: { name: string; currency: Currency }) => void;
   }
 
   let { onsubmit, oncancel, onImportCSV }: Props = $props();
 
-  let name = $state("My Budget");
-  let currency = $state<Currency>("NOK");
+  let name = $state("");
+  let currency = $state<Currency | "">("");
+  let activeTab = $state<"create" | "import">("create");
 
   function handleSubmit(e: Event) {
     e.preventDefault();
-    onsubmit({ name, currency });
+    if (!name.trim() || !currency) return;
+
+    if (activeTab === "import" && onImportCSV) {
+      onImportCSV({ name: name.trim(), currency: currency as Currency });
+    } else {
+      onsubmit({ name: name.trim(), currency: currency as Currency });
+    }
   }
+
+  let isFormValid = $derived(name.trim().length > 0 && currency !== "");
 </script>
 
 <form onsubmit={handleSubmit} class="space-y-6">
+  <Tabs.Root bind:value={activeTab} class="w-full">
+    <Tabs.List class="grid w-full grid-cols-2">
+      <Tabs.Trigger value="create">
+        <Plus class="mr-2 h-4 w-4" />
+        Create New
+      </Tabs.Trigger>
+      <Tabs.Trigger value="import">
+        <Upload class="mr-2 h-4 w-4" />
+        Import from Bank
+      </Tabs.Trigger>
+    </Tabs.List>
+    <Tabs.Content value="create" class="space-y-4 mt-4">
+      <p class="text-sm text-muted-foreground">
+        Start with an empty budget and add transactions manually
+      </p>
+    </Tabs.Content>
+    <Tabs.Content value="import" class="space-y-4 mt-4">
+      <p class="text-sm text-muted-foreground">
+        Import transactions from your bank's CSV export file
+      </p>
+    </Tabs.Content>
+  </Tabs.Root>
   <div class="space-y-2">
     <Label for="budget-name">Budget Name</Label>
     <Input
@@ -41,7 +73,11 @@
     <Label for="currency">Currency</Label>
     <Select.Root type="single" bind:value={currency}>
       <Select.Trigger id="currency" class="w-full bg-background">
-        <span>{currencyLabels[currency]}</span>
+        <span
+          >{currency
+            ? currencyLabels[currency as Currency]
+            : "Select currency"}</span
+        >
       </Select.Trigger>
       <Select.Content>
         <Select.Item value="NOK" label="NOK - Norwegian Krone">
@@ -64,24 +100,6 @@
     </Select.Root>
   </div>
 
-  {#if onImportCSV}
-    <div class="pt-2">
-      <div class="border-t mb-4"></div>
-      <p class="text-sm text-muted-foreground mb-3">
-        Or start by importing transactions from your bank
-      </p>
-      <Button
-        type="button"
-        variant="outline"
-        onclick={onImportCSV}
-        class="w-full"
-      >
-        <Upload class="mr-2 h-4 w-4" />
-        Import from CSV
-      </Button>
-    </div>
-  {/if}
-
   <div class="flex gap-3 items-center">
     {#if oncancel}
       <Button type="button" variant="ghost" onclick={oncancel} class="gap-2">
@@ -101,6 +119,8 @@
         Back
       </Button>
     {/if}
-    <Button type="submit" class="ml-auto">Create Budget</Button>
+    <Button type="submit" class="ml-auto" disabled={!isFormValid}>
+      {activeTab === "import" ? "Continue to Import" : "Create Budget"}
+    </Button>
   </div>
 </form>

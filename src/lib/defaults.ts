@@ -26,9 +26,30 @@ export function getDefaultCategories(): Category[] {
     },
     {
       id: generateId(),
+      name: "Restaurants",
+      icon: "UtensilsCrossed",
+      color: "#e17055",
+      type: "expense",
+    },
+    {
+      id: generateId(),
+      name: "Travel",
+      icon: "Plane",
+      color: "#74b9ff",
+      type: "expense",
+    },
+    {
+      id: generateId(),
       name: "Shopping",
       icon: "ShoppingBag",
       color: "#fd79a8",
+      type: "expense",
+    },
+    {
+      id: generateId(),
+      name: "Home",
+      icon: "Home",
+      color: "#fab1a0",
       type: "expense",
     },
     {
@@ -47,6 +68,13 @@ export function getDefaultCategories(): Category[] {
     },
     {
       id: generateId(),
+      name: "Investments",
+      icon: "TrendingUp",
+      color: "#6ee7b7",
+      type: "expense",
+    },
+    {
+      id: generateId(),
       name: "Other Expenses",
       icon: "Package",
       color: "#636e72",
@@ -57,27 +85,6 @@ export function getDefaultCategories(): Category[] {
       name: "Salary",
       icon: "Briefcase",
       color: "#10b981",
-      type: "income",
-    },
-    {
-      id: generateId(),
-      name: "Freelance",
-      icon: "Laptop",
-      color: "#34d399",
-      type: "income",
-    },
-    {
-      id: generateId(),
-      name: "Investments",
-      icon: "TrendingUp",
-      color: "#6ee7b7",
-      type: "income",
-    },
-    {
-      id: generateId(),
-      name: "Gifts",
-      icon: "Gift",
-      color: "#86efac",
       type: "income",
     },
     {

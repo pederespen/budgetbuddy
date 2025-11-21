@@ -6,14 +6,7 @@
   import { Label } from "$lib/components/ui/label";
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
-  import {
-    Pencil,
-    Check,
-    X,
-    FileJson,
-    FileText,
-    FileSpreadsheet,
-  } from "lucide-svelte";
+  import { FileJson, FileText, FileSpreadsheet } from "lucide-svelte";
   import { exportAsJSON, exportAsCSV, exportAsXLSX } from "$lib/utils/export";
 
   let { budget }: { budget: Budget } = $props();
@@ -22,14 +15,20 @@
   let selectedDateFormat = $state<DateFormat>(budget.dateFormat);
   let isConvertingCurrency = $state(false);
 
-  let isEditingName = $state(false);
-  let editedName = $state(budget.name);
+  let budgetName = $state(budget.name);
 
   $effect(() => {
     selectedCurrency = budget.currency;
     selectedDateFormat = budget.dateFormat;
-    editedName = budget.name;
+    budgetName = budget.name;
   });
+
+  function handleBudgetNameChange() {
+    const trimmedName = budgetName.trim();
+    if (trimmedName && trimmedName !== budget.name) {
+      budgetStore.updateBudget(budget.id, { name: trimmedName });
+    }
+  }
 
   async function getExchangeRate(
     from: Currency,
@@ -82,82 +81,29 @@
   function handleDateFormatChange() {
     budgetStore.updateBudget(budget.id, { dateFormat: selectedDateFormat });
   }
-
-  function handleStartEditName() {
-    isEditingName = true;
-    editedName = budget.name;
-  }
-
-  function handleSaveName() {
-    const trimmedName = editedName.trim();
-    if (!trimmedName) return;
-    budgetStore.updateBudget(budget.id, { name: trimmedName });
-    isEditingName = false;
-  }
-
-  function handleCancelEditName() {
-    isEditingName = false;
-    editedName = budget.name;
-  }
 </script>
 
 <div class="space-y-8">
-  <!-- Budget Information Section -->
-  <div class="space-y-3">
-    <div class="space-y-4">
-      <div class="space-y-2">
-        <Label for="budget-name">Budget Name</Label>
-        {#if isEditingName}
-          <div class="flex gap-2 max-w-xs">
-            <Input
-              id="budget-name"
-              type="text"
-              bind:value={editedName}
-              class="flex-1"
-              placeholder="Budget name"
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              onclick={handleSaveName}
-              title="Save"
-            >
-              <Check class="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onclick={handleCancelEditName}
-              title="Cancel"
-            >
-              <X class="h-4 w-4" />
-            </Button>
-          </div>
-        {:else}
-          <div class="flex items-center gap-2 max-w-xs">
-            <p class="text-sm flex-1">{budget.name}</p>
-            <Button
-              variant="ghost"
-              size="icon"
-              onclick={handleStartEditName}
-              title="Edit name"
-            >
-              <Pencil class="h-4 w-4" />
-            </Button>
-          </div>
-        {/if}
-      </div>
-    </div>
-  </div>
-
-  <!-- Display Settings Section -->
+  <!-- Settings Section -->
   <div class="space-y-4">
     <h3
       class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
     >
-      Display Settings
+      Settings
     </h3>
     <div class="space-y-4">
+      <div class="space-y-2">
+        <Label for="budget-name">Budget Name</Label>
+        <Input
+          id="budget-name"
+          type="text"
+          bind:value={budgetName}
+          onblur={handleBudgetNameChange}
+          placeholder="Budget name"
+          class="max-w-xs"
+        />
+      </div>
+
       <div class="space-y-2">
         <Label for="currency">Currency</Label>
         <Select.Root
@@ -219,6 +165,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Divider -->
+  <div class="border-t"></div>
 
   <!-- Export Section -->
   <div class="space-y-3">

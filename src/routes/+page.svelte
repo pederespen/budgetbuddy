@@ -15,10 +15,11 @@
   import BudgetSetupForm from "$lib/components/forms/BudgetSetupForm.svelte";
   import CSVImportWizard from "$lib/components/import/CSVImportWizard.svelte";
   import type { Currency, Budget, Transaction, Category } from "$lib/types";
-  import { Upload, FileJson } from "lucide-svelte";
 
   let showCreateForm = $state(false);
   let showCSVImport = $state(false);
+  let pendingBudgetName = $state("My Budget");
+  let pendingBudgetCurrency = $state<Currency>("NOK");
 
   let activeBudget: Budget | undefined = $derived(
     $budgetStore.budgets.find(
@@ -89,8 +90,8 @@
       // Use the categories from the import wizard (which have the correct IDs)
       const newBudget = {
         id: generateId(),
-        name: "My Budget",
-        currency: "NOK" as Currency,
+        name: pendingBudgetName,
+        currency: pendingBudgetCurrency,
         dateFormat: "DD/MM/YYYY" as const,
         categories: categories,
         entries: [],
@@ -133,6 +134,12 @@
   function handleCSVCancel() {
     showCSVImport = false;
   }
+
+  function handleStartCSVImport(data: { name: string; currency: Currency }) {
+    pendingBudgetName = data.name;
+    pendingBudgetCurrency = data.currency;
+    showCSVImport = true;
+  }
 </script>
 
 <div class="h-full flex flex-col bg-background">
@@ -162,7 +169,7 @@
                   <BudgetSetupForm
                     onsubmit={handleCreateBudget}
                     oncancel={() => (showCreateForm = false)}
-                    onImportCSV={() => (showCSVImport = true)}
+                    onImportCSV={handleStartCSVImport}
                   />
                 </CardContent>
               </Card>
