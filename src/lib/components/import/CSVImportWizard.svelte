@@ -907,11 +907,15 @@
     {#if currentStep === "review"}
       <div class="flex-1 flex flex-col min-h-0">
         <Card class="flex flex-col flex-1 overflow-hidden">
-          <CardHeader class="pb-3 flex-shrink-0">
-            <div class="flex items-start justify-between">
-              <div>
-                <CardTitle>Review & Categorize Patterns</CardTitle>
-                <CardDescription>
+          <CardHeader class="pb-3 flex-shrink-0 hidden sm:block">
+            <div
+              class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3"
+            >
+              <div class="min-w-0 flex-1">
+                <CardTitle class="text-lg sm:text-xl"
+                  >Review & Categorize Patterns</CardTitle
+                >
+                <CardDescription class="text-xs sm:text-sm">
                   {totalTransactions} transactions found in {patternGroups.length}
                   unique patterns
                   {#if dateRange}
@@ -922,19 +926,96 @@
               <Button
                 variant="outline"
                 onclick={() => (showCategoryManager = true)}
+                class="flex-shrink-0 text-sm"
               >
                 Manage Categories
               </Button>
             </div>
           </CardHeader>
-          <CardContent class="flex-1 overflow-hidden flex flex-col space-y-3">
-            <div class="flex gap-3 text-sm flex-shrink-0">
-              <div class="flex-1 p-3 bg-green-50 dark:bg-green-950 rounded-lg">
-                <p class="font-medium text-green-900 dark:text-green-100">
+          <CardContent
+            class="flex-1 overflow-hidden flex flex-col sm:space-y-3"
+          >
+            <!-- Mobile: Everything scrolls together -->
+            <div class="flex-1 overflow-y-auto sm:hidden space-y-3 py-3">
+              <div class="flex flex-col gap-3">
+                <div class="min-w-0 flex-1">
+                  <CardTitle class="text-lg"
+                    >Review & Categorize Patterns</CardTitle
+                  >
+                  <CardDescription class="text-xs">
+                    {totalTransactions} transactions found in {patternGroups.length}
+                    unique patterns
+                    {#if dateRange}
+                      from {dateRange.start} to {dateRange.end}
+                    {/if}
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  onclick={() => (showCategoryManager = true)}
+                  class="flex-shrink-0 text-sm w-full"
+                >
+                  Manage Categories
+                </Button>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="p-2 bg-green-50 dark:bg-green-950 rounded-lg">
+                  <p
+                    class="font-medium text-green-900 dark:text-green-100 text-xs"
+                  >
+                    Categorized
+                  </p>
+                  <p
+                    class="text-xl font-bold text-green-600 dark:text-green-400"
+                  >
+                    {categorizedCount}
+                  </p>
+                  <p class="text-xs text-green-700 dark:text-green-300">
+                    patterns assigned
+                  </p>
+                </div>
+                <div class="p-2 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
+                  <p
+                    class="font-medium text-yellow-900 dark:text-yellow-100 text-xs"
+                  >
+                    Uncategorized
+                  </p>
+                  <p
+                    class="text-xl font-bold text-yellow-600 dark:text-yellow-400"
+                  >
+                    {uncategorizedCount}
+                  </p>
+                  <p class="text-xs text-yellow-700 dark:text-yellow-300">
+                    patterns remaining
+                  </p>
+                </div>
+              </div>
+
+              <PatternReview
+                {patternGroups}
+                {categories}
+                {patternCategoryMap}
+                on:patternCategoryChange={(e) =>
+                  handlePatternCategoryChange(
+                    e.detail.pattern,
+                    e.detail.category
+                  )}
+              />
+            </div>
+
+            <!-- Desktop: Stats fixed, patterns scroll -->
+            <div
+              class="hidden sm:grid grid-cols-2 gap-2 sm:gap-3 text-sm flex-shrink-0"
+            >
+              <div class="p-2 sm:p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+                <p
+                  class="font-medium text-green-900 dark:text-green-100 text-xs sm:text-sm"
+                >
                   Categorized
                 </p>
                 <p
-                  class="text-2xl font-bold text-green-600 dark:text-green-400"
+                  class="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400"
                 >
                   {categorizedCount}
                 </p>
@@ -943,13 +1024,15 @@
                 </p>
               </div>
               <div
-                class="flex-1 p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg"
+                class="p-2 sm:p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg"
               >
-                <p class="font-medium text-yellow-900 dark:text-yellow-100">
+                <p
+                  class="font-medium text-yellow-900 dark:text-yellow-100 text-xs sm:text-sm"
+                >
                   Uncategorized
                 </p>
                 <p
-                  class="text-2xl font-bold text-yellow-600 dark:text-yellow-400"
+                  class="text-xl sm:text-2xl font-bold text-yellow-600 dark:text-yellow-400"
                 >
                   {uncategorizedCount}
                 </p>
@@ -959,7 +1042,7 @@
               </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto min-h-0">
+            <div class="hidden sm:block flex-1 overflow-y-auto min-h-0">
               <PatternReview
                 {patternGroups}
                 {categories}
@@ -990,7 +1073,7 @@
                 </svg>
                 Back
               </Button>
-              <Button onclick={handleImport}>
+              <Button onclick={handleImport} class="text-sm sm:text-base">
                 Import {totalTransactions} Transactions
               </Button>
             </div>

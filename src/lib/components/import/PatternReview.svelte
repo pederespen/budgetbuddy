@@ -98,16 +98,130 @@
     {@const selectedCategoryId = selectedCategory?.id || ""}
     {#key selectedCategoryId}
       <div class="border rounded-lg overflow-hidden">
-        <div class="bg-muted px-4 py-3 flex items-center justify-between">
+        <!-- Mobile Layout -->
+        <div class="bg-muted px-3 py-3 sm:hidden">
+          <div class="flex items-start gap-3 mb-2">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                {#if group.isIncome}
+                  <span
+                    class="text-lg font-semibold text-green-600 flex-shrink-0 leading-tight"
+                    >+</span
+                  >
+                {:else}
+                  <span
+                    class="text-lg font-semibold text-red-600 flex-shrink-0 leading-tight"
+                    >−</span
+                  >
+                {/if}
+                <h3 class="font-medium text-sm break-words flex-1 min-w-0">
+                  {group.pattern}
+                </h3>
+              </div>
+              <div
+                class="flex items-center gap-2 text-xs text-muted-foreground"
+              >
+                <span
+                  >{group.count} transaction{group.count !== 1 ? "s" : ""}</span
+                >
+                <span>•</span>
+                <span>{formatCurrency(group.totalAmount, "NOK")}</span>
+              </div>
+            </div>
+            <button
+              onclick={() => toggleExpanded(group.pattern)}
+              class="p-1 hover:bg-background rounded flex-shrink-0"
+              type="button"
+              aria-label="Toggle example transactions"
+            >
+              {#if expandedPatterns.has(group.pattern)}
+                <ChevronUp class="w-4 h-4" />
+              {:else}
+                <ChevronDown class="w-4 h-4" />
+              {/if}
+            </button>
+          </div>
+          <div class="w-full bg-background rounded-md">
+            <Select.Root
+              type="single"
+              value={selectedCategoryId}
+              onValueChange={(v: string | undefined) =>
+                handleCategoryChange(group.pattern, v)}
+            >
+              <Select.Trigger class="w-full bg-background">
+                <div class="flex items-center gap-2">
+                  {#if selectedCategory}
+                    {@const IconComponent = getIconComponent(
+                      selectedCategory.icon
+                    )}
+                    <IconComponent
+                      class="w-4 h-4"
+                      style="color: {selectedCategory.color}"
+                    />
+                  {/if}
+                  <span class="text-sm"
+                    >{selectedCategory?.name || "Select category..."}</span
+                  >
+                </div>
+              </Select.Trigger>
+              <Select.Content>
+                {#if group.isIncome}
+                  <Select.Group>
+                    <Select.Label>Income</Select.Label>
+                    {#each categories.filter((c) => c.type === "income") as category}
+                      {@const IconComponent = getIconComponent(category.icon)}
+                      <Select.Item value={category.id}>
+                        <div class="flex items-center gap-2">
+                          <IconComponent
+                            class="w-4 h-4"
+                            style="color: {category.color}"
+                          />
+                          {category.name}
+                        </div>
+                      </Select.Item>
+                    {/each}
+                  </Select.Group>
+                {:else}
+                  <Select.Group>
+                    <Select.Label>Expenses</Select.Label>
+                    {#each categories.filter((c) => c.type === "expense") as category}
+                      {@const IconComponent = getIconComponent(category.icon)}
+                      <Select.Item value={category.id}>
+                        <div class="flex items-center gap-2">
+                          <IconComponent
+                            class="w-4 h-4"
+                            style="color: {category.color}"
+                          />
+                          {category.name}
+                        </div>
+                      </Select.Item>
+                    {/each}
+                  </Select.Group>
+                {/if}
+              </Select.Content>
+            </Select.Root>
+          </div>
+        </div>
+
+        <!-- Desktop Layout -->
+        <div
+          class="bg-muted px-4 py-3 hidden sm:flex items-center justify-between"
+        >
           <div class="flex items-center gap-3 flex-1 min-w-0">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2">
-                <h3 class="font-medium truncate">{group.pattern}</h3>
                 {#if group.isIncome}
-                  <TrendingUp class="w-4 h-4 text-green-600 flex-shrink-0" />
+                  <span
+                    class="text-lg font-semibold text-green-600 flex-shrink-0 leading-tight"
+                    >+</span
+                  >
                 {:else}
-                  <TrendingDown class="w-4 h-4 text-red-600 flex-shrink-0" />
+                  <span
+                    class="text-lg font-semibold text-red-600 flex-shrink-0 leading-tight"
+                    >−</span
+                  >
                 {/if}
+                <h3 class="font-medium truncate">{group.pattern}</h3>
               </div>
               <div
                 class="flex items-center gap-3 text-xs text-muted-foreground mt-1"
