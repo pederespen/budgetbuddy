@@ -518,14 +518,16 @@
             <div
               class="flex-shrink-0 space-y-2 sm:overflow-y-auto sm:max-h-[30vh] lg:max-h-none"
             >
-              <div class="space-y-2 border rounded-lg p-3 bg-muted/50">
+              <div
+                class="space-y-2 sm:border sm:rounded-lg sm:p-3 sm:bg-muted/50"
+              >
                 <p class="text-xs font-medium">Column Mapping</p>
                 <p class="text-xs text-muted-foreground">
                   Confirm which columns contain the required data:
                 </p>
 
                 <div
-                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2"
+                  class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2"
                 >
                   <div class="space-y-1">
                     <Label for="date-column" class="text-xs"
@@ -625,10 +627,10 @@
                 </div>
               </div>
 
+              <div class="border-t my-4"></div>
+
               {#if allCsvData.length > 1}
-                <div
-                  class="flex items-center justify-between gap-4 border-b pb-2 pt-2"
-                >
+                <div class="flex items-center justify-between gap-4 pb-2 pt-2">
                   <Button
                     variant="outline"
                     size="icon"
